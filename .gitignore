@@ -1,0 +1,5 @@
+# Ignore files related to API credentials
+.env
+
+# Ignore __pycache__
+__pycache__
