@@ -52,13 +52,15 @@ class PlayerFixtureTest(TestCase):
     
     def test_fixture_with_two_playerfixture_entries(self):
         """
-        fixture_with_two_playerfixture_entries shouldn't raisea ValidationError if the fixture has excatly 2 playerfixture entries
+        fixture_with_two_playerfixture_entries shouldn't raise a ValidationError if the fixture has excatly 2 playerfixture entries
         """
         player1 = create_random_player()
         player2 = create_random_player()
+        player3 = create_random_player()
         fixture = create_fixture()
 
-        for player in [player1, player2]:
+        for player in [player1, player2, player3]:
             playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
 
-        self.assertIsNone(playerfixture.clean)
+        clean_result = playerfixture.clean()
+        self.assertIsNone(clean_result)
