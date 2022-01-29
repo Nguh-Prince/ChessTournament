@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -21,6 +22,10 @@ class Player(models.Model):
 class Tournament(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(Player, on_delete=models.CASCADE)
+    total_number_of_participants = models.IntegerField(default=16)
+    
+    def clean(self) -> None:
+        return super().clean()
 
 class TournamentCompetitors(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)

@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from . import models
 
 from django.core.exceptions import ValidationError
@@ -12,6 +13,15 @@ last_names = ["Radcliffe", "Specter", "Stone", "Hightower",
 phone_numbers = ["6535040440703", "6749940201814", "6747920592203",
                  "65452io2ou48058", "68084924533203", "678342258599286"]
 genders = ["m", "f", "nb", "rns"]
+
+def is_power_of_2(number):
+    if number == 1:
+        return True
+
+    if number % 2 == 1:
+        return False
+
+    return is_power_of_2(number / 2)
 
 class ModelCreation:
     def create_random_player(self) -> models.Player:
@@ -89,3 +99,34 @@ class PlayerFixtureTest(TestCase):
 
         playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
         self.assertRaises(ValidationError, playerfixture.clean)
+
+class TournamentTest(TestCase):
+    model_creation = ModelCreation()
+    almighty_creator = model_creation.create_random_player()
+
+    def test_tournament_with_odd_number_of_participants(self):
+        """
+        tournament_with_odd_number_of_participants should raise a ValidationError when a tournament has an odd total_number_of_participants
+        """
+        tournament = self.model_creation.create_tournament(creator=self.almighty_creator)
+        tournament.total_number_of_participants = random.choice( range(1, 100, 2) )
+
+        self.assertRaises(ValidationError, tournament.clean)
+
+    def test_tournament_with_non_power_of_2_participants(self):
+        """
+        tournament_with_non_power_of_2_participants should raise a ValidationError when a tournament has an even but non power of 2 total_number_of_participants
+        """
+        tournament = self.model_creation.create_tournament(creator=self.almighty_creator)
+        tournament.total_number_of_participants = random.choice( [f for f in range(2, 100, 2) if not is_power_of_2(f) ] )
+
+        self.assertRaises(ValidationError, tournament.clean)
+
+    def test_tournament_with_power_of_2_total_number_of_participants(self):
+        """
+        tournament_with_non_power_of_2_participants shouldn't raise a ValidationError when a tournament has a power of 2 total_number_of_participants
+        """
+        tournament = self.model_creation.create_tournament(creator=self.almighty_creator)
+        tournament.total_number_of_participants = random.choice( [f for f in range(2, 100, 2) if is_power_of_2(f) ] )
+
+        self.assertRaises(ValidationError, tournament.clean)
