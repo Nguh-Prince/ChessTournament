@@ -18,8 +18,17 @@ class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
 
+class Tournament(models.Model):
+    time_created = models.DateTimeField(auto_now_add=True)
+    creator = models.ForeignKey(Player, on_delete=models.CASCADE)
+
+class TournamentCompetitors(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+
 class Fixture(models.Model):
     level = models.IntegerField()
+    tournament = models.ForeignKey(Tournament, on_delete=models.SET_NULL, null=True)
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
@@ -34,6 +43,11 @@ class PlayerFixture(models.Model):
         # a fixture cannot have more than 2 player fixture entries
         if self.fixture.playerfixture_set.all().count() > 2:
             raise ValidationError( _("Fixture already has two players") )
+        # a fixture in a tournament can only be played by players that have joined that tournament
+        tournament = self.fixture.tournament
+
+        if tournament and self.player.tournamentcompetitors_set.filter(tournament=tournament).count() < 1:
+            raise ValidationError( _("This fixture can only be played by players that are participating in the tournament") )
         return super().clean()
 
     class Meta:
