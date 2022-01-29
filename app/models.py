@@ -13,8 +13,8 @@ class Player(models.Model):
     first_name = models.CharField(max_length=30, null=False)
     last_name = models.CharField(max_length=30, null=False)
     phone = models.CharField(max_length=20, unique=True)
-    level = models.IntegerField()
-    classroom = models.CharField(max_length=5)
+    level = models.IntegerField(null=True)
+    classroom = models.CharField(max_length=5, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
 
