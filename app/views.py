@@ -14,6 +14,7 @@ def test(request):
 
 def login_view(request):
     context = {'errors': []}
+    print("In login_view")
     if request.method == "POST":
         identifier = request.POST.get("identifier")
         password = request.POST.get("password")
@@ -30,16 +31,17 @@ def login_view(request):
 
         if not user.is_active:
             return HttpResponse( _("Your account is currently inactive") )
-
+        
         login(request, user)
 
     return render(request, 'app/signin.html')
 
-def signup_view(request):
+def signup(request):
     context = {'errors': []}
     if request.method == "POST":
         names = request.POST.get("name")
         phone = request.POST.get("phone")
+        email = request.POST.get("email")
         classroom = request.POST.get("classroom")
         gender = request.POST.get("gender")
         password = request.POST.get("password")
@@ -68,7 +70,7 @@ def signup_view(request):
         if len(context["errors"]) < 1: # no errors in the form
             # create the player and an inactive user
             player = models.Player.objects.create(first_name=names[0], last_name=names[-1], classroom=classroom, gender=gender, phone=phone)
-            user = User.objects.create(username=username, is_active=False)
+            user = User.objects.create(username=username, is_active=False, email=email)
             user.set_password(password)
             player.user = user
             player.save()
