@@ -1,4 +1,5 @@
-from pyexpat import model
+from .utilities import is_power_of_2
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -25,6 +26,11 @@ class Tournament(models.Model):
     total_number_of_participants = models.IntegerField(default=16)
     
     def clean(self) -> None:
+        # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
+        if self.total_number_of_participants <= 1:
+            raise ValidationError( _("The total number of participants must be greater than 1") )
+        if not is_power_of_2(self.total_number_of_participants):
+            raise ValidationError( _("The total number of participants must be a power of 2 i.e 2, 4, 8, 16, 32, etc.") )
         return super().clean()
 
 class TournamentCompetitors(models.Model):
