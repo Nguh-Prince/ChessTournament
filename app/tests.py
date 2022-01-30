@@ -44,8 +44,11 @@ class ModelCreation:
 
         return fixture
 
-    def create_tournament(self, creator: models.Player) -> models.Tournament:
-        tournament = models.Tournament.objects.create(creator=creator)
+    def create_tournament(self, creator: models.Player, name: str=None) -> models.Tournament:
+        if name is None:
+            name = random.choice(first_names)
+        
+        tournament = models.Tournament.objects.create(creator=creator, name=name)
 
         return tournament
 
@@ -144,3 +147,13 @@ class TournamentTest(TestCase):
         tournament.total_number_of_participants = -8
 
         self.assertRaises(ValidationError, tournament.clean)
+
+    def test_two_uncompleted_tournaments_with_same_names(self):
+        """
+        two_uncompleted_tournaments_with_same_names should raise a ValidationError
+        """
+        almighty_creator = self.model_creation.create_random_player()
+        tournament1 = self.model_creation.create_tournament(almighty_creator, "tournoi")
+        tournament2 = self.model_creation.create_tournament(almighty_creator, "tournoi")
+
+        self.assertRaises(ValidationError, tournament2.clean)

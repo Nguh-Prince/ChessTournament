@@ -24,6 +24,7 @@ class Tournament(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(Player, on_delete=models.CASCADE)
     total_number_of_participants = models.IntegerField(default=16)
+    completed = models.BooleanField(default=False)
     name = models.CharField(max_length=150)
     
     def clean(self) -> None:
@@ -32,6 +33,10 @@ class Tournament(models.Model):
             raise ValidationError( _("The total number of participants must be greater than 1") )
         if not is_power_of_2(self.total_number_of_participants):
             raise ValidationError( _("The total number of participants must be a power of 2 i.e 2, 4, 8, 16, 32, etc.") )
+
+        # two uncompleted tournaments cannot have the same name
+        if Tournament.objects.filter(name=self.name, completed=False).count() > 1:
+            raise ValidationError( _("There is another active tournament with the same name") )
         return super().clean()
 
 class TournamentPlayer(models.Model):
@@ -63,7 +68,7 @@ class PlayerFixture(models.Model):
         # a fixture in a tournament can only be played by players that have joined that tournament
         tournament = self.fixture.tournament
 
-        if tournament and self.player.tournamentcompetitors_set.filter(tournament=tournament).count() < 1:
+        if tournament and self.player.tournamentplayer_set.filter(tournament=tournament).count() < 1:
             raise ValidationError( _("This fixture can only be played by players that are participating in the tournament") )
         return super().clean()
 
