@@ -34,12 +34,15 @@ def login_view(request):
         
         login(request, user)
         context["successes"].append( _("Login successful") )
-        return redirect("app:test")
+        return redirect("app:home")
 
     return render(request, 'app/signin.html')
 
 def test(request):
     return render(request, "app/base.html")
+
+def home(request):
+    return render(request, "app/home.html")
 
 def signup(request):
     context = {'errors': []}
