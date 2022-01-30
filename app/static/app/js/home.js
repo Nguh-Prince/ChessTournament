@@ -132,6 +132,10 @@ function loadTournaments() {
                     $(cardBody).append(p)
                 }
 
+                let link = createElement('a', ['btn', 'btn-primary'], {href: `${tournament['id']}/`})
+                link.textContent = gettext("View")
+                $(cardBody).append(link)
+
                 $("#tournaments").append(card)
             }
         }, 

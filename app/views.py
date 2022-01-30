@@ -45,11 +45,11 @@ def login_view(request):
 
     return render(request, 'app/signin.html')
 
-def test(request):
-    return render(request, "app/base.html")
-
 def home(request):
     return render(request, "app/home.html")
+
+def tournaments(request):
+    return render(request, "app/tournaments.html")
 
 def signup(request):
     context = {'errors': []}

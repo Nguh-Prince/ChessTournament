@@ -18,7 +18,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     creator_details = PlayerSerializer(read_only=True, source='creator')
     class Meta:
         model = models.Tournament
-        fields = ('name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created')
+        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created')
     
     def validate_total_number_of_participants(self, value):
         # must be a power of 2 and greater than 1
