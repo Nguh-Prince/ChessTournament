@@ -15,10 +15,13 @@ class Player(models.Model):
     first_name = models.CharField(max_length=30, null=False)
     last_name = models.CharField(max_length=30, null=False)
     phone = models.CharField(max_length=20, unique=True)
-    level = models.IntegerField(null=True)
+    level = models.IntegerField(null=True, blank=True)
     classroom = models.CharField(max_length=5, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
+
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name}: {self.classroom}"
 
 class Tournament(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
@@ -42,11 +45,15 @@ class Tournament(models.Model):
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    kicked_out = models.BooleanField(default=False)
 
     def clean(self) -> None:
         # a tournamentcompetitor cannot be added to a tournament that already has its total_number_of_participants
         if self.tournament.tournamentplayer_set.count() > self.tournament.total_number_of_participants:
             raise ValidationError( _("The tournament is already full.") )
+
+    class Meta:
+        unique_together = [ ["tournament", "player"] ]
 
 class Fixture(models.Model):
     level = models.IntegerField()

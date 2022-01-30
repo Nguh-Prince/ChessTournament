@@ -1,6 +1,6 @@
 from unicodedata import name
 from django.urls import path
-from . import views
+from . import api_views as views
 
 app_name = "api"
 

@@ -99,17 +99,17 @@ active
                 <form method="post">
                     <div class="mb-3">
                         <label for="name" class="form-label">{% trans "Name" %}</label>
-                        <input type="text" name="name" class="form-control" id="name" required>
+                        <input type="text" name="name" class="form-control" id="new_tournament_name" required>
                     </div>
                     <div class="mb-3">
                         <label for="number_of_participants" class="form-label">{% trans "Number of participants" %}</label>
-                        <input type="number" name="number_of_participants" class="form-control" id="number_of_participants" required>
+                        <input type="number" name="number_of_participants" class="form-control" id="new_tournament_number_of_participants" required>
                     </div>
                 </form>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary disabled">{% trans "Submit" %}</button>
+                <button type="button" class="btn btn-primary disabled" id="submit_new_tournament">{% trans "Submit" %}</button>
             </div>
         </div>
     </div>

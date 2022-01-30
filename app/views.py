@@ -4,7 +4,7 @@ from . import serializers
 from django.contrib.auth import login as login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, response
 from django.shortcuts import redirect, render
 from django.template import context
 from django.utils.translation import gettext as _
@@ -31,10 +31,17 @@ def login_view(request):
 
         if not user.is_active:
             return HttpResponse( _("Your account is currently inactive") )
+
+        try:
+            request.session["player"] = serializers.PlayerSerializer(user.player).data
+
+            response = redirect("app:home")
+            response.set_cookie("player_id", user.player.id)
+        except models.Player.DoesNotExist as e:
+            return HttpResponse( _("You are not a player. Error: " + str(e) ) )
         
         login(request, user)
-        context["successes"].append( _("Login successful") )
-        return redirect("app:home")
+        return response
 
     return render(request, 'app/signin.html')
 
@@ -91,9 +98,3 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect("app:login")
-
-# API class-based views
-class TournamentsList(ListCreateAPIView):
-    queryset = models.Tournament.objects.all()
-
-    serializer_class = serializers.TournamentSerializer

@@ -30,7 +30,9 @@ class ModelCreation:
         classroom = "se3"
         level = 3
         
-        return models.Player.objects.create(first_name=first_name, last_name=last_name, phone=phone_number, classroom=classroom, level=level, gender=gender)
+        player = models.Player.objects.create(first_name=first_name, last_name=last_name, phone=phone_number, classroom=classroom, level=level, gender=gender)
+
+        return player
 
     def create_fixture(self) -> models.Fixture:
         level = random.choice([1, 2, 3, 4, 5])
