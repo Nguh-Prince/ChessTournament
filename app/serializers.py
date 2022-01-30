@@ -15,10 +15,10 @@ class PlayerSerializer(serializers.ModelSerializer):
 class TournamentSerializer(serializers.ModelSerializer):
     participants_enrolled = serializers.IntegerField(source='tournamentplayer_set.count', 
     read_only=True)
-    creator_details = PlayerSerializer(read_only=True)
+    creator_details = PlayerSerializer(read_only=True, source='creator')
     class Meta:
         model = models.Tournament
-        fields = ('name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details')
+        fields = ('name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created')
     
     def validate_total_number_of_participants(self, value):
         # must be a power of 2 and greater than 1

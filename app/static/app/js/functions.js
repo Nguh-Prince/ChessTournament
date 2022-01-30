@@ -1,4 +1,4 @@
-var state = {}
+const DateTime = luxon.DateTime
 
 function createElement(htmlTag, classes = null, attributes = null) {
     node = document.createElement(htmlTag)

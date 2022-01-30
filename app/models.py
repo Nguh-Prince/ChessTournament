@@ -46,6 +46,7 @@ class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     kicked_out = models.BooleanField(default=False)
+    participating = models.BooleanField(default=False) # when a player is accepted to compete in a tournament this becomes True
 
     def clean(self) -> None:
         # a tournamentcompetitor cannot be added to a tournament that already has its total_number_of_participants

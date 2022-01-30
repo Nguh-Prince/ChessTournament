@@ -1,3 +1,7 @@
+var state = {
+    tournaments: []
+}
+
 $("#new_tournament_name").on("input", function () {
     number_of_participants = $("#new_tournament_number_of_participants")
 
@@ -35,6 +39,7 @@ $("#new_tournament_name").on("input", function () {
         }
     }
 })
+
 $("#new_tournament_number_of_participants").on("input", function () {
     tournament_name = $("#new_tournament_name")
     value = Number( $(this).val() )
@@ -98,3 +103,46 @@ $("#submit_new_tournament").click(function() {
     })
 })
 
+$(document).ready(function() {
+    loadTournaments()
+})
+
+function loadTournaments() {
+    $.ajax({
+        type: "GET",
+        url: `${API_URL}/players/${getCookie("player_id")}/tournaments/`,
+        success: function(data) {
+            $("#tournaments").html('')
+            state.tournaments = data
+
+            for (let tournament of state.tournaments) {
+                card = createElement('div', ['card', ['col-md-4']])
+                cardBody = createElement('div', ['card-body'])
+                $(card).append(cardBody)
+
+                cardTitle = createElement('div', ['card-title'])
+                $(cardBody).append(cardTitle)
+                cardTitle.textContent = tournament["name"]
+
+                texts = [`Created by <strong>${tournament["creator_details"]["first_name"]} ${tournament["creator_details"]["last_name"]}</strong>`, `Created on <strong>${ getLocaleTime(tournament["time_created"]) }</strong>`]
+
+                for (let text of texts) {
+                    p = createElement('p', ['card-title'])
+                    p.innerHTML = text
+                    $(cardBody).append(p)
+                }
+
+                $("#tournaments").append(card)
+            }
+        }, 
+        error: function(data) {
+            if (data.status == 500) {
+                displayMessage( ERROR_MESSAGES["500"] )
+            } else if (data.status == 403) {
+                displayMessage( ERROR_MESSAGES["403"] )
+            } else {
+                displayMessage( data.responseText )
+            }
+        }
+    })
+}

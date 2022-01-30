@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
+    
+    <script src="{% static 'app/js/luxon.min.js' %}"></script>
     <script src="{% static 'app/js/functions.js' %}"></script>
 
     <style>
@@ -20,6 +22,10 @@
             z-index: 10000;
         }
     </style>
+
+    <script>
+        LOCALE = "{{ LANGUAGE_CODE }}"
+    </script>
 </head>
 
 <body>
@@ -47,9 +53,7 @@
         </div>
     </nav>
 
-    <div id="messages">
-
-    </div>
+    <div id="messages"></div>
 
     {% block content %}
     {% endblock %}
