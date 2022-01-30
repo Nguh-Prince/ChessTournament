@@ -1,19 +1,18 @@
-from unicodedata import name
 from . import models
+from . import serializers
 
 from django.contrib.auth import login as login, logout
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import context
 from django.utils.translation import gettext as _
 
-def test(request):
-    return render(request, 'app/index.html')
+from rest_framework.generics import ListCreateAPIView
 
 def login_view(request):
-    context = {'errors': []}
+    context = {'errors': [], 'successes': []}
     print("In login_view")
     if request.method == "POST":
         identifier = request.POST.get("identifier")
@@ -23,18 +22,24 @@ def login_view(request):
             user = User.objects.get(username=identifier)
         except User.DoesNotExist as e:
             context["errors"].append( _("Username or password incorrect") )
-            return render(request, "app/login.html", context=context)
+            return render(request, "app/signin.html", context=context)
 
         if not user.check_password(password):
             context["errors"].append( _("Username or password incorrect") )
-            return render(request, "app/login.html", context=context)
+            return render(request, "app/signin.html", context=context)
+
 
         if not user.is_active:
             return HttpResponse( _("Your account is currently inactive") )
         
         login(request, user)
+        context["successes"].append( _("Login successful") )
+        return redirect("app:test")
 
     return render(request, 'app/signin.html')
+
+def test(request):
+    return render(request, "app/base.html")
 
 def signup(request):
     context = {'errors': []}
@@ -79,6 +84,13 @@ def signup(request):
     
     return render(request, "app/signup.html", context=context)
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("app:login")
+
+# API class-based views
+class TournamentsList(ListCreateAPIView):
+    queryset = models.Tournament.objects.all()
+
+    serializer_class = serializers.TournamentSerializer

@@ -12,9 +12,33 @@
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <style>
+        #messages {
+            position: fixed;
+            overflow-y: auto;
+            top: 0;
+            width: 80%;
+            margin-left: 10%;
+        }
+    </style>
 </head>
 
 <body>
+    <div id="messages">
+        {% for error in errors %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <strong>{{ error }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% for success in successes %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <strong>{{ success }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
     <div class="authincation section-padding">
         <div class="container h-100">
             <div class="row justify-content-center h-100 align-items-center">

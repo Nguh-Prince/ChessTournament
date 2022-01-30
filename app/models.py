@@ -33,9 +33,14 @@ class Tournament(models.Model):
             raise ValidationError( _("The total number of participants must be a power of 2 i.e 2, 4, 8, 16, 32, etc.") )
         return super().clean()
 
-class TournamentCompetitors(models.Model):
+class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+
+    def clean(self) -> None:
+        # a tournamentcompetitor cannot be added to a tournament that already has its total_number_of_participants
+        if self.tournament.tournamentplayer_set.count() > self.tournament.total_number_of_participants:
+            raise ValidationError( _("The tournament is already full.") )
 
 class Fixture(models.Model):
     level = models.IntegerField()
