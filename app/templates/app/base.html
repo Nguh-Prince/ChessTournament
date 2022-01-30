@@ -10,6 +10,16 @@
     <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'app/js/functions.js' %}"></script>
+
+    <style>
+        #messages {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10000;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,6 +46,10 @@
             </div>
         </div>
     </nav>
+
+    <div id="messages">
+
+    </div>
 
     {% block content %}
     {% endblock %}
