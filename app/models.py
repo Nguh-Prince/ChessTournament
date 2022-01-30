@@ -1,14 +1,16 @@
 from .utilities import is_power_of_2
 
 from django.db import models
+from django.db.models.signals import post_save 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
+import math
+
 class Player(models.Model):
     GENDER_CHOICES = (
-        ("m", _("Male")),
-        ("f", _("Female")),
+        ("m", _("Male")), 
         ("nb", _("Non binary")),
         ("rns", _("Rather not say"))
     )
@@ -23,11 +25,36 @@ class Player(models.Model):
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}: {self.classroom}"
 
+class GeometricProgression:
+    def __init__(self, first_term: float, common_ratio: float) -> None:
+        self.first_term = first_term
+        self.common_ratio = common_ratio
+
+    def nthTerm(self, n:int) -> float:
+        return self.first_term * (self.common_ratio ** (n-1))
+
+    def sumOfNTerms(self, n:int) -> float:
+        if self.common_ratio < 1:
+            numerator, denominator = 1 - (self.common_ratio ** n), 1 - self.common_ratio
+        else:
+            numerator, denominator = (self.common_ratio ** n) - 1, self.common_ratio - 1
+        
+        return ( self.first_term * numerator ) / denominator
+    
+    def getSequencePositionofNumber(self, number) -> int:
+        """
+        given a number, this method returns its position in the progression
+        """
+        n = math.log( (2*number/self.first_term*self.common_ratio), self.common_ratio )
+
+        return n if n.is_integer() else None
+
 class Tournament(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(Player, on_delete=models.CASCADE)
     total_number_of_participants = models.IntegerField(default=16)
     completed = models.BooleanField(default=False)
+    started = models.BooleanField(default=False)
     name = models.CharField(max_length=150)
     
     def clean(self) -> None:
@@ -42,6 +69,23 @@ class Tournament(models.Model):
             raise ValidationError( _("There is another active tournament with the same name") )
         return super().clean()
 
+        # a tournament cannot be started when the number of enrolled participants is less than the total_number_of_participants
+        # a tournament cannot be completed when it has not yet started
+        # a tournament cannot be modified when it has started or is completed
+    
+    def number_of_fixtures(self):
+        gp = GeometricProgression(self.total_number_of_participants // 2, 0.5)
+        return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
+
+def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
+    # create fixtures for a tournament once the tournament has been added or edited
+    if instance.clean():
+        # delete all the other fixtures
+        instance.fixture_set.all().delete()
+
+        for i in range(instance.number_of_fixtures()):
+            pass
+
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
@@ -50,7 +94,7 @@ class TournamentPlayer(models.Model):
 
     def clean(self) -> None:
         # a tournamentcompetitor cannot be added to a tournament that already has its total_number_of_participants
-        if self.tournament.tournamentplayer_set.count() > self.tournament.total_number_of_participants:
+        if self.tournament.tournamentplayer_set.filter(participating=True).count() > self.tournament.total_number_of_participants:
             raise ValidationError( _("The tournament is already full.") )
 
     class Meta:
