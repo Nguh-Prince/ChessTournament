@@ -24,6 +24,7 @@ class Tournament(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(Player, on_delete=models.CASCADE)
     total_number_of_participants = models.IntegerField(default=16)
+    name = models.CharField(max_length=150)
     
     def clean(self) -> None:
         # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
