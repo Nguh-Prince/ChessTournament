@@ -4,7 +4,7 @@ from . import serializers
 from django.contrib.auth import login as login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponse, response
+from django.http import Http404, HttpResponse, response
 from django.shortcuts import redirect, render
 from django.template import context
 from django.utils.translation import gettext as _
@@ -50,6 +50,14 @@ def home(request):
 
 def tournaments(request):
     return render(request, "app/tournaments.html")
+
+def tournament_detail(request, tournament_id):
+    check_query = models.Tournament.objects.filter(id=tournament_id)
+
+    if check_query.count() < 1:
+        return Http404()
+
+    return render(request, 'app/tournament_detail.html', context={"tournament": check_query.first()})
 
 def signup(request):
     context = {'errors': []}

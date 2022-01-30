@@ -11,5 +11,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('home/', views.home, name="home"),
     path('tournaments/', views.tournaments, name="tournaments"),
+    path('tournaments/<int:tournament_id>/', views.tournament_detail, name="tournament-detail"),
     path('api/', include("app.api_urls")),
 ]
