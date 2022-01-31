@@ -10,5 +10,48 @@ active
 {% endblock %}
 
 {% block content %}
+<div class="row p-3">
+    <div class="col-md-3 text-center">
+        <span>{% trans "Number of participants enrolled: " %} {{ tournament.number_of_enrolled_participants }}</span>
+        <span>{% trans "Number of participants enrolled: " %} {{ tournament.total_number_of_participants }}</span>
+    </div>
+    <div class="col-md-9 text-end p-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
+    </div>
+</div>
+{% endblock %}
 
+{% block modals %}
+<div id="participants_list" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">{% trans "List of participants" %}</div>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="list_of_participants">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Class" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in tournament.enrolled_participants %}
+                        <tr>
+                            <td>
+                                {{ player.name }}
+                            </td>
+                            <td>
+                                {{ player.classroom }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

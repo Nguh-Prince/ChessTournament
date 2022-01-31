@@ -107,6 +107,10 @@ $(document).ready(function() {
     loadTournaments()
 })
 
+function getTournamentDetailLink(tournament_id) {
+    return `/tournaments/${tournament_id}/`
+}
+
 function loadTournaments() {
     $.ajax({
         type: "GET",
@@ -132,7 +136,7 @@ function loadTournaments() {
                     $(cardBody).append(p)
                 }
 
-                let link = createElement('a', ['btn', 'btn-primary'], {href: `${tournament['id']}/`})
+                let link = createElement('a', ['btn', 'btn-primary'], {href: getTournamentDetailLink(tournament.id)})
                 link.textContent = gettext("View")
                 $(cardBody).append(link)
 

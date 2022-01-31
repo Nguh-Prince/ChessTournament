@@ -24,6 +24,10 @@ class Player(models.Model):
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}: {self.classroom}"
+    
+    @property
+    def name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
 
 class GeometricProgression:
     def __init__(self, first_term: float, common_ratio: float) -> None:
@@ -76,6 +80,12 @@ class Tournament(models.Model):
     def number_of_fixtures(self):
         gp = GeometricProgression(self.total_number_of_participants // 2, 0.5)
         return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
+    
+    def enrolled_participants(self):
+        return self.tournamentplayer_set.filter(participating=True)
+    
+    def number_of_enrolled_participants(self):
+        return self.enrolled_participants().count() if self.enrolled_participants() else 0
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
