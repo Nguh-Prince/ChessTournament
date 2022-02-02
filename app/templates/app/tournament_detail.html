@@ -5,8 +5,19 @@
 active
 {% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'app/css/datatables.bootstrap5.min.css' %}">
+<script src="{% static 'app/js/datatables.bootstrap5.min.js' %}"></script>
+<script src="{% static 'app/js/jquery.datatables.min.js' %}"></script>
+{% endblock %}
+
 {% block js %}
 <script src="{% static 'app/d3.v7.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $("#list_of_participants").DataTable()
+    })
+</script>
 {% endblock %}
 
 {% block content %}
@@ -18,6 +29,10 @@ active
     <div class="col-md-9 text-end p-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
     </div>
+</div>
+<div class="row p-3">
+    <span>{% trans "Tournament layout" %}</span>
+    
 </div>
 {% endblock %}
 
@@ -41,10 +56,10 @@ active
                         {% for player in tournament.enrolled_participants %}
                         <tr>
                             <td>
-                                {{ player.name }}
+                                {{ player.player.name }}
                             </td>
                             <td>
-                                {{ player.classroom }}
+                                {{ player.player.classroom }}
                             </td>
                         </tr>
                         {% endfor %}

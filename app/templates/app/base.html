@@ -26,6 +26,9 @@
     <script>
         LOCALE = "{{ LANGUAGE_CODE }}"
     </script>
+
+    {% block styles %}
+    {% endblock %}
 </head>
 
 <body>
@@ -46,9 +49,11 @@
                         <a class="nav-link {% block tournaments_active %}{% endblock %}" href="{% url 'app:tournaments' %}">{% trans "Tournaments" %}</a>
                     </li>
                 </ul>
+                {% if request.session.user %}
                 <div class="d-flex">
                     <a class="btn btn-outline-danger" href="{% url 'app:logout' %}">{% trans "Logout" %}</a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </nav>

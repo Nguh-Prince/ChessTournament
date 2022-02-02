@@ -86,6 +86,9 @@ class Tournament(models.Model):
     
     def number_of_enrolled_participants(self):
         return self.enrolled_participants().count() if self.enrolled_participants() else 0
+    
+    def __str__(self) -> str:
+        return f"{self.name}"
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
