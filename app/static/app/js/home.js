@@ -116,6 +116,7 @@ function loadTournaments() {
         type: "GET",
         url: `${API_URL}/players/${getCookie("player_id")}/tournaments/`,
         success: function(data) {
+            console.log(data)
             $("#tournaments").html('')
             state.tournaments = data
 

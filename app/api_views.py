@@ -18,7 +18,7 @@ class TournamentsList(generics.ListCreateAPIView):
 class PlayerTournamentsList(generics.ListAPIView):
     # get a list of tournaments that a certain player either created or is participating in
     def get_queryset(self):
-        return models.Tournament.objects.filter( Q(creator__id=self.kwargs['player_id']) | Q(tournamentplayer__id=self.kwargs['player_id']) )
+        return models.Tournament.objects.filter( Q(creator__id=self.kwargs['player_id']) | Q(tournamentplayer__id=self.kwargs['player_id']) ).distinct()
 
     serializer_class = serializers.TournamentSerializer
 

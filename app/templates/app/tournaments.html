@@ -63,8 +63,20 @@
         </div>
     </div>
 </div>
-
-<div class="modal" tabindex="-1" id="sign-up">
-    
+<input type="hidden" id="show-sign-in-prompt">
+<div class="modal" tabindex="-1" id="sign-in-prompt">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span>
+                    {% trans "You need to be signed in to enroll in a tournament" %}
+                </span>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" href="{% url 'app:signup' %}" id="sign-up">{% trans "Sign up" %}</a>
+                <a class="btn btn-primary" href="{% url 'app:login' %}" id="login">{% trans "Log in" %}</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

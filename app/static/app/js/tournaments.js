@@ -9,6 +9,7 @@ function loadAllTournaments() {
         url: `${API_URL}/tournaments/`,
         success: function(data) {
             $("#all-tournaments").html('')
+            
             state.allTournaments = data
 
             for (let tournament of state.allTournaments) {
@@ -27,7 +28,12 @@ function loadAllTournaments() {
                     p.innerHTML = text
                     $(cardBody).append(p)
                 }
+                let buttonConatiner = createElement('div', ['container', 'gy-5'])
                 let link = createElement('a', ['btn', 'btn-primary'], {href: `${tournament['id']}/`})
+
+                $(cardBody).append(buttonConatiner)
+                $(buttonConatiner).append(link)
+
                 link.textContent = gettext("View")
 
                 let playerId = getCookie("player_id")
@@ -45,14 +51,52 @@ function loadAllTournaments() {
 
                 if (!playerId || !flag) { // show enroll button
                     let button = createElement('button', ['btn', 'btn-primary'])
+                    button.textContent = gettext("Enroll")
                     $(cardBody).append(button)
 
                     $(button).click(function() {
-                        
+                        if (!playerId) {
+                            // show sign in prompt
+                            $("#show-sign-in-prompt").click()
+                        } else {
+                            $.ajax({
+                                type: "POST",
+                                url: `${API_URL}/tournaments/enroll/`,
+                                data: {
+                                    player: getCookie("player_id"),
+                                    tournament: tournament["id"]
+                                },
+                                headers: {
+                                    "X-CSRFTOKEN": getCookie("csrftoken")
+                                }, 
+                                success: function() {
+                                    displayMessage( gettext("You have been enrolled successfully. Awaiting verification from the tournament's creator.", ['alert-success', 'alert-dismissible']) )
+                                    loadAllTournaments()
+                                },
+                                error: function(data) {
+                                    if (data.status == 500) {
+                                        displayMessage(ERROR_MESSAGES["500"])
+                                    } else if (data.status == 403) {
+                                        displayMessage(ERROR_MESSAGES["403"])
+                                    } else {
+                                        displayMessage( data.responseText )
+                                    }
+                                    console.log(data.responseText)
+                                }
+                            })
+                        }
                     })
+
+                    $(buttonConatiner).append(button)
                 }
 
-                $(cardBody).append(link)
+                if (!participating) {
+                    // enrolled but not participating
+                    let button = createElement('button', ['btn', 'btn-outline-danger'])
+                    button.textContent = gettext("Pending")
+
+                    $(buttonConatiner).append(button)
+                }
 
                 $("#all-tournaments").append(card)
             }
