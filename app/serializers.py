@@ -12,13 +12,22 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = models.Player
         fields = "__all__"
 
+class TournamentPlayerSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer(read_only=True)
+
+    class Meta:
+        model = models.TournamentPlayer
+        fields = ('id', 'player', 'tournament', 'player', 'participating')
+
 class TournamentSerializer(serializers.ModelSerializer):
     participants_enrolled = serializers.IntegerField(source='tournamentplayer_set.count', 
     read_only=True)
     creator_details = PlayerSerializer(read_only=True, source='creator')
+    participants = TournamentPlayerSerializer(read_only=True, source='tournamentplayer_set', many=True)
+
     class Meta:
         model = models.Tournament
-        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created')
+        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created', 'participants')
     
     def validate_total_number_of_participants(self, value):
         # must be a power of 2 and greater than 1
@@ -35,6 +44,11 @@ class TournamentSerializer(serializers.ModelSerializer):
             raise ValidationError( _("There is another active tournament with the same name") )
         
         return value
+
+class TournamentEnrollSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TournamentPlayer
+        fields = ('player', 'tournament')
 
 class FixtureSerializer(serializers.ModelSerializer):
     pass

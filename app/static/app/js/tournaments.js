@@ -29,6 +29,29 @@ function loadAllTournaments() {
                 }
                 let link = createElement('a', ['btn', 'btn-primary'], {href: `${tournament['id']}/`})
                 link.textContent = gettext("View")
+
+                let playerId = getCookie("player_id")
+                let flag = false
+                let participating = false
+
+                if (playerId) { // check if this player is enrolled in this tournament
+                    for (let participant of tournament.participants) {
+                        if (participant["player"]["id"] == playerId) {
+                            flag = true
+                            participating = participant['participating']
+                        }
+                    }
+                }
+
+                if (!playerId || !flag) { // show enroll button
+                    let button = createElement('button', ['btn', 'btn-primary'])
+                    $(cardBody).append(button)
+
+                    $(button).click(function() {
+                        
+                    })
+                }
+
                 $(cardBody).append(link)
 
                 $("#all-tournaments").append(card)
