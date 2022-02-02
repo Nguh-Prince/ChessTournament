@@ -81,6 +81,7 @@ class Tournament(models.Model):
         gp = GeometricProgression(self.total_number_of_participants // 2, 0.5)
         return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
     
+    @property
     def enrolled_participants(self):
         return self.tournamentplayer_set.filter(participating=True)
     

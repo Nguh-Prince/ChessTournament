@@ -1,4 +1,4 @@
-from . import models, serializers
+from . import models, permissions, serializers
 
 from django.db.models import Q
 
@@ -21,6 +21,13 @@ class PlayerTournamentsList(generics.ListAPIView):
         return models.Tournament.objects.filter( Q(creator__id=self.kwargs['player_id']) | Q(tournamentplayer__id=self.kwargs['player_id']) ).distinct()
 
     serializer_class = serializers.TournamentSerializer
+
+class TournamentDetail(generics.RetrieveUpdateDestroyAPIView):
+    def get_queryset(self):
+        return models.Tournament.objects.all()
+    
+    serializer_class = serializers.TournamentDetailSerializer
+    permission_classes = (permissions.IsOwnerOr403, )
 
 class EnrollPlayerSerializer(generics.CreateAPIView):
     serializer_class = serializers.TournamentEnrollSerializer
