@@ -81,6 +81,16 @@ class Tournament(models.Model):
     def number_of_fixtures(self):
         gp = GeometricProgression(self.total_number_of_participants // 2, 0.5)
         return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
+
+    def create_fixtures(self):
+        number = self.total_number_of_participants
+        print(number, type(number))
+
+        while number >= 2:
+            number /= 2
+            for i in range(int(number)):
+                level = f"Round of {number}"
+                Fixture.objects.create( tournament=self, level = level if number*2 > 8 else self.common_levels[int(number*2)] )          
     
     @property
     def enrolled_participants(self):
@@ -94,17 +104,17 @@ class Tournament(models.Model):
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
-    if is_power_of_2(instance.total_number_of_participants) and instance.clean():
+    if is_power_of_2(instance.total_number_of_participants) and instance.clean() and instance.number_of_fixtures() != instance.fixture_set.count() and not instance.started:
         # delete all the other fixtures
         instance.fixture_set.all().delete()
-
+        print("Deleting existing fixtures")
         number = instance.total_number_of_participants
 
         while number >= 2:
             number /= 2
             for i in range(number):
                 level = f"Round of {number}"
-                fixture = Fixture.objects.create( tournament=instance, level = level if level > 8 else instance.common_levels[level] )
+                fixture = Fixture.objects.create( tournament=instance, level = level if level > 8 else instance.common_levels[number] )
 pre_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
@@ -124,6 +134,9 @@ class TournamentPlayer(models.Model):
 class Fixture(models.Model):
     level = models.TextField()
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        ordering = ['-level', 'tournament']
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (

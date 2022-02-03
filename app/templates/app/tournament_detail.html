@@ -33,7 +33,38 @@ active
 </div>
 <div class="row p-3">
     <span>{% trans "Tournament layout" %}</span>
-    
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" id="fixtures-table">
+                <thead>
+                    <th>{% trans "Fixture level" %}</th>
+                    <th>{% trans "Players" %}</th>
+                    <th>{% trans "Games" %}</th>
+                </thead>
+                <tbody>
+                    {% for fixture in tournament.fixture_set.all %}
+                    <tr>
+                        <td>
+                            {{ fixture.level }}
+                        </td>
+                        <td>
+                            {% for game in fixture.game_set.all %}
+                            <button class="btn btn-secondary">
+                                {% blocktranslate with game_number=forloop.counter %}
+                                Game #{{ game_number }}
+                                {% endblocktranslate %}
+                            </button>
+                            {% endfor %}
+                            <button class="btn btn-primary">
+                                {% trans "Add a game" %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
