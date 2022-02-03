@@ -1,7 +1,7 @@
 from .utilities import is_power_of_2
 
 from django.db import models
-from django.db.models.signals import post_save 
+from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -94,7 +94,7 @@ class Tournament(models.Model):
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
-    if instance.is_power_of_2(instance.total_number_of_participants) and instance.clean():
+    if is_power_of_2(instance.total_number_of_participants) and instance.clean():
         # delete all the other fixtures
         instance.fixture_set.all().delete()
 
@@ -105,7 +105,7 @@ def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
             for i in range(number):
                 level = f"Round of {number}"
                 fixture = Fixture.objects.create( tournament=instance, level = level if level > 8 else instance.common_levels[level] )
-post_save.connect(create_tournament_fixtures, Tournament)
+pre_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
