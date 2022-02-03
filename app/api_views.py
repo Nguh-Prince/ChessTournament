@@ -27,7 +27,13 @@ class TournamentDetail(generics.RetrieveUpdateDestroyAPIView):
         return models.Tournament.objects.all()
     
     serializer_class = serializers.TournamentDetailSerializer
-    permission_classes = (permissions.IsOwnerOr403, )
+    permission_classes = (permissions.IsCreatorOr403, )
+
+class TournamentPlayerDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.TournamentPlayer.objects.all()
+
+    serializer_class = serializers.TournamentPlayerSerializer
+    permission_classes = (permissions.IsTournamentCreatorOrPlayerOrReadOnly, )
 
 class EnrollPlayerSerializer(generics.CreateAPIView):
     serializer_class = serializers.TournamentEnrollSerializer

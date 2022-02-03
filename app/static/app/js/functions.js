@@ -457,16 +457,7 @@ function deleteItem(url) {
 
 function isPowerOf2(number) {
     if (Number(number)) {
-        number = Number(number)
-
-        if (number == 1) {
-            return true
-        }
-        else if (number % 2 == 1) {
-            return false
-        }
-
-        return isPowerOf2(number / 2)
+        return Math.log2(number) % 1 == 0
     }
     return false
 }

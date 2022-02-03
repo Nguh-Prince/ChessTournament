@@ -1,11 +1,10 @@
-from django.forms import ValidationError
 from . import models
 from .utilities import is_power_of_2
 
 from django.utils.translation import gettext as _
 
 from rest_framework import serializers
-from rest_framework import status
+from rest_framework.serializers import ValidationError
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:

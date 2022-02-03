@@ -60,6 +60,7 @@ class Tournament(models.Model):
     completed = models.BooleanField(default=False)
     started = models.BooleanField(default=False)
     name = models.CharField(max_length=150)
+    common_levels = {2: _("Finals"), 4: _("Semi-finals"), 8: _("Quarter finals")}
     
     def clean(self) -> None:
         # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
@@ -93,12 +94,18 @@ class Tournament(models.Model):
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
-    if instance.clean():
+    if instance.is_power_of_2(instance.total_number_of_participants) and instance.clean():
         # delete all the other fixtures
         instance.fixture_set.all().delete()
 
-        for i in range(instance.number_of_fixtures()):
-            pass
+        number = instance.total_number_of_participants
+
+        while number >= 2:
+            number /= 2
+            for i in range(number):
+                level = f"Round of {number}"
+                fixture = Fixture.objects.create( tournament=instance, level = level if level > 8 else instance.common_levels[level] )
+post_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
@@ -115,8 +122,8 @@ class TournamentPlayer(models.Model):
         unique_together = [ ["tournament", "player"] ]
 
 class Fixture(models.Model):
-    level = models.IntegerField()
-    tournament = models.ForeignKey(Tournament, on_delete=models.SET_NULL, null=True)
+    level = models.TextField()
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
