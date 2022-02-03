@@ -136,10 +136,19 @@ function loadTournaments() {
                     p.innerHTML = text
                     $(cardBody).append(p)
                 }
-
+                let actionButtons = createElement('div', ['container'])
                 let link = createElement('a', ['btn', 'btn-primary'], {href: getTournamentDetailLink(tournament.id)})
                 link.textContent = gettext("View")
-                $(cardBody).append(link)
+                
+                $(cardBody).append(actionButtons)
+                $(actionButtons).append(link)
+
+                if (tournament["creator"] == getCookie("player_id")) {
+                    // delete tournament button
+                    let deleteButton = createElement('button', ['btn', 'btn-danger'], {'data-bs-target': '#delete-item-prompt', 'data-bs-toggle': 'modal'})
+                    deleteButton.textContent = gettext("Delete")
+                    $(actionButtons).append(deleteButton)
+                }
 
                 $("#tournaments").append(card)
             }

@@ -39,7 +39,7 @@ function loadAllTournaments() {
                 let playerId = getCookie("player_id")
                 let flag = false
                 let participating = false
-
+                console.log(playerId)
                 if (playerId) { // check if this player is enrolled in this tournament
                     for (let participant of tournament.participants) {
                         if (participant["player"]["id"] == playerId) {
@@ -90,7 +90,7 @@ function loadAllTournaments() {
                     $(buttonConatiner).append(button)
                 }
 
-                if (!participating) {
+                else if (!participating) {
                     // enrolled but not participating
                     let button = createElement('button', ['btn', 'btn-outline-danger'])
                     button.textContent = gettext("Pending")

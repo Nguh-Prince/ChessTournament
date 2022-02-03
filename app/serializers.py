@@ -17,13 +17,18 @@ class TournamentPlayerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.TournamentPlayer
-        fields = ('id', 'player', 'tournament', 'player', 'participating')
+        fields = ('id', 'player', 'tournament', 'player', 'participating', 'kicked_out')
+
+    def validate(self, attrs):
+        if attrs['participating'] and attrs['kicked_out'] and attrs['participating'] != attrs['kicked_out'] and attrs['participating'] == False:  # cannot be kicked out of a tournament you're not participating in
+            raise ValidationError( _("Player cannot be kicked out of a tournament they are not participating in") )
+        return super().validate(attrs)
 
 class TournamentSerializer(serializers.ModelSerializer):
     participants_enrolled = serializers.IntegerField(source='enrolled_participants.count', 
     read_only=True)
     creator_details = PlayerSerializer(read_only=True, source='creator')
-    participants = TournamentPlayerSerializer(read_only=True, source='enrolled_participants', many=True)
+    participants = TournamentPlayerSerializer(read_only=True, source='tournamentplayer_set', many=True)
 
     class Meta:
         model = models.Tournament
@@ -46,16 +51,16 @@ class TournamentSerializer(serializers.ModelSerializer):
         return value
 
 class TournamentDetailSerializer(TournamentSerializer):
-    all_players_enrolled = PlayerSerializer(read_only=True, source='tournamentplayer_set', many=True)
-    total_number_of_players_applied = serializers.IntegerField(source='tournamentplayer_set.count', read_only=True)
+    all_players_enrolled = TournamentPlayerSerializer(read_only=True, source='tournamentplayer_set', many=True)
+    # total_number_of_players_applied = serializers.IntegerField(source='tournamentplayer_set.count', read_only=True)
     class Meta:
         model = models.Tournament
-        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created', 'participants', 'all_players_enrolled', 'total_number_of_players_enrolled')
+        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created', 'participants', 'all_players_enrolled', )
 
 class TournamentEnrollSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TournamentPlayer
-        fields = ('player', 'tournament')
+        fields = ('player', 'tournament', )
 
 class FixtureSerializer(serializers.ModelSerializer):
     pass

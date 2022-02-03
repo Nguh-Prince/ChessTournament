@@ -50,19 +50,42 @@ active
                         <tr>
                             <th>{% trans "Name" %}</th>
                             <th>{% trans "Class" %}</th>
+                            {% if request.session.player.id == tournament.creator.id %}
+                            <th>{% trans "Action" %}</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
-                        {% for player in tournament.enrolled_participants %}
-                        <tr>
-                            <td>
-                                {{ player.player.name }}
-                            </td>
-                            <td>
-                                {{ player.player.classroom }}
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if request.session.player.id == tournament.creator.id %}
+                            {% for tournament_player in tournament.tournamentplayer_set.all%}
+                            <tr>
+                                <td>
+                                    {{ tournament_player.player.name }}
+                                </td>
+                                <td>
+                                    {{ tournament_player.player.class }}
+                                </td>
+                                <td>
+                                    {% if tournament_player.participating and not tournament_player.kicked_out %}
+                                    <button class="btn btn-danger">{% trans "Kick out" %}</button>
+                                    {% elif not tournament_player.participating %}
+                                    <button class="btn btn-primary">{% trans "Enroll" %}</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            {% for player in tournament.enrolled_participants %}
+                            <tr>
+                                <td>
+                                    {{ player.player.name }}
+                                </td>
+                                <td>
+                                    {{ player.player.classroom }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

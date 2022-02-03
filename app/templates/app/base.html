@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
-    
+
     <script src="{% static 'app/js/luxon.min.js' %}"></script>
     <script src="{% static 'app/js/functions.js' %}"></script>
 
@@ -43,14 +43,34 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link {% block home_active %}{% endblock %}" aria-current="page" href="{% url 'app:home' %}">{% trans "Home" %}</a>
+                        <a class="nav-link {% block home_active %}{% endblock %}" aria-current="page"
+                            href="{% url 'app:home' %}">{% trans "Home" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block tournaments_active %}{% endblock %}" href="{% url 'app:tournaments' %}">{% trans "Tournaments" %}</a>
+                        <a class="nav-link {% block tournaments_active %}{% endblock %}"
+                            href="{% url 'app:tournaments' %}">{% trans "Tournaments" %}</a>
                     </li>
                 </ul>
                 <div class="d-flex">
-                    <a class="btn btn-outline-danger" href="{% url 'app:logout' %}">{% trans "Logout" %}</a>
+                    <a href="" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="d-block link-dark text-decoration-none dropdown-toggle">
+                        <img src="{% static 'app/assets/img/rick-and-morty.jpg' %}" alt="" width="32"
+                            height="32" class="rounded-circle">
+                        <span>{{ request.user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser">
+                        <li>
+                            <a href="" class="nav-link px-2 link-secondary">
+                                <i class="fas fa-cog pr-3"></i>
+                                {% trans "Settings" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app:logout' %}" class="nav-link px-2 link-secondary">
+                                <i class="fas fa-power-off pr-3"></i>
+                                {% trans "Log out" %}
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -62,9 +82,26 @@
     {% block content %}
     {% endblock %}
 
+    <div class="modal" id="delete-item-prompt">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {% trans "Delete item" %}
+                </div>
+                <div class="modal-body">
+                    {% trans "Are you sure you want to delete this item?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-danger">{% trans "Yes" %}</button>
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary">{% trans "No" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% block modals %}
     {% endblock %}
 </body>
 {% block js %}
 {% endblock %}
+
 </html>
