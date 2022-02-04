@@ -1,4 +1,4 @@
-from .utilities import is_power_of_2
+from .utilities import is_power_of_2, a_if_and_only_if_b, a_implies_b
 
 from django.db import models
 from django.db.models.signals import post_save, pre_save
@@ -84,7 +84,6 @@ class Tournament(models.Model):
 
     def create_fixtures(self):
         number = self.total_number_of_participants
-        print(number, type(number))
 
         while number >= 2:
             number /= 2
@@ -112,10 +111,10 @@ def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
 
         while number >= 2:
             number /= 2
-            for i in range(number):
+            for i in range(int(number)):
                 level = f"Round of {number}"
-                fixture = Fixture.objects.create( tournament=instance, level = level if level > 8 else instance.common_levels[number] )
-pre_save.connect(create_tournament_fixtures, Tournament)
+                fixture = Fixture.objects.create( tournament=instance, level = level if number > 8 else instance.common_levels[number] )
+# pre_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
@@ -135,7 +134,9 @@ class Fixture(models.Model):
     level = models.TextField()
     level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
-    dependent_on = models.OneToOneField('self', on_delete=models.CASCADE, null=True, related_name='parent_fixture')
+    root = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='children')
+    # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
+    # a fixture can be the root of no more than 2 other fixtures
 
     class Meta:
         ordering = ['-level_number', 'tournament']
@@ -146,6 +147,21 @@ class Fixture(models.Model):
 
     def __str__(self) -> str:
         return f"{self.level} - {self.level_number}"
+
+    def clean(self) -> None:
+        if self.children.count() > 2:
+            raise ValidationError( _("A fixture cannot be dependent on more than 2 other fixtures") )
+        if self.root and not a_if_and_only_if_b( not self.tournament, not self.root.tournament ): # if root has no tournament, fixture should have no tournament either
+            raise ValidationError( _("Either both the parent and child fixtures are in tournaments or neither of them are") )
+        if self.root and self.tournament and not a_if_and_only_if_b( self.tournament and self.root.tournament, self.root.tournament == self.tournament ):
+            raise ValidationError( _("This fixture hs to be in the same tournament as its parent") )
+        if self.root and self.root.children.count() > 2:
+            raise ValidationError( _("The fixture you are specifying is already dependent on 2 other fixtures") )
+        if self.tournament and self.children.filter(tournament=self.tournament).count() != self.children.count():
+            raise ValidationError(_("A fixture cannot be dependent on fixtures that are in another tournament or not in a tournament at all"))
+        if self.children and self.children.count() > 2:
+            raise ValidationError( _("A fixture should have at most 2 children") )
+        return super().clean()
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
@@ -165,7 +181,9 @@ class PlayerFixture(models.Model):
 
         if tournament and self.player.tournamentplayer_set.filter(tournament=tournament).count() < 1:
             raise ValidationError( _("This fixture can only be played by players that are participating in the tournament") )
+
         return super().clean()
+
 
     class Meta:
         unique_together = [ ["player", "fixture"] ]

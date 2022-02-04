@@ -1,5 +1,7 @@
+from typing import Iterable
 from django.forms import model_to_dict
 from . import models
+from . import serializers
 from .utilities import is_power_of_2
 
 from django.core.exceptions import ValidationError
@@ -34,10 +36,22 @@ class ModelCreation:
 
         return player
 
-    def create_fixture(self) -> models.Fixture:
+    def create_fixture(self, tournament:models.Tournament=None, root:models.Fixture=None, children:Iterable=None) -> models.Fixture:
         level = random.choice([1, 2, 3, 4, 5])
 
-        return models.Fixture.objects.create(level=level)
+        fixture = models.Fixture.objects.create(level=level)
+
+        if tournament:
+            fixture.tournament = tournament
+        if root:
+            fixture.root = root
+        if children:
+            for child in children:
+                child.root = fixture
+                child.save()
+        
+        fixture.save()
+        return fixture
 
     def create_fixture_in_tournament(self, tournament: models.Tournament) -> models.Fixture:
         fixture = self.create_fixture()
@@ -65,6 +79,7 @@ class PlayerFixtureTest(TestCase):
         player2 = self.model_creation.create_random_player()
         player3 = self.model_creation.create_random_player()
         fixture = self.model_creation.create_fixture()
+        print(fixture)
 
         for player in [player1, player2, player3]:
             playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
@@ -96,6 +111,37 @@ class PlayerFixtureTest(TestCase):
 
         playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
         self.assertRaises(ValidationError, playerfixture.clean)
+
+    def test_fixture_with_players_that_are_not_in_childrens_fixtureplayer_set(self):
+        pass
+    # players must be from the fixture's children's fixtureplayer_set
+
+    def test_fixture_with_more_than_2_children(self):
+        """
+        fixture_with_more_than_2_children should raise a ValidationError
+        """
+        player = self.model_creation.create_random_player()
+        tournament = self.model_creation.create_tournament(player, name="Test")
+
+        children = [self.model_creation.create_fixture(tournament=tournament), self.model_creation.create_fixture(tournament=tournament), self.model_creation.create_fixture(tournament=tournament)]
+        parent_fixture = self.model_creation.create_fixture(tournament=tournament, children=children)
+        print(f"Printing this fixture's children: {parent_fixture.children.all()} " )
+        self.assertRaises(ValidationError, parent_fixture.clean)
+
+    def test_fixture_in_different_tournament_from_children(self):
+        """
+        fixture_in_different_tournament_from_children should raise a ValidationError
+        """
+        player = self.model_creation.create_random_player()
+
+        tournaments = [self.model_creation.create_tournament(player, "Test Tournament 0"), self.model_creation.create_tournament(player, "Test Tournament 1")]
+
+        root_fixture = self.model_creation.create_fixture(tournament=tournaments[0])
+
+        for i in range(2):
+            self.model_creation.create_fixture(tournament=tournaments[1], root=root_fixture)
+
+        self.assertRaises(ValidationError, root_fixture.clean)
 
 class TournamentTest(TestCase):
     model_creation = ModelCreation()
@@ -159,3 +205,6 @@ class TournamentTest(TestCase):
         tournament2 = self.model_creation.create_tournament(almighty_creator, "tournoi")
 
         self.assertRaises(ValidationError, tournament2.clean)
+
+class FixtureTest(TestCase):
+    pass
