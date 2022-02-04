@@ -5,6 +5,12 @@
 active
 {% endblock %}
 
+{% block title %}
+{% blocktranslate with id=tournament.id %}
+Mate | Tournaments | id
+{% endblocktranslate %}
+{% endblock %}
+
 {% block styles %}
 <link rel="stylesheet" href="{% static 'app/css/datatables.bootstrap5.min.css' %}">
 <script src="{% static 'app/js/datatables.bootstrap5.min.js' %}"></script>

@@ -135,6 +135,7 @@ class Fixture(models.Model):
     level = models.TextField()
     level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
+    dependent_on = models.OneToOneField('self', on_delete=models.CASCADE, null=True, related_name='parent_fixture')
 
     class Meta:
         ordering = ['-level_number', 'tournament']
