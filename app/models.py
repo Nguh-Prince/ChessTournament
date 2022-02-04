@@ -133,6 +133,7 @@ class TournamentPlayer(models.Model):
 
 class Fixture(models.Model):
     level = models.TextField()
+    level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
 
     class Meta:
