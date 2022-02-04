@@ -137,11 +137,14 @@ class Fixture(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
 
     class Meta:
-        ordering = ['-level', 'tournament']
+        ordering = ['-level_number', 'tournament']
 
     def number_of_players(self):
         count = self.playerfixture_set.count()
         return 0 if not count else count
+
+    def __str__(self) -> str:
+        return f"{self.level} - {self.level_number}"
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
