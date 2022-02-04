@@ -7,7 +7,7 @@ active
 
 {% block title %}
 {% blocktranslate with id=tournament.id %}
-Mate | Tournaments | id
+Mate | Tournaments | {{id}}
 {% endblocktranslate %}
 {% endblock %}
 
@@ -29,11 +29,12 @@ Mate | Tournaments | id
 
 {% block content %}
 <div class="row p-3">
-    <div class="col-md-3 text-center">
+    <div class="col-md-4 text-center">
         <span>{% trans "Number of participants enrolled: " %} {{ tournament.number_of_enrolled_participants }}</span>
-        <span>{% trans "Number of participants enrolled: " %} {{ tournament.total_number_of_participants }}</span>
+        <br>
+        <span>{% trans "Total number of participants: " %} {{ tournament.total_number_of_participants }}</span>
     </div>
-    <div class="col-md-9 text-end p-3">
+    <div class="col-md-8 text-end p-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
     </div>
 </div>

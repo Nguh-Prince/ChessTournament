@@ -79,28 +79,33 @@ $("#new_tournament_number_of_participants").on("input", function () {
 })
 
 $("#submit_new_tournament").click(function () {
-    formData = {
-        name: $("#new_tournament_name").val(),
-        total_number_of_participants: $("#new_tournament_number_of_participants").val(),
-        creator: getCookie("player_id")
-    }
-
-    $.ajax({
-        type: "POST",
-        url: `${API_URL}/tournaments/`,
-        data: formData,
-        headers: {
-            "X-CSRFTOKEN": getCookie("csrftoken")
-        },
-        success: function (data) {
-            displayMessage(gettext("Tournament added successfully"), ["alert-success", "alert-dismissible"])
-            $(".btn-close").click()
-        },
-        error: function (data) {
-            displayMessage(data.responseText)
-            console.log(data.responseText)
+    if (getCookie("player_id")) {
+        formData = {
+            name: $("#new_tournament_name").val(),
+            total_number_of_participants: $("#new_tournament_number_of_participants").val(),
+            creator: getCookie("player_id")
         }
-    })
+
+        $.ajax({
+            type: "POST",
+            url: `${API_URL}/tournaments/`,
+            data: formData,
+            headers: {
+                "X-CSRFTOKEN": getCookie("csrftoken")
+            },
+            success: function (data) {
+                displayMessage(gettext("Tournament added successfully"), ["alert-success", "alert-dismissible"])
+                $(".btn-close").click()
+                loadTournaments()
+            },
+            error: function (data) {
+                displayMessage(data.responseText)
+                console.log(data.responseText)
+            }
+        })
+    } else {
+        $("#show-sign-in-prompt").click()
+    }
 })
 
 $(document).ready(function () {

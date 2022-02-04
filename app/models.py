@@ -104,7 +104,7 @@ class Tournament(models.Model):
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
-    if is_power_of_2(instance.total_number_of_participants) and instance.clean() and instance.number_of_fixtures() != instance.fixture_set.count() and not instance.started:
+    if is_power_of_2(instance.total_number_of_participants) and not instance.clean() and instance.number_of_fixtures() != instance.fixture_set.count() and not instance.started:
         # delete all the other fixtures
         instance.fixture_set.all().delete()
         print("Deleting existing fixtures")
