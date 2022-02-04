@@ -138,6 +138,10 @@ class Fixture(models.Model):
     class Meta:
         ordering = ['-level', 'tournament']
 
+    def number_of_players(self):
+        count = self.playerfixture_set.count()
+        return 0 if not count else count
+
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
         ("White", _("White")),

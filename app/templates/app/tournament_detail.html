@@ -48,16 +48,34 @@ active
                             {{ fixture.level }}
                         </td>
                         <td>
+                            <ul>
+                                {% for fixture_player in fixture.fixtureplayer_set.all %}
+                                <li>{{ fixture_player.player.name }}</li>
+                                {% empty %}
+                                <li>{% trans "This fixture has no players" %}</li>
+                                {% endfor %}
+                                {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %}
+                                <button class="btn btn-primary">{% trans "Add a player" %}</button>
+                                {% endif %}
+                            </ul>
+                        </td>
+                        <td>
                             {% for game in fixture.game_set.all %}
                             <button class="btn btn-secondary">
                                 {% blocktranslate with game_number=forloop.counter %}
                                 Game #{{ game_number }}
                                 {% endblocktranslate %}
                             </button>
+                            {% empty %}
+                            <ul>
+                                <li>{% trans "This fixture has no games" %}</li>
+                            </ul>
                             {% endfor %}
+                            {% if request.session.player and tournament.creator.id == request.session.player.id %}
                             <button class="btn btn-primary">
                                 {% trans "Add a game" %}
                             </button>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
