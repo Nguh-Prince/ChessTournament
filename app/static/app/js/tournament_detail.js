@@ -64,11 +64,11 @@ $(".add-game").click(function() {
 })
 
 $("#add-game").click(function() {
-    addGameToFixture($("#new_game_fixture").val())
+    addGameToFixture($("#new_game_fixture").val(), $("#tournament_id").val())
 })
 
-function addGameToFixture(fixtureId) {
-    if (fixtureId) {
+function addGameToFixture(fixtureId, tournamentId) {
+    if (fixtureId && tournamentId) {
         let formData = {
             classroom: $("#new_game_classroom").val(),
             date: $("#new_game_date").val(),
@@ -77,6 +77,7 @@ function addGameToFixture(fixtureId) {
             fixture: fixtureId
         }
         $.ajax({
+            url: `${API_URL}/tournaments/${tournamentId}/games/`,
             type: "POST",
             headers: {
                 "X-CSRFTOKEN": getCookie("csrftoken")
@@ -84,6 +85,7 @@ function addGameToFixture(fixtureId) {
             data: formData,
             encode: true,
             success: function(data) {
+                console.log(data)
                 displayMessage(gettext("Game added successfully"), ['alert-success', 'alert-dismissible'])
                 setTimeout(location.reload, 15000)
             },

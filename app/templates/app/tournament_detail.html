@@ -28,6 +28,7 @@ Mate | Tournaments | {{id}}
 {% endblock %}
 
 {% block content %}
+<input type="hidden" id="tournament_id" value="{{ tournament.id }}">
 <div class="row p-3">
     <div class="col-md-4 text-center">
         <span>{% trans "Number of participants enrolled: " %} {{ tournament.number_of_enrolled_participants }}</span>
