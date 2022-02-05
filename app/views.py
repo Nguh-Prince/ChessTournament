@@ -1,3 +1,4 @@
+from app.forms import GameForm
 from . import models
 from . import serializers
 
@@ -57,7 +58,7 @@ def tournament_detail(request, tournament_id):
     if check_query.count() < 1:
         return Http404()
 
-    return render(request, 'app/tournament_detail.html', context={"tournament": check_query.first()})
+    return render(request, 'app/tournament_detail.html', context={"tournament": check_query.first(), 'game_form': GameForm})
 
 def signup(request):
     context = {'errors': []}

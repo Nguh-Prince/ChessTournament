@@ -1,5 +1,5 @@
 {% extends 'app/base.html' %}
-{% load i18n static %}
+{% load crispy_forms_tags i18n static %}
 
 {% block tournaments_active %}
 active
@@ -13,15 +13,15 @@ Mate | Tournaments | {{id}}
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'app/css/datatables.bootstrap5.min.css' %}">
-<script src="{% static 'app/js/datatables.bootstrap5.min.js' %}"></script>
 <script src="{% static 'app/js/jquery.datatables.min.js' %}"></script>
+<script src="{% static 'app/js/datatables.bootstrap5.min.js' %}"></script>
 {% endblock %}
 
 {% block js %}
 <script src="{% static 'app/js/d3.v7.min.js' %}"></script>
 <script src="{% static 'app/js/tournament_detail.js' %}"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $("#list_of_participants").DataTable()
     })
 </script>
@@ -61,9 +61,9 @@ Mate | Tournaments | {{id}}
                                 {% empty %}
                                 <li>{% trans "This fixture has no players" %}</li>
                                 {% endfor %}
-                                {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %}
-                                <button class="btn btn-primary">{% trans "Add a player" %}</button>
-                                {% endif %}
+                                {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} <button class="btn btn-primary">
+                                    {% trans "Add a player" %}</button>
+                                    {% endif %}
                             </ul>
                         </td>
                         <td>
@@ -79,7 +79,7 @@ Mate | Tournaments | {{id}}
                             </ul>
                             {% endfor %}
                             {% if request.session.player and tournament.creator.id == request.session.player.id %}
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game" data-fixture-id="{{ fixture.id }}">
                                 {% trans "Add a game" %}
                             </button>
                             {% endif %}
@@ -114,36 +114,38 @@ Mate | Tournaments | {{id}}
                     </thead>
                     <tbody>
                         {% if request.session.player.id == tournament.creator.id %}
-                            {% for tournament_player in tournament.tournamentplayer_set.all%}
-                            <tr>
-                                <td>
-                                    {{ tournament_player.player.name }}
-                                </td>
-                                <td>
-                                    {{ tournament_player.player.class }}
-                                </td>
-                                <td>
-                                    {% if tournament_player.participating and not tournament_player.kicked_out %}
-                                    <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans "Kick out" %}</button>
-                                    {% elif not tournament_player.participating %}
-                                    <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans "Enroll" %}</button>
-                                    {% elif tournament.kicked_out %}
-                                    <button class="btn btn-outline-danger disabled">{% trans "Kicked out" %}</button>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
+                        {% for tournament_player in tournament.tournamentplayer_set.all%}
+                        <tr>
+                            <td>
+                                {{ tournament_player.player.name }}
+                            </td>
+                            <td>
+                                {{ tournament_player.player.class }}
+                            </td>
+                            <td>
+                                {% if tournament_player.participating and not tournament_player.kicked_out %}
+                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans
+                                    "Kick out" %}</button>
+                                {% elif not tournament_player.participating %}
+                                <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans
+                                    "Enroll" %}</button>
+                                {% elif tournament.kicked_out %}
+                                <button class="btn btn-outline-danger disabled">{% trans "Kicked out" %}</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
                         {% else %}
-                            {% for player in tournament.enrolled_participants %}
-                            <tr>
-                                <td>
-                                    {{ player.player.name }}
-                                </td>
-                                <td>
-                                    {{ player.player.classroom }}
-                                </td>
-                            </tr>
-                            {% endfor %}
+                        {% for player in tournament.enrolled_participants %}
+                        <tr>
+                            <td>
+                                {{ player.player.name }}
+                            </td>
+                            <td>
+                                {{ player.player.classroom }}
+                            </td>
+                        </tr>
+                        {% endfor %}
                         {% endif %}
                     </tbody>
                 </table>
@@ -151,14 +153,43 @@ Mate | Tournaments | {{id}}
         </div>
     </div>
 </div>
-
+{% if request.session.player and tournament.creator.id == request.session.player.id %}
 <div id="new_game" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"></h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="new_game_fixture" readonly>
+                <div class="mb-3">
+                    <label for="new_game_classroom">{% trans "Classroom*" %}</label>
+                    <input type="text" class="form-control" id="new_game_classroom">
+                </div>
+                <div class="mb-3">
+                    <label for="new_game_date">{% trans "Date*" %}</label>
+                    <input type="date" class="form-control" id="new_game_date">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="new_game_period">{% trans "Period*" %}</label>
+                        <select class="form-control select" id="new_game_period">
+                            <option value="break">{% trans "Break" %}</option>
+                            <option value="after_school">{% trans "After school" %}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="new_game_number">{% trans "Number*" %}</label>
+                        <input type="number" class="form-control" id="new_game_number" value=1 min="1">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="add-game">{% trans "Submit" %}</button>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

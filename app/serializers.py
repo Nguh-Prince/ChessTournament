@@ -61,8 +61,10 @@ class TournamentEnrollSerializer(serializers.ModelSerializer):
         model = models.TournamentPlayer
         fields = ('player', 'tournament', )
 
-class FixtureSerializer(serializers.ModelSerializer):
-    pass
-
 class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Game
+        fields = ('id', 'classroom', 'date', 'period', 'number', 'fixture')
+
+class FixtureSerializer(serializers.ModelSerializer):
     pass

@@ -37,3 +37,9 @@ class TournamentPlayerDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class EnrollPlayerSerializer(generics.CreateAPIView):
     serializer_class = serializers.TournamentEnrollSerializer
+
+class TournamentGames(generics.ListCreateAPIView):
+    def get_queryset(self):
+        return models.Game.objects.filter( fixture__tournament__id=self.kwargs["tournament_id"] )
+
+    serializer_class = serializers.GameSerializer

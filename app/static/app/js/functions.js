@@ -41,6 +41,11 @@ function getLocaleTime(dateTimeISO) {
     return dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)
 }
 
+function getLocaleDate(dateISO) {
+    dt = DateTime.fromISO(dateISO)
+    return dt.setLocale(LOCALE).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)
+}
+
 function createElementFromObject(object) {
     // object must contain a tag attribute (which has a string value)
     // classes attribute (a list consisting of the different css class strings to be applied to the class)

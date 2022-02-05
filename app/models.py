@@ -198,7 +198,10 @@ class Game(models.Model):
     classroom = models.CharField(max_length=5)
     period = models.CharField(max_length=30)
     number = models.IntegerField(default=1)
-    white_score = models.FloatField()
+    white_score = models.FloatField(null=True)
+
+    class Meta:
+        unique_together = [ ["date", "classroom", "period", "number"] ]
 
     def clean(self) -> None:
         # white score must either be 0, 0.5 or 1
@@ -209,3 +212,8 @@ class Game(models.Model):
         for period in self.PERIOD_CHOICES:
             if self.period == period[0]:
                 flag = True
+
+        if self.number < 1:
+            raise ValidationError( _("The game number must be a positive integer") )
+
+        # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e. 

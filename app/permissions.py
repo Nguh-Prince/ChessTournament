@@ -36,3 +36,20 @@ class IsTournamentCreatorOrPlayerOrReadOnly(permissions.BasePermission):
             return True
         
         return False
+
+class IsTournamentCreatororReadOnly(permissions.BasePermission):  # permission ensures that only the creator of a tournament can add, delete or modify games
+    def has_object_permission(self, request, view, obj):
+        player_id = None
+
+        try:
+            player_id = request.user.player.id
+        except Exception as e:
+            print(e)
+
+        if request.method in permissions.SAFE_METHODS or obj.fixture.tournament.creator.id == player_id:
+            return True
+
+        if not player_id:
+            return False
+        
+        return False
