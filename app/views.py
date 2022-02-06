@@ -56,7 +56,7 @@ def tournament_detail(request, tournament_id):
     check_query = models.Tournament.objects.filter(id=tournament_id)
 
     if check_query.count() < 1:
-        return Http404()
+        raise Http404
 
     return render(request, 'app/tournament_detail.html', context={"tournament": check_query.first(), 'game_form': GameForm})
 

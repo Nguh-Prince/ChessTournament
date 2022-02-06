@@ -60,11 +60,13 @@ class ModelCreation:
 
         return fixture
 
-    def create_tournament(self, creator: models.Player, name: str=None) -> models.Tournament:
+    def create_tournament(self, creator: models.Player, name: str=None, total_number_of_participants: int=None) -> models.Tournament:
         if name is None:
             name = random.choice(first_names)
+        if total_number_of_participants is None:
+            total_number_of_participants = random.choice( [2, 4, 8] )
         
-        tournament = models.Tournament.objects.create(creator=creator, name=name)
+        tournament = models.Tournament.objects.create(creator=creator, name=name, total_number_of_participants=total_number_of_participants)
 
         return tournament
 
@@ -125,7 +127,6 @@ class PlayerFixtureTest(TestCase):
 
         children = [self.model_creation.create_fixture(tournament=tournament), self.model_creation.create_fixture(tournament=tournament), self.model_creation.create_fixture(tournament=tournament)]
         parent_fixture = self.model_creation.create_fixture(tournament=tournament, children=children)
-        print(f"Printing this fixture's children: {parent_fixture.children.all()} " )
         self.assertRaises(ValidationError, parent_fixture.clean)
 
     def test_fixture_in_different_tournament_from_children(self):
@@ -142,6 +143,21 @@ class PlayerFixtureTest(TestCase):
             self.model_creation.create_fixture(tournament=tournaments[1], root=root_fixture)
 
         self.assertRaises(ValidationError, root_fixture.clean)
+
+    def test_fixture_in_tournament_with_adequate_number_of_fixtures(self):
+        """
+        fixture_in_tournament_with_adequate_number_of_fixtures should raise a ValidationError
+        """
+        player = self.model_creation.create_random_player()
+
+        tournament = self.model_creation.create_tournament(creator=player, total_number_of_participants=8)
+
+        for i in range( int(tournament.number_of_fixtures()) ):
+            fixture = self.model_creation.create_fixture(tournament=tournament)
+
+        fixture = self.model_creation.create_fixture(tournament=tournament)
+
+        self.assertRaises(ValidationError, fixture.clean)
 
 class TournamentTest(TestCase):
     model_creation = ModelCreation()

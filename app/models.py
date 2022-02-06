@@ -49,7 +49,7 @@ class GeometricProgression:
         """
         given a number, this method returns its position in the progression
         """
-        n = math.log( (2*number/self.first_term*self.common_ratio), self.common_ratio )
+        n = math.log( (self.common_ratio * number) / self.first_term, self.common_ratio )
 
         return n if n.is_integer() else None
 
@@ -83,13 +83,28 @@ class Tournament(models.Model):
         return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
 
     def create_fixtures(self):
-        number = self.total_number_of_participants
+        number = 2 # start by creating the finals
+        created_fixtures = {}
+        while number <= self.total_number_of_participants:
+            created_fixtures.setdefault( number // 2, [] )
+            rootFixtureCounter = 0
+            thisLevelFixtureCounter = 0
+            for i in range( number // 2 ):
+                # create fixtures and append them to the appropriate level, while picking their roots from the appropriate level
+                level = self.common_levels[number] if number <= 8 else f"Round of {number}"
+                fixture = Fixture.objects.create( tournament=self, level_number=number//2, level=level )
+                created_fixtures[number // 2].append(fixture)
 
-        while number >= 2:
-            number /= 2
-            for i in range(int(number)):
-                level = f"Round of {number}"
-                Fixture.objects.create( tournament=self, level = level if number*2 > 8 else self.common_levels[int(number*2)] )          
+                if number // 2 > 1:
+                    if thisLevelFixtureCounter < 2:
+                        fixture.root = created_fixtures[number // 4][rootFixtureCounter]
+                        thisLevelFixtureCounter += 1
+                    else: # increment the rootFixtureCounter after we've assigned two child fixtures to a fixture in that list
+                        rootFixtureCounter += 1
+                        thisLevelFixtureCounter = 1
+                        fixture.root = created_fixtures[number // 4][rootFixtureCounter]
+
+            number *= 2
     
     @property
     def enrolled_participants(self):
@@ -161,7 +176,10 @@ class Fixture(models.Model):
             raise ValidationError(_("A fixture cannot be dependent on fixtures that are in another tournament or not in a tournament at all"))
         if self.children and self.children.count() > 2:
             raise ValidationError( _("A fixture should have at most 2 children") )
-        return super().clean()
+        print("Printing the number of fixtures in the tournament and the number of fixtures expected")
+        print(self.tournament.fixture_set.count(), self.tournament.number_of_fixtures())
+        if self.tournament.fixture_set.count() > self.tournament.number_of_fixtures():
+            raise ValidationError( _("You are trying to add this fixture to a tournament that already has its total number of fixtures") )
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
@@ -198,7 +216,12 @@ class Game(models.Model):
     classroom = models.CharField(max_length=5)
     period = models.CharField(max_length=30)
     number = models.IntegerField(default=1)
-    white_score = models.FloatField(null=True)
+    home_score = models.FloatField(null=True)
+    away_score = models.FloatField(null=True)
+    
+    home = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE, null=True, blank=True, related_name='home')
+    away = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE, null=True, blank=True, related_name='away')
+
 
     class Meta:
         unique_together = [ ["date", "classroom", "period", "number"] ]
@@ -212,6 +235,9 @@ class Game(models.Model):
         for period in self.PERIOD_CHOICES:
             if self.period == period[0]:
                 flag = True
+        
+        if flag == False:
+            raise ValidationError( _("The period of the game must either be break or after school") )
 
         if self.number < 1:
             raise ValidationError( _("The game number must be a positive integer") )
