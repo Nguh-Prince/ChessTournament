@@ -23,6 +23,7 @@ Mate | Tournaments | {{id}}
 <script>
     $(document).ready(function () {
         $("#list_of_participants").DataTable()
+        $("#fixtures-table").DataTable()
     })
 </script>
 {% endblock %}
@@ -45,6 +46,7 @@ Mate | Tournaments | {{id}}
         <div class="col-md-12">
             <table class="table table-striped" id="fixtures-table">
                 <thead>
+                    <th>{% trans "Number of participants" %}</th>
                     <th>{% trans "Fixture level" %}</th>
                     <th>{% trans "Players" %}</th>
                     <th>{% trans "Games" %}</th>
@@ -52,6 +54,9 @@ Mate | Tournaments | {{id}}
                 <tbody>
                     {% for fixture in tournament.fixture_set.all %}
                     <tr>
+                        <td>
+                            {{ fixture.level_number }}
+                        </td>
                         <td>
                             {{ fixture.level }}
                         </td>

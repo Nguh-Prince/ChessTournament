@@ -123,7 +123,7 @@ class PlayerFixtureTest(TestCase):
         fixture_with_more_than_2_children should raise a ValidationError
         """
         player = self.model_creation.create_random_player()
-        tournament = self.model_creation.create_tournament(player, name="Test")
+        tournament = self.model_creation.create_tournament(player, f"{random.choice(first_names)}{random.choice(last_names)}")
 
         children = [self.model_creation.create_fixture(tournament=tournament), self.model_creation.create_fixture(tournament=tournament), self.model_creation.create_fixture(tournament=tournament)]
         parent_fixture = self.model_creation.create_fixture(tournament=tournament, children=children)
