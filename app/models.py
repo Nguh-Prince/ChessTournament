@@ -83,10 +83,12 @@ class Tournament(models.Model):
         return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
 
     def create_fixtures(self):
+        self.fixture_set.all().delete()
         number = 2 # start by creating the finals
         created_fixtures = {}
         while number <= self.total_number_of_participants:
             created_fixtures.setdefault( number // 2, [] )
+            print(created_fixtures)
             rootFixtureCounter = 0
             thisLevelFixtureCounter = 0
             for i in range( number // 2 ):
@@ -98,11 +100,14 @@ class Tournament(models.Model):
                 if number // 2 > 1:
                     if thisLevelFixtureCounter < 2:
                         fixture.root = created_fixtures[number // 4][rootFixtureCounter]
+
                         thisLevelFixtureCounter += 1
                     else: # increment the rootFixtureCounter after we've assigned two child fixtures to a fixture in that list
                         rootFixtureCounter += 1
                         thisLevelFixtureCounter = 1
                         fixture.root = created_fixtures[number // 4][rootFixtureCounter]
+                
+                fixture.save()
 
             number *= 2
     
@@ -119,17 +124,9 @@ class Tournament(models.Model):
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
     if is_power_of_2(instance.total_number_of_participants) and not instance.clean() and instance.number_of_fixtures() != instance.fixture_set.count() and not instance.started:
-        # delete all the other fixtures
-        instance.fixture_set.all().delete()
-        print("Deleting existing fixtures")
-        number = instance.total_number_of_participants
+        instance.create_fixtures()
 
-        while number >= 2:
-            number /= 2
-            for i in range(int(number)):
-                level = f"Round of {number}"
-                fixture = Fixture.objects.create( tournament=instance, level = level if number > 8 else instance.common_levels[number] )
-# pre_save.connect(create_tournament_fixtures, Tournament)
+post_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
@@ -149,7 +146,7 @@ class Fixture(models.Model):
     level = models.TextField()
     level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
-    root = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='children')
+    root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
     # a fixture can be the root of no more than 2 other fixtures
 
