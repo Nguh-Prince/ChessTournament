@@ -1,6 +1,7 @@
 from .utilities import is_power_of_2, a_if_and_only_if_b, a_implies_b
 
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -72,6 +73,13 @@ class Tournament(models.Model):
         # two uncompleted tournaments cannot have the same name
         if Tournament.objects.filter(name=self.name, completed=False).count() > 1:
             raise ValidationError( _("There is another active tournament with the same name") )
+        
+        # a tournament cannot be started when the number of enrolled participants is less than the total_number_of_participants
+        if self.started and self.enrolled_participants() < self.total_number_of_participants:
+            raise ValidationError( _("Tournament can only be started when %(number)d participants have been enrolled") % {'number': self.total_number_of_participants} )
+
+        if self.completed and not self.started:
+            raise ValidationError( _("A tournament cannot be completed when it has not yet started") )
         return super().clean()
 
         # a tournament cannot be started when the number of enrolled participants is less than the total_number_of_participants
@@ -110,7 +118,25 @@ class Tournament(models.Model):
                 fixture.save()
 
             number *= 2
-    
+
+    def assign_players_to_initial_fixtures(self):
+        # this method randomly places enrolled players in the outermost fixtures, i.e. those that do not have any children
+        outermost_fixtures = self.fixture_set.filter(children__isnull=True)
+        enrolled_participants = self.enrolled_participants
+        
+        print(outermost_fixtures, outermost_fixtures.count())
+        print(enrolled_participants, enrolled_participants.count())
+        if enrolled_participants.count() == outermost_fixtures.count() * 2 and enrolled_participants.count() == self.total_number_of_participants:
+            j = 0
+            for fixture in outermost_fixtures:
+                for i in range(2):
+                    playerfixture = PlayerFixture( fixture=fixture, player=enrolled_participants[j+i].player )
+                    playerfixture.clean()
+                    playerfixture.save()
+
+                j += 2
+        
+
     @property
     def enrolled_participants(self):
         return self.tournamentplayer_set.filter(participating=True)
@@ -178,6 +204,10 @@ class Fixture(models.Model):
         if self.tournament.fixture_set.count() > self.tournament.number_of_fixtures():
             raise ValidationError( _("You are trying to add this fixture to a tournament that already has its total number of fixtures") )
 
+    def winner(self):
+        # queries the games in this fixture for a winner
+        pass
+
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
         ("White", _("White")),
@@ -239,4 +269,22 @@ class Game(models.Model):
         if self.number < 1:
             raise ValidationError( _("The game number must be a positive integer") )
 
+        if self.fixture.children_set.filter( ~Q(game__date__lte=self.date) ):
+            pass        
+
         # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e. 
+
+class PlayerFixtureGame(models.Model):
+    game = models.ForeignKey( Game, on_delete=models.CASCADE )
+    playerfixture = models.ForeignKey( PlayerFixture, on_delete=models.CASCADE )
+    score = models.FloatField( null=False, default=0.5 )
+    is_home = models.BooleanField()
+    
+    class Meta:
+        unique_together = [ ["game", "playerfixture"] ]
+
+    def clean(self) -> None:
+        # a game can have only two playerfixturegame records
+        if self.game.playerfixturegame_set.count() > 2:
+            raise ValidationError( _("A game can have only 2 playerfixturegame records") )
+        

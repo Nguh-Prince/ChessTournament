@@ -23,7 +23,9 @@ Mate | Tournaments | {{id}}
 <script>
     $(document).ready(function () {
         $("#list_of_participants").DataTable()
-        $("#fixtures-table").DataTable()
+        $("#fixtures-table").DataTable({
+            "order": [ [ 0, "desc" ] ]
+        })
     })
 </script>
 {% endblock %}
@@ -62,8 +64,8 @@ Mate | Tournaments | {{id}}
                         </td>
                         <td>
                             <ul>
-                                {% for fixture_player in fixture.fixtureplayer_set.all %}
-                                <li>{{ fixture_player.player.name }}</li>
+                                {% for fixture_player in fixture.playerfixture_set.all %}
+                                <li>{{ fixture_player.player }}</li>
                                 {% empty %}
                                 <li>{% trans "This fixture has no players" %}</li>
                                 {% endfor %}
@@ -97,6 +99,12 @@ Mate | Tournaments | {{id}}
         </div>
     </div>
 </div>
+
+<div class="row p-3">
+    <button class="btn btn-primary {% if not tournament.clean %}disabled{% endif %}">
+        {% trans "Start" %}
+    </button>
+</div>
 {% endblock %}
 
 {% block modals %}
@@ -126,12 +134,11 @@ Mate | Tournaments | {{id}}
                                 {{ tournament_player.player.name }}
                             </td>
                             <td>
-                                {{ tournament_player.player.class }}
+                                {{ tournament_player.player.classroom }}
                             </td>
                             <td>
                                 {% if tournament_player.participating and not tournament_player.kicked_out %}
-                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans
-                                    "Kick out" %}</button>
+                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans "Kick out" %}</button>
                                 {% elif not tournament_player.participating %}
                                 <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans
                                     "Enroll" %}</button>

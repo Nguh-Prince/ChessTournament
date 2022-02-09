@@ -9,6 +9,8 @@ from django.test import TestCase
 
 import random
 
+import string
+
 first_names = ["John", "Chris", "Michael", "Peter",
                "Andrew", "Kizito", "Randy", "Jake", "Daniel"]
 last_names = ["Radcliffe", "Specter", "Stone", "Hightower",
@@ -25,7 +27,7 @@ class ModelCreation:
         
         # get a unique phone number
         while True:
-            phone_number = random.choice(phone_numbers)
+            phone_number = random.choices(string.digits, k=9)
             if models.Player.objects.filter(phone=phone_number).count() < 1:
                 break
 
