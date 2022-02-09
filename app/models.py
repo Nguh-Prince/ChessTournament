@@ -239,19 +239,8 @@ class Game(models.Model):
         ("after_school", _("After school"))
     )
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
-    date = models.DateField()
     classroom = models.CharField(max_length=5)
-    period = models.CharField(max_length=30)
-    number = models.IntegerField(default=1)
-    home_score = models.FloatField(null=True)
-    away_score = models.FloatField(null=True)
-    
-    home = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE, null=True, blank=True, related_name='home')
-    away = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE, null=True, blank=True, related_name='away')
-
-
-    class Meta:
-        unique_together = [ ["date", "classroom", "period", "number"] ]
+    time = models.DateTimeField(null=True)
 
     def clean(self) -> None:
         # white score must either be 0, 0.5 or 1
@@ -278,7 +267,7 @@ class PlayerFixtureGame(models.Model):
     game = models.ForeignKey( Game, on_delete=models.CASCADE )
     playerfixture = models.ForeignKey( PlayerFixture, on_delete=models.CASCADE )
     score = models.FloatField( null=False, default=0.5 )
-    is_home = models.BooleanField()
+    is_home = models.BooleanField( default=False )
     
     class Meta:
         unique_together = [ ["game", "playerfixture"] ]
@@ -287,4 +276,5 @@ class PlayerFixtureGame(models.Model):
         # a game can have only two playerfixturegame records
         if self.game.playerfixturegame_set.count() > 2:
             raise ValidationError( _("A game can have only 2 playerfixturegame records") )
-        
+        if self.game.playerfixturegame_set.filter(is_home=self.is_home).count() > 1:
+            raise ValidationError( _("More than two players with the same color, change this instance's is_home value") )
