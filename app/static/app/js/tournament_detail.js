@@ -119,17 +119,25 @@ function addGameToFixture(fixtureId, tournamentId) {
                 playerfixture: $(`${selector}`).val(),
                 is_home: selector == "#white" ? true : false
             }
+<<<<<<< HEAD
 
             let validationObject = {
+=======
+            validationObjects.push({
+>>>>>>> 0a12adc96b90dfb7d827a577d85ddedfbfc3bbb4
                 selector: selector,
                 type: 'number',
                 required: true,
                 different: selector == "#white" ? "#black" : "#white"
+<<<<<<< HEAD
             }
 
             if (validateObject(validationObject)) {
                 formData.players.push(object)
             }
+=======
+            })
+>>>>>>> 0a12adc96b90dfb7d827a577d85ddedfbfc3bbb4
         }
 
         if (validateObjects(validationObjects)) {
@@ -139,9 +147,14 @@ function addGameToFixture(fixtureId, tournamentId) {
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
                 },
+<<<<<<< HEAD
                 data: JSON.stringify(formData),
                 encode: true,
                 contentType: "application/json",
+=======
+                data: formData,
+                encode: true,
+>>>>>>> 0a12adc96b90dfb7d827a577d85ddedfbfc3bbb4
                 success: function (data) {
                     console.log(data)
                     displayMessage(gettext("Game added successfully"), ['alert-success', 'alert-dismissible'])

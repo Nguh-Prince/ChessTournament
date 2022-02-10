@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 from turtle import home
+=======
+>>>>>>> 0a12adc96b90dfb7d827a577d85ddedfbfc3bbb4
 from . import models
 from .utilities import is_power_of_2
 

@@ -241,10 +241,13 @@ class Game(models.Model):
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
     classroom = models.CharField(max_length=5)
     time = models.DateTimeField(null=True)
+<<<<<<< HEAD
     minutes_per_player = models.IntegerField()
 
     class Meta:
         unique_together = [ ["fixture", "time"] ] # games in the same fixture cannot be played at the same time
+=======
+>>>>>>> 0a12adc96b90dfb7d827a577d85ddedfbfc3bbb4
 
     def clean(self) -> None:
         # white score must either be 0, 0.5 or 1
