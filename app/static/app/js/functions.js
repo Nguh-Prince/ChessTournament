@@ -298,6 +298,7 @@ function validateObject(object) {
     // required: boolean 
     // in: css selector for a datalist or select where this input's value must come from
     // notIn: css selector for a datalist or select where this input'value should not be found
+    // different: css selector for an input element (textarea, input, select, etc) that should not have the same value as this object
     // errorContainer: a css selector for where to append the error message, if not provided parent is used
 
     let value = $(object.selector).val()
@@ -373,6 +374,15 @@ function validateObject(object) {
             if (value && $(`${object.notIn} option[value='${value}']`).val()) {
                 message = gettext("This value already exists in the list %s")
                 message = interpolate(message, [object.notIn])
+
+                messages.push(message)
+                flag = false
+            }
+        }
+        if (object.different) {
+            if ( value && $(`${object.different}`).val() == value ) {
+                message = gettext( "The value of this input must be different from that of %s" )
+                message = interpolate(message, [object.different])
 
                 messages.push(message)
                 flag = false

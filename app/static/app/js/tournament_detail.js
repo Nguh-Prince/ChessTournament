@@ -60,6 +60,29 @@ function enroll(tournamentPlayerId) {
 
 $(".add-game").click(function() {
     let fixtureId = $(this).attr('data-fixture-id')
+    cell = $(this).parent()
+    let playerObjects = []
+
+    cell.children('.player').each(function() {
+        let object = {
+            id: $(this).attr('id'),
+            name: $(this).val()
+        }
+        playerObjects.push(object)
+    })
+
+    if (playerObjects.length == 2) {
+        $("#new_game .player>select").each( function() {
+            for (let object of playerObjects) {
+                let option = createElement('option', [], {value: object.id})
+                option.textContent = object.name
+                $(this).append(option)
+            }
+        } )
+    } else {
+        $("#new_game .player").css('display', 'none')
+    }
+
     $("#new_game_fixture").val(fixtureId)
 })
 
@@ -71,9 +94,7 @@ function addGameToFixture(fixtureId, tournamentId) {
     if (fixtureId && tournamentId) {
         let formData = {
             classroom: $("#new_game_classroom").val(),
-            date: $("#new_game_date").val(),
-            period: $("#new_game_period").val(),
-            number: $("#new_game_number").val(),
+            time: $("#new_game_datetime").val(),
             fixture: fixtureId
         }
         $.ajax({
@@ -103,3 +124,4 @@ function addGameToFixture(fixtureId, tournamentId) {
         })
     }
 }
+

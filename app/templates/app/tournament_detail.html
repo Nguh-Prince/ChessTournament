@@ -64,7 +64,7 @@ Mate | Tournaments | {{id}}
                         <td>
                             {{ fixture.level }}
                         </td>
-                        <td>
+                        <td class="player-container">
                             <ul>
                                 {% for fixture_player in fixture.playerfixture_set.all %}
                                 <li>{{ fixture_player.player }}</li>
@@ -77,6 +77,10 @@ Mate | Tournaments | {{id}}
                             </ul>
                         </td>
                         <td>
+                            {% for fixture_player in fixture.playerfixture_set.all %}
+                            <input type="hidden" class="player" id="{{ fixture_player.id }}" value="{{ fixture_player.player }}">
+                            {% endfor %}
+
                             {% for game in fixture.game_set.all %}
                             <button class="btn btn-secondary">
                                 {% blocktranslate with game_number=forloop.counter %}
@@ -183,21 +187,16 @@ Mate | Tournaments | {{id}}
                     <input type="text" class="form-control" id="new_game_classroom">
                 </div>
                 <div class="mb-3">
-                    <label for="new_game_date">{% trans "Date*" %}</label>
-                    <input type="date" class="form-control" id="new_game_date">
+                    <label for="new_game_datetime">{% trans "Date & Time*" %}</label>
+                    <input type="datetime" class="form-control" id="new_game_datetime">
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <label for="new_game_period">{% trans "Period*" %}</label>
-                        <select class="form-control select" id="new_game_period">
-                            <option value="break">{% trans "Break" %}</option>
-                            <option value="after_school">{% trans "After school" %}</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label for="new_game_number">{% trans "Number*" %}</label>
-                        <input type="number" class="form-control" id="new_game_number" value=1 min="1">
-                    </div>
+                <div class="mb-3 player">
+                    <label for="white">{% trans "White" %}</label>
+                    <select class="form-control select" id="white"></select>
+                </div>
+                <div class="mb-3 player">
+                    <label for="black">{% trans "Black" %}</label>
+                    <select class="form-control select" id="black"></select>
                 </div>
             </div>
             <div class="modal-footer">

@@ -64,7 +64,13 @@ class TournamentEnrollSerializer(serializers.ModelSerializer):
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
-        fields = ('id', 'classroom', 'date', 'period', 'number', 'fixture')
+        fields = ('id', 'time', 'fixture')
+
+    def validate(self, attrs):
+        if attrs['fixture'].children.filter(game__time__gt=attrs['time']):
+            raise serializers.ValidationError( _("This game must have a time greater than or equal to that of the games in the previous fixtures") )
+        
+        return attrs
 
 class FixtureSerializer(serializers.ModelSerializer):
     pass
