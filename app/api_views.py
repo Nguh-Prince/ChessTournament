@@ -43,3 +43,10 @@ class TournamentGames(generics.ListCreateAPIView):
         return models.Game.objects.filter( fixture__tournament__id=self.kwargs["tournament_id"] )
 
     serializer_class = serializers.GameSerializer
+    permission_classes = (permissions.IsTournamentCreatororReadOnly, )
+
+class GameDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Game.objects.all()
+
+    serializer_class = serializers.GameSerializer
+    permission_classes = (permissions.IsTournamentCreatororReadOnly, )

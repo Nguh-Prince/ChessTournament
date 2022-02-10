@@ -245,6 +245,7 @@ class Game(models.Model):
 
     class Meta:
         unique_together = [ ["fixture", "time"] ] # games in the same fixture cannot be played at the same time
+        ordering = [ "time" ]
 
     def clean(self) -> None:
         # white score must either be 0, 0.5 or 1
@@ -254,7 +255,7 @@ class Game(models.Model):
         # checking if the period is in the period_choices
         for period in self.PERIOD_CHOICES:
             if self.period == period[0]:
-                flag = True
+               flag = True
         
         if flag == False:
             raise ValidationError( _("The period of the game must either be break or after school") )

@@ -1,3 +1,7 @@
+var state = {
+    games: {}
+}
+
 class Node {
     constructor(data) {
         this.data = data;
@@ -98,33 +102,39 @@ function addGameToFixture(fixtureId, tournamentId) {
             classroom: $("#new_game_classroom").val(),
             time: $("#new_game_datetime").val(),
             fixture: fixtureId,
+            minutes_per_player: $("#new_game_minutes_per_player").val(),
             players: []
         }
         let validationObjects = [
             {
-                selector: $("#new_game_datetime"),
+                selector: "#new_game_datetime",
                 type: 'string',
                 required: true
             },
             {
-                selector: $("#new_game_classroom"),
+                selector: "#new_game_classroom",
                 type: 'string',
+                required: true
+            },
+            {
+                selector: "#new_game_minutes_per_player",
+                type: 'number',
                 required: true
             }
         ]
 
-        let selectors = ["#white", "#black"]
+        let selectors = ["#new_game_white", "#new_game_black"]
         for (let selector of selectors) {
             let object = {
                 playerfixture: $(`${selector}`).val(),
-                is_home: selector == "#white" ? true : false
+                is_home: selector == "#new_game_white" ? true : false
             }
 
             let validationObject = {
                 selector: selector,
                 type: 'number',
                 required: true,
-                different: selector == "#white" ? "#black" : "#white"
+                different: selector == "#new_game_white" ? "#blnew_game_ack" : "#new_game_white"
             }
 
             if (validateObject(validationObject)) {
@@ -148,6 +158,7 @@ function addGameToFixture(fixtureId, tournamentId) {
                     setTimeout(location.reload, 15000)
                 },
                 error: function (data) {
+                    console.log(JSON.stringify(formData))
                     if (data.status == 500) {
                         displayMessage(ERROR_MESSAGES["500"])
                     }
@@ -163,3 +174,68 @@ function addGameToFixture(fixtureId, tournamentId) {
     }
 }
 
+function showGameDetail(gameId) {
+    if (gameId) {
+        if (!(gameId in state.games)) {
+            $.ajax({
+                type: "GET",
+                url: `${API_URL}/games/${gameId}/`,
+                success: function (data) {
+                    state.games['gameId'] = data
+                    populateGameModal(data)
+                },
+                error: function (data) {
+                    if (data.status == 500) {
+                        displayMessage(ERROR_MESSAGES["500"])
+                    } else if (data.status == 403) {
+                        displayMessage(ERROR_MESSAGES["403"])
+                    } else {
+                        displayMessage(data.responseText)
+                    }
+                }
+            })
+
+        } else {
+            let game = state.games[gameId]
+            populateGameModal(game)
+        }
+    }
+}
+
+function populateGameModal(gameObject) {
+    console.log(gameObject)
+    $("#game_detail .modal-header").text(gameObject["__str__"])
+
+    $("#game_classroom").val(gameObject["classroom"])
+
+    $("#game_datetime").val(gameObject["time"])
+
+    $("#game_minutes_per_player").val(gameObject["minutes_per_player"])
+
+    for (player in gameObject["players"]) {
+        player["is_home"] ? $("#game_white").val(player["playerfixture"]) : $("#game_black").val(player["playerfixture"])
+    }
+}
+
+$(".display-game").click(function () {
+    let cell = $(this).parent()
+    let playerObjects = []
+
+    cell.children('input.player').each(function () {
+        playerObjects.push({
+            id: $(this).attr('id'),
+            name: $(this).val()
+        })
+    })
+
+    $("#game_detail .player>select").each(function () {
+        $(this).html('')
+        for (let object of playerObjects) {
+            let option = createElement('option', [], { value: object.id })
+            option.textContent = object.name
+            $(this).append(option)
+        }
+    })
+
+    $("#game_id").val( $(this).attr('data-game-id') )
+})

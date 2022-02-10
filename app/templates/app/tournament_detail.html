@@ -82,7 +82,7 @@ Mate | Tournaments | {{id}}
                             {% endfor %}
 
                             {% for game in fixture.game_set.all %}
-                            <button class="btn btn-secondary">
+                            <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )" data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}">
                                 {% blocktranslate with game_number=forloop.counter %}
                                 Game #{{ game_number }}
                                 {% endblocktranslate %}
@@ -177,7 +177,7 @@ Mate | Tournaments | {{id}}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title">{% trans "New game" %}</h5>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -190,20 +190,64 @@ Mate | Tournaments | {{id}}
                     <label for="new_game_datetime">{% trans "Date & Time*" %}</label>
                     <input type="datetime" class="form-control" id="new_game_datetime">
                 </div>
-                <div class="mb-3 player">
-                    <label for="white">{% trans "White" %}</label>
-                    <select class="form-control select" id="white"></select>
+                <div class="mb-3">
+                    <label for="new_game_minutes_per_player">{% trans "Minutes per player*" %}</label>
+                    <input type="number" step="1" class="form-control" id="new_game_minutes_per_player">
                 </div>
                 <div class="mb-3 player">
-                    <label for="black">{% trans "Black" %}</label>
-                    <select class="form-control select" id="black"></select>
+                    <label for="new_game_white">{% trans "White" %}</label>
+                    <select class="form-control select" id="new_game_white"></select>
+                </div>
+                <div class="mb-3 player">
+                    <label for="new_game_black">{% trans "Black" %}</label>
+                    <select class="form-control select" id="new_game_black"></select>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="add-game">{% trans "Submit" %}</button>
+                <button class="btn btn-danger" data-bs-dismiss="modal">{% trans "Close" %}</button>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
+
+<div id="game_detail" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-header"></h5>
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="game_id" readonly>
+                <div class="mb-3">
+                    <label for="game_classroom">{% trans "Classroom*" %}</label>
+                    <input type="text" class="form-control" id="game_classroom">
+                </div>
+                <div class="mb-3">
+                    <label for="game_datetime">{% trans "Date & Time*" %}</label>
+                    <input type="datetime" class="form-control" id="game_datetime">
+                </div>
+                <div class="mb-3">
+                    <label for="game_minutes_per_player">{% trans "Minutes per player*" %}</label>
+                    <input type="number" step="1" class="form-control" id="game_minutes_per_player">
+                </div>
+                <div class="mb-3 player">
+                    <label for="game_white">{% trans "White" %}</label>
+                    <select class="form-control select" id="game_white"></select>
+                </div>
+                <div class="mb-3 player">
+                    <label for="game_black">{% trans "Black" %}</label>
+                    <select class="form-control select" id="game_black"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% if tournament.creator.id == request.session.player.id %}
+                <button class="btn btn-primary" id="edit-game">{% trans "Submit" %}</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -66,20 +66,20 @@ class TournamentEnrollSerializer(serializers.ModelSerializer):
 class PlayerFixtureGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PlayerFixtureGame
-        fields = ('playerfixture', 'score', 'is_home')
+        fields = ('id', 'playerfixture', 'score', 'is_home')
 
 class GameSerializer(serializers.ModelSerializer):
     players = PlayerFixtureGameSerializer(many=True, source='playerfixturegame_set')
     class Meta:
         model = models.Game
-        fields = ('id', 'time', 'fixture', 'players')
+        fields = ('id', 'time', 'fixture', 'players', 'classroom', 'minutes_per_player', '__str__')
 
     def validate(self, attrs):
         ic(attrs)
         if attrs['fixture'].children.filter(game__time__gt=attrs['time']):
             raise serializers.ValidationError( _("This game must have a time greater than or equal to that of the games in the previous fixtures") )
         
-        if len(attrs['players']) != 2 and len(attrs['players']) > 0:
+        if len(attrs['playerfixturegame_set']) != 2 and len(attrs['playerfixturegame_set']) > 0:
             raise serializers.ValidationError( _("A game can only have 2 players") )
 
         if attrs['fixture'] and attrs['fixture'].children.filter(game__time__gte=attrs['time']):
@@ -89,7 +89,7 @@ class GameSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError( _("Another game is being played at the same time as this game") )
 
         home_count, away_count = 0, 0
-        for player in attrs['players']:
+        for player in attrs['playerfixturegame_set']:
             if attrs['fixture'] and player['playerfixture'].fixture != attrs['fixture']:
                 raise serializers.ValidationError( _("This game can only be played by players in its fixture") )
             if player['is_home']:
@@ -97,10 +97,26 @@ class GameSerializer(serializers.ModelSerializer):
             else: 
                 away_count += 1
 
-        if home_count != 1 or away_count != 1:
-            raise serializers.ValidationError( _("There can only be one home and one away player") )
-
+        ic(home_count, away_count, len( attrs['playerfixturegame_set'] ) > 0)
+        if len(attrs['playerfixturegame_set']) > 0:
+            if home_count != away_count and home_count != 1 and away_count != 1:
+                raise serializers.ValidationError( _("There can only be one home and one away player") )
+        
         return attrs
+
+    def create(self, validated_data):
+        ic(validated_data)
+        game_players = validated_data.pop( 'playerfixturegame_set' )
+        game = models.Game.objects.create( **validated_data )
+
+        for player in game_players:
+            models.PlayerFixtureGame.objects.create( **player, game=game )
+
+        return game
+
+    def update(self, instance, validated_data):
+        
+        pass
 
 class FixtureSerializer(serializers.ModelSerializer):
     pass
