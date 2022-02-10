@@ -27,10 +27,6 @@ function createErrorMessage(message, id=null) {
     return div
 }
 
-function gettext(string) {
-    return string
-}
-
 const isDate = (date) => {
     return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date))
 }
@@ -39,6 +35,11 @@ function getLocaleTime(dateTimeISO) {
     // returns time in the format Mmm dd, yyyy, h:mm when passed an ISO string
     dt = DateTime.fromISO(dateTimeISO)
     return dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)
+}
+
+function getLocaleDate(dateISO) {
+    dt = DateTime.fromISO(dateISO)
+    return dt.setLocale(LOCALE).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)
 }
 
 function createElementFromObject(object) {
@@ -293,6 +294,7 @@ function validateObject(object) {
     // required: boolean 
     // in: css selector for a datalist or select where this input's value must come from
     // notIn: css selector for a datalist or select where this input'value should not be found
+    // different: css selector for an input element (textarea, input, select, etc) that should not have the same value as this object
     // errorContainer: a css selector for where to append the error message, if not provided parent is used
 
     let value = $(object.selector).val()
@@ -305,7 +307,7 @@ function validateObject(object) {
 
     if (!value && object.required) {
         messages.push(gettext("This field is required"))
-
+        console.log(object)
         flag = false
     } else {
         object.type == "number" ? value = parseFloat(value) : 1
@@ -368,6 +370,15 @@ function validateObject(object) {
             if (value && $(`${object.notIn} option[value='${value}']`).val()) {
                 message = gettext("This value already exists in the list %s")
                 message = interpolate(message, [object.notIn])
+
+                messages.push(message)
+                flag = false
+            }
+        }
+        if (object.different) {
+            if ( value && $(`${object.different}`).val() == value ) {
+                message = gettext( "The value of this input must be different from that of %s" )
+                message = interpolate(message, [object.different])
 
                 messages.push(message)
                 flag = false
@@ -457,16 +468,7 @@ function deleteItem(url) {
 
 function isPowerOf2(number) {
     if (Number(number)) {
-        number = Number(number)
-
-        if (number == 1) {
-            return true
-        }
-        else if (number % 2 == 1) {
-            return false
-        }
-
-        return isPowerOf2(number / 2)
+        return Math.log2(number) % 1 == 0
     }
     return false
 }
@@ -476,11 +478,8 @@ ERROR_MESSAGES = {
     "403": gettext("You are not authorized to access this resource")
 }
 
-PRINT_SERVER_IP = "127.0.0.1"
-// PRINT_SERVER_IP = "localhost"
-PRINT_SERVER_PORT = "33455"
-
-$('input').on('input', function () {
+$('.form-control').on('input', function () {
+    console.log("Inputting input")
     $(this).parent().children('span.help-block').remove()
     $(this).parent().removeClass('has-error')
 })

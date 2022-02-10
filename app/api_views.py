@@ -27,7 +27,19 @@ class TournamentDetail(generics.RetrieveUpdateDestroyAPIView):
         return models.Tournament.objects.all()
     
     serializer_class = serializers.TournamentDetailSerializer
-    permission_classes = (permissions.IsOwnerOr403, )
+    permission_classes = (permissions.IsCreatorOr403, )
+
+class TournamentPlayerDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.TournamentPlayer.objects.all()
+
+    serializer_class = serializers.TournamentPlayerSerializer
+    permission_classes = (permissions.IsTournamentCreatorOrPlayerOrReadOnly, )
 
 class EnrollPlayerSerializer(generics.CreateAPIView):
     serializer_class = serializers.TournamentEnrollSerializer
+
+class TournamentGames(generics.ListCreateAPIView):
+    def get_queryset(self):
+        return models.Game.objects.filter( fixture__tournament__id=self.kwargs["tournament_id"] )
+
+    serializer_class = serializers.GameSerializer

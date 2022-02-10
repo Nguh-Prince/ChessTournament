@@ -8,11 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/styles.css' %}">
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
 
+    <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static 'app/js/luxon.min.js' %}"></script>
     <script src="{% static 'app/js/functions.js' %}"></script>
+
+    {% get_current_language as LANGUAGE_CODE %}
 
     <style>
         #messages {
@@ -54,8 +58,8 @@
                 <div class="d-flex">
                     <a href="" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false"
                         class="d-block link-dark text-decoration-none dropdown-toggle">
-                        <img src="{% static 'app/assets/img/rick-and-morty.jpg' %}" alt="" width="32"
-                            height="32" class="rounded-circle">
+                        <img src="{% static 'app/assets/img/rick-and-morty.jpg' %}" alt="" width="32" height="32"
+                            class="rounded-circle">
                         <span>{{ request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser">
@@ -82,6 +86,23 @@
     {% block content %}
     {% endblock %}
 
+    <input type="hidden" id="show-sign-in-prompt" data-bs-target="#sign-in-prompt" data-bs-toggle="modal">
+    <div class="modal" tabindex="-1" id="sign-in-prompt">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span>
+                        {% trans "You need to be signed in to enroll in a tournament" %}
+                    </span>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary" href="{% url 'app:signup' %}" id="sign-up">{% trans "Sign up" %}</a>
+                    <a class="btn btn-primary" href="{% url 'app:login' %}" id="login">{% trans "Log in" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="delete-item-prompt">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -93,7 +114,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-bs-dismiss="modal" class="btn btn-danger">{% trans "Yes" %}</button>
-                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary">{% trans "No" %}</button>
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary">{% trans "No"
+                        %}</button>
                 </div>
             </div>
         </div>

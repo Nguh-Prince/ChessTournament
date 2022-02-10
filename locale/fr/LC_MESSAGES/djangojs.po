@@ -1,0 +1,128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-10 05:13+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\app\static\app\js\functions.js:271
+msgid "This value is not found on the list"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:305
+msgid "The in and notIn selectors of this object are the same"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:309 .\app\static\app\js\home.js:23
+#: .\app\static\app\js\home.js:72
+msgid "This field is required"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:317
+msgid "Expected a number"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:323
+#, javascript-format
+msgid "The value of this field must be greater than %s"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:333
+msgid "This is not a valid date "
+msgstr ""
+
+#: .\app\static\app\js\functions.js:344
+msgid "At least two names are required"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:352
+#, javascript-format
+msgid "Expected %s, got a value of %s"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:362
+#, javascript-format
+msgid "This value does not exist on the list %s"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:371
+#, javascript-format
+msgid "This value already exists in the list %s"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:380
+#, javascript-format
+msgid "The value of this input must be different from that of %s"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:454
+msgid "Item deleted successfully"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:459 .\app\static\app\js\functions.js:477
+msgid "Error connecting to the server"
+msgstr ""
+
+#: .\app\static\app\js\functions.js:478
+msgid "You are not authorized to access this resource"
+msgstr ""
+
+#: .\app\static\app\js\home.js:34 .\app\static\app\js\home.js:62
+msgid "Must be a number that is a power of 2 e.g 4, 8, 16, etc."
+msgstr ""
+
+#: .\app\static\app\js\home.js:97
+msgid "Tournament added successfully"
+msgstr ""
+
+#: .\app\static\app\js\home.js:148 .\app\static\app\js\tournaments.js:37
+msgid "View"
+msgstr ""
+
+#: .\app\static\app\js\home.js:156
+msgid "Delete"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:25
+msgid "You cannot kickout a player that has not been enrolled"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:28
+msgid "enroll or kickout must be set to true"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:44
+#: .\app\static\app\js\tournament_detail.js:46
+msgid "Player kicked out successfully"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:140
+msgid "Game added successfully"
+msgstr ""
+
+#: .\app\static\app\js\tournaments.js:54
+msgid "Enroll"
+msgstr ""
+
+#: .\app\static\app\js\tournaments.js:73
+msgid ""
+"You have been enrolled successfully. Awaiting verification from the "
+"tournament's creator."
+msgstr ""
+
+#: .\app\static\app\js\tournaments.js:96
+msgid "Pending"
+msgstr ""

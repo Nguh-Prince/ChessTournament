@@ -1,7 +1,8 @@
-from .utilities import is_power_of_2
+from .utilities import is_power_of_2, a_if_and_only_if_b, a_implies_b
 
 from django.db import models
-from django.db.models.signals import post_save 
+from django.db.models import Q
+from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -49,7 +50,7 @@ class GeometricProgression:
         """
         given a number, this method returns its position in the progression
         """
-        n = math.log( (2*number/self.first_term*self.common_ratio), self.common_ratio )
+        n = math.log( (self.common_ratio * number) / self.first_term, self.common_ratio )
 
         return n if n.is_integer() else None
 
@@ -60,6 +61,7 @@ class Tournament(models.Model):
     completed = models.BooleanField(default=False)
     started = models.BooleanField(default=False)
     name = models.CharField(max_length=150)
+    common_levels = {2: _("Finals"), 4: _("Semi-finals"), 8: _("Quarter finals")}
     
     def clean(self) -> None:
         # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
@@ -71,6 +73,13 @@ class Tournament(models.Model):
         # two uncompleted tournaments cannot have the same name
         if Tournament.objects.filter(name=self.name, completed=False).count() > 1:
             raise ValidationError( _("There is another active tournament with the same name") )
+        
+        # a tournament cannot be started when the number of enrolled participants is less than the total_number_of_participants
+        if self.started and self.enrolled_participants() < self.total_number_of_participants:
+            raise ValidationError( _("Tournament can only be started when %(number)d participants have been enrolled") % {'number': self.total_number_of_participants} )
+
+        if self.completed and not self.started:
+            raise ValidationError( _("A tournament cannot be completed when it has not yet started") )
         return super().clean()
 
         # a tournament cannot be started when the number of enrolled participants is less than the total_number_of_participants
@@ -80,7 +89,54 @@ class Tournament(models.Model):
     def number_of_fixtures(self):
         gp = GeometricProgression(self.total_number_of_participants // 2, 0.5)
         return gp.sumOfNTerms( gp.getSequencePositionofNumber(1) )
-    
+
+    def create_fixtures(self):
+        self.fixture_set.all().delete()
+        number = 2 # start by creating the finals
+        created_fixtures = {}
+        while number <= self.total_number_of_participants:
+            created_fixtures.setdefault( number // 2, [] )
+            print(created_fixtures)
+            rootFixtureCounter = 0
+            thisLevelFixtureCounter = 0
+            for i in range( number // 2 ):
+                # create fixtures and append them to the appropriate level, while picking their roots from the appropriate level
+                level = self.common_levels[number] if number <= 8 else f"Round of {number}"
+                fixture = Fixture.objects.create( tournament=self, level_number=number//2, level=level )
+                created_fixtures[number // 2].append(fixture)
+
+                if number // 2 > 1:
+                    if thisLevelFixtureCounter < 2:
+                        fixture.root = created_fixtures[number // 4][rootFixtureCounter]
+
+                        thisLevelFixtureCounter += 1
+                    else: # increment the rootFixtureCounter after we've assigned two child fixtures to a fixture in that list
+                        rootFixtureCounter += 1
+                        thisLevelFixtureCounter = 1
+                        fixture.root = created_fixtures[number // 4][rootFixtureCounter]
+                
+                fixture.save()
+
+            number *= 2
+
+    def assign_players_to_initial_fixtures(self):
+        # this method randomly places enrolled players in the outermost fixtures, i.e. those that do not have any children
+        outermost_fixtures = self.fixture_set.filter(children__isnull=True)
+        enrolled_participants = self.enrolled_participants
+        
+        print(outermost_fixtures, outermost_fixtures.count())
+        print(enrolled_participants, enrolled_participants.count())
+        if enrolled_participants.count() == outermost_fixtures.count() * 2 and enrolled_participants.count() == self.total_number_of_participants:
+            j = 0
+            for fixture in outermost_fixtures:
+                for i in range(2):
+                    playerfixture = PlayerFixture( fixture=fixture, player=enrolled_participants[j+i].player )
+                    playerfixture.clean()
+                    playerfixture.save()
+
+                j += 2
+        
+
     @property
     def enrolled_participants(self):
         return self.tournamentplayer_set.filter(participating=True)
@@ -93,12 +149,10 @@ class Tournament(models.Model):
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited
-    if instance.clean():
-        # delete all the other fixtures
-        instance.fixture_set.all().delete()
+    if is_power_of_2(instance.total_number_of_participants) and not instance.clean() and instance.number_of_fixtures() != instance.fixture_set.count() and not instance.started:
+        instance.create_fixtures()
 
-        for i in range(instance.number_of_fixtures()):
-            pass
+post_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
@@ -115,8 +169,44 @@ class TournamentPlayer(models.Model):
         unique_together = [ ["tournament", "player"] ]
 
 class Fixture(models.Model):
-    level = models.IntegerField()
-    tournament = models.ForeignKey(Tournament, on_delete=models.SET_NULL, null=True)
+    level = models.TextField()
+    level_number = models.IntegerField(null=True)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
+    root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
+    # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
+    # a fixture can be the root of no more than 2 other fixtures
+
+    class Meta:
+        ordering = ['-level_number', 'tournament']
+
+    def number_of_players(self):
+        count = self.playerfixture_set.count()
+        return 0 if not count else count
+
+    def __str__(self) -> str:
+        return f"{self.level} - {self.level_number}"
+
+    def clean(self) -> None:
+        if self.children.count() > 2:
+            raise ValidationError( _("A fixture cannot be dependent on more than 2 other fixtures") )
+        if self.root and not a_if_and_only_if_b( not self.tournament, not self.root.tournament ): # if root has no tournament, fixture should have no tournament either
+            raise ValidationError( _("Either both the parent and child fixtures are in tournaments or neither of them are") )
+        if self.root and self.tournament and not a_if_and_only_if_b( self.tournament and self.root.tournament, self.root.tournament == self.tournament ):
+            raise ValidationError( _("This fixture hs to be in the same tournament as its parent") )
+        if self.root and self.root.children.count() > 2:
+            raise ValidationError( _("The fixture you are specifying is already dependent on 2 other fixtures") )
+        if self.tournament and self.children.filter(tournament=self.tournament).count() != self.children.count():
+            raise ValidationError(_("A fixture cannot be dependent on fixtures that are in another tournament or not in a tournament at all"))
+        if self.children and self.children.count() > 2:
+            raise ValidationError( _("A fixture should have at most 2 children") )
+        print("Printing the number of fixtures in the tournament and the number of fixtures expected")
+        print(self.tournament.fixture_set.count(), self.tournament.number_of_fixtures())
+        if self.tournament.fixture_set.count() > self.tournament.number_of_fixtures():
+            raise ValidationError( _("You are trying to add this fixture to a tournament that already has its total number of fixtures") )
+
+    def winner(self):
+        # queries the games in this fixture for a winner
+        pass
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
@@ -136,7 +226,9 @@ class PlayerFixture(models.Model):
 
         if tournament and self.player.tournamentplayer_set.filter(tournament=tournament).count() < 1:
             raise ValidationError( _("This fixture can only be played by players that are participating in the tournament") )
+
         return super().clean()
+
 
     class Meta:
         unique_together = [ ["player", "fixture"] ]
@@ -147,11 +239,12 @@ class Game(models.Model):
         ("after_school", _("After school"))
     )
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
-    date = models.DateField()
     classroom = models.CharField(max_length=5)
-    period = models.CharField(max_length=30)
-    number = models.IntegerField(default=1)
-    white_score = models.FloatField()
+    time = models.DateTimeField(null=True)
+    minutes_per_player = models.IntegerField()
+
+    class Meta:
+        unique_together = [ ["fixture", "time"] ] # games in the same fixture cannot be played at the same time
 
     def clean(self) -> None:
         # white score must either be 0, 0.5 or 1
@@ -162,3 +255,30 @@ class Game(models.Model):
         for period in self.PERIOD_CHOICES:
             if self.period == period[0]:
                 flag = True
+        
+        if flag == False:
+            raise ValidationError( _("The period of the game must either be break or after school") )
+
+        if self.number < 1:
+            raise ValidationError( _("The game number must be a positive integer") )
+
+        if self.fixture.children_set.filter( ~Q(game__date__lte=self.date) ):
+            pass        
+
+        # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e. 
+
+class PlayerFixtureGame(models.Model):
+    game = models.ForeignKey( Game, on_delete=models.CASCADE )
+    playerfixture = models.ForeignKey( PlayerFixture, on_delete=models.CASCADE )
+    score = models.FloatField( null=False, default=0.5 )
+    is_home = models.BooleanField( default=False )
+    
+    class Meta:
+        unique_together = [ ["game", "playerfixture"] ]
+
+    def clean(self) -> None:
+        # a game can have only two playerfixturegame records
+        if self.game.playerfixturegame_set.count() > 2:
+            raise ValidationError( _("A game can have only 2 playerfixturegame records") )
+        if self.game.playerfixturegame_set.filter(is_home=self.is_home).count() > 1:
+            raise ValidationError( _("More than two players with the same color, change this instance's is_home value") )

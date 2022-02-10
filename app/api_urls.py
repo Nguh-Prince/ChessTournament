@@ -10,4 +10,6 @@ urlpatterns = [
     path('tournaments/', views.TournamentsList.as_view(), name='tournaments'),
     path('tournaments/<int:pk>/', views.TournamentDetail.as_view(), name='tournament-detail'),
     path('tournaments/enroll/', views.EnrollPlayerSerializer.as_view(), name='tournaments'),
+    path('tournamentplayers/<int:pk>/', views.TournamentPlayerDetail.as_view(), name='tournamentplayer-detail'),
+    path('tournaments/<int:tournament_id>/games/', views.TournamentGames.as_view(), name='tournament-games'),
 ]
