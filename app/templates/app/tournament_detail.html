@@ -194,13 +194,25 @@ Mate | Tournaments | {{id}}
                     <label for="new_game_minutes_per_player">{% trans "Minutes per player*" %}</label>
                     <input type="number" step="1" class="form-control" id="new_game_minutes_per_player">
                 </div>
-                <div class="mb-3 player">
-                    <label for="new_game_white">{% trans "White" %}</label>
-                    <select class="form-control select" id="new_game_white"></select>
+                <div class="row">
+                    <div class="col-md-8 player">
+                        <label for="new_game_white">{% trans "White" %}</label>
+                        <select class="form-control select" id="new_game_white"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="new_game_white_score">{% trans "Score" %}</label>
+                        <input type="number" id="new_game_white_score" class="form-control" value="0.5">
+                    </div>
                 </div>
-                <div class="mb-3 player">
-                    <label for="new_game_black">{% trans "Black" %}</label>
-                    <select class="form-control select" id="new_game_black"></select>
+                <div class="row">
+                    <div class="col-md-8 player">
+                        <label for="new_game_black">{% trans "Black" %}</label>
+                        <select class="form-control select" id="new_game_black"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="new_game_black_score">{% trans "Score" %}</label>
+                        <input type="number" id="new_game_black_score" class="form-control" value="0.5">
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
