@@ -311,7 +311,7 @@ function validateObject(object) {
 
     if (!value && object.required) {
         messages.push(gettext("This field is required"))
-
+        console.log(object)
         flag = false
     } else {
         object.type == "number" ? value = parseFloat(value) : 1
@@ -482,11 +482,8 @@ ERROR_MESSAGES = {
     "403": gettext("You are not authorized to access this resource")
 }
 
-PRINT_SERVER_IP = "127.0.0.1"
-// PRINT_SERVER_IP = "localhost"
-PRINT_SERVER_PORT = "33455"
-
-$('input').on('input', function () {
+$('.form-control').on('input', function () {
+    console.log("Inputting input")
     $(this).parent().children('span.help-block').remove()
     $(this).parent().removeClass('has-error')
 })

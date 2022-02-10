@@ -3,6 +3,8 @@ from .utilities import is_power_of_2
 
 from django.utils.translation import gettext as _
 
+from icecream import ic
+
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
@@ -61,12 +63,19 @@ class TournamentEnrollSerializer(serializers.ModelSerializer):
         model = models.TournamentPlayer
         fields = ('player', 'tournament', )
 
+class PlayerFixtureGameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.PlayerFixtureGame
+        fields = ('playerfixture', 'score', 'is_home')
+
 class GameSerializer(serializers.ModelSerializer):
+    players = PlayerFixtureGameSerializer(many=True, source='playerfixturegame_set')
     class Meta:
         model = models.Game
-        fields = ('id', 'time', 'fixture')
+        fields = ('id', 'time', 'fixture', 'players')
 
     def validate(self, attrs):
+        ic(attrs)
         if attrs['fixture'].children.filter(game__time__gt=attrs['time']):
             raise serializers.ValidationError( _("This game must have a time greater than or equal to that of the games in the previous fixtures") )
         
