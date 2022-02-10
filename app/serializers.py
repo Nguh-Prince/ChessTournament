@@ -1,3 +1,4 @@
+from ipaddress import v4_int_to_packed
 from . import models
 from .utilities import is_power_of_2
 
@@ -73,10 +74,11 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
         fields = ('id', 'time', 'fixture', 'players', 'classroom', 'minutes_per_player', '__str__')
+        extra_kwargs = {'players': {'validators': []}}
 
     def validate(self, attrs):
         ic(attrs)
-        if attrs['fixture'].children.filter(game__time__gt=attrs['time']):
+        if attrs['fixture'].children.filter(game__time__gt=attrs['time']).count() > 0:
             raise serializers.ValidationError( _("This game must have a time greater than or equal to that of the games in the previous fixtures") )
         
         if len(attrs['playerfixturegame_set']) != 2 and len(attrs['playerfixturegame_set']) > 0:
@@ -115,8 +117,20 @@ class GameSerializer(serializers.ModelSerializer):
         return game
 
     def update(self, instance, validated_data):
-        
-        pass
+        ic(validated_data)
+        instance.playerfixturegame_set.all().delete()
+
+        instance.classroom = validated_data['classroom']
+        instance.time = validated_data['time']
+        instance.minutes_per_player = validated_data['minutes_per_player']
+        instance.save()
+
+        players = validated_data.pop('playerfixturegame_set')
+
+        for player in players:
+            models.PlayerFixture.objects.create( **player, game=instance )
+
+        return instance
 
 class FixtureSerializer(serializers.ModelSerializer):
     pass

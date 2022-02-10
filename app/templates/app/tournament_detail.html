@@ -82,7 +82,7 @@ Mate | Tournaments | {{id}}
                             {% endfor %}
 
                             {% for game in fixture.game_set.all %}
-                            <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )" data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}">
+                            <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )" data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}" data-fixture-id="{{ fixture.id }}">
                                 {% blocktranslate with game_number=forloop.counter %}
                                 Game #{{ game_number }}
                                 {% endblocktranslate %}
@@ -221,6 +221,8 @@ Mate | Tournaments | {{id}}
             </div>
             <div class="modal-body">
                 <input type="hidden" id="game_id" readonly>
+                <input type="hidden" id="game_fixture" readonly>
+
                 <div class="mb-3">
                     <label for="game_classroom">{% trans "Classroom*" %}</label>
                     <input type="text" class="form-control" id="game_classroom">
