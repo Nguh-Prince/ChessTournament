@@ -9,7 +9,6 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'app/css/styles.css' %}">
-    <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
 
     <script src="{% url 'javascript-catalog' %}"></script>
@@ -124,6 +123,7 @@
     {% block modals %}
     {% endblock %}
 </body>
+<script src="{% static 'app/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 {% block js %}
 {% endblock %}
 

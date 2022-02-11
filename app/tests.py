@@ -27,7 +27,7 @@ class ModelCreation:
         
         # get a unique phone number
         while True:
-            phone_number = random.choices(string.digits, k=9)
+            phone_number = ''.join(random.choices(string.digits, k=9))
             if models.Player.objects.filter(phone=phone_number).count() < 1:
                 break
 
