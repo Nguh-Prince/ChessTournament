@@ -34,23 +34,22 @@ class TournamentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Tournament
-        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created', 'participants')
-    
-    def validate_total_number_of_participants(self, value):
+        fields = ('id', 'name', 'total_number_of_participants', 'participants_enrolled', 'creator', 'creator_details', 'time_created', 'participants', 'number_of_points_for_draw', 'number_of_points_for_win', 'number_of_points_for_loss')
+
+    def validate(self, attrs):
+        value = attrs['total_number_of_participants']
         # must be a power of 2 and greater than 1
         if value <= 1:
             raise serializers.ValidationError( _("The total number of participants must be greater than 1") )
         if not is_power_of_2(value):
             raise serializers.ValidationError( _("The total number of participants must be a power of 2 i.e 2, 4, 8, 16, 32, etc.") )
-
-        return value
-    
-    def validate_name(self, value):
-        # two non-completed tournaments cannot have the same name
+        
+        value = attrs['name']
         if self.Meta.model.objects.filter(name=value, completed=False).count() > 1:
             raise ValidationError( _("There is another active tournament with the same name") )
         
-        return value
+        if attrs['number_of_points_for_win'] == attrs['number_of_points_for_loss'] or attrs['number_of_points_for_loss'] == attrs['number_of_points_draw'] or attrs['number_of_points_for_draw'] == attrs['number_of_points_for_win']:
+            raise ValidationError( _("The number of points for a win, draw and loss must be different from each other") )
 
 class TournamentDetailSerializer(TournamentSerializer):
     all_players_enrolled = TournamentPlayerSerializer(read_only=True, source='tournamentplayer_set', many=True)

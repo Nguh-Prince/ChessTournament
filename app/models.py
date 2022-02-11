@@ -83,6 +83,10 @@ class Tournament(models.Model):
 
         if self.completed and not self.started:
             raise ValidationError( _("A tournament cannot be completed when it has not yet started") )
+        
+        if self.number_of_points_for_draw == self.number_of_points_for_loss or self.number_of_points_for_win == self.number_of_points_for_draw or self.number_of_points_for_win == self.number_of_points_for_loss:
+            raise ValidationError( _("The number of points for win, loss and draw must be different.") )
+        
         return super().clean()
 
         # a tournament cannot be started when the number of enrolled participants is less than the total_number_of_participants

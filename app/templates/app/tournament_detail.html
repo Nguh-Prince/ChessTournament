@@ -201,7 +201,11 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="new_game_white_score">{% trans "Score" %}</label>
-                        <input type="number" id="new_game_white_score" class="form-control" value="0.5">
+                        <select id="new_game_white_score" class="form-control">
+                            <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
+                            <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
+                            <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row">
@@ -211,7 +215,11 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="new_game_black_score">{% trans "Score" %}</label>
-                        <input type="number" id="new_game_black_score" class="form-control" value="0.5">
+                        <select id="new_game_black_score" class="form-control">
+                            <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
+                            <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
+                            <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
+                        </select>
                     </div>
                 </div>
             </div>

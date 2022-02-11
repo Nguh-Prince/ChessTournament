@@ -48,7 +48,7 @@ $("#new_tournament_number_of_participants").on("input", function () {
         $("#submit_new_tournament").removeClass("disabled")
         $(this).parent().children('.invalid-feedback').remove()
         $(this).removeClass('is-invalid')
-        $(this).addClass('is-invalid')
+        // $(this).addClass('is-invalid')
 
         tournament_name.parent().children('.invalid-feedback').remove()
         tournament_name.removeClass('is-invalid')
@@ -83,8 +83,24 @@ $("#submit_new_tournament").click(function () {
         formData = {
             name: $("#new_tournament_name").val(),
             total_number_of_participants: $("#new_tournament_number_of_participants").val(),
-            creator: getCookie("player_id")
+            creator: getCookie("player_id"),
+            number_of_points_for_win: $("new_tournament_number_of_points_for_win"),
+            number_of_points_for_loss: $("new_tournament_number_of_points_for_loss"),
+            number_of_points_for_draw: $("new_tournament_number_of_points_for_draw"),
         }
+
+        let validationObjects = [
+            {
+                selector: '#new_tournament_name',
+                required: true,
+                type: 'string'
+            },
+            {
+                selector: '#new_tournament_number_of_participants',
+                required: true,
+                type: 'number'
+            }
+        ]
 
         $.ajax({
             type: "POST",
