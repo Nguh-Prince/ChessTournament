@@ -62,6 +62,9 @@ class Tournament(models.Model):
     started = models.BooleanField(default=False)
     name = models.CharField(max_length=150)
     common_levels = {2: _("Finals"), 4: _("Semi-finals"), 8: _("Quarter finals")}
+    number_of_points_for_draw = models.FloatField(default=0.5)
+    number_of_points_for_win = models.FloatField(default=1)
+    number_of_points_for_loss = models.FloatField(default=0)
     
     def clean(self) -> None:
         # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
