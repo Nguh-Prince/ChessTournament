@@ -119,6 +119,25 @@ $("#new_game_datetime_formatted").click(function() {
     })
 })
 
+function reloadPage() {
+    location.reload()
+}
+
+$('.score').change(function() {
+    let value = Number.parseFloat(($(this).val()))
+
+    let opponentScore = $($(this).attr('data-opponent-score'))
+
+    if (value == TOURNAMENT_WIN) {
+        opponentScore.val( TOURNAMENT_LOSS.toFixed(1) )
+    } 
+    else if (value == TOURNAMENT_LOSS) {
+        opponentScore.val( TOURNAMENT_WIN.toFixed(1) )
+    } else if( value == TOURNAMENT_DRAW ) {
+        opponentScore.val( TOURNAMENT_DRAW.toFixed(1) )
+    }
+})
+
 function addGameToFixture(fixtureId, tournamentId) {
     if (fixtureId && tournamentId) {
         let formData = {
@@ -185,7 +204,7 @@ function addGameToFixture(fixtureId, tournamentId) {
                 success: function (data) {
                     console.log(data)
                     displayMessage(gettext("Game added successfully"), ['alert-success', 'alert-dismissible'])
-                    setTimeout(location.reload, 15000)
+                    setTimeout(reloadPage, 15000)
                 },
                 error: function (data) {
                     console.log(JSON.stringify(formData))

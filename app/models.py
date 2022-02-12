@@ -180,6 +180,7 @@ class Fixture(models.Model):
     level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
     root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
+    # finished = models.Boolen
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
     # a fixture can be the root of no more than 2 other fixtures
 

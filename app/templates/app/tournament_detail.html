@@ -27,6 +27,13 @@ Mate | Tournaments | {{id}}
         $("#fixtures-table").DataTable({
             "order": [ [ 0, "desc" ] ]
         })
+        TOURNAMENT_WIN = {{ tournament.number_of_points_for_win }}
+        TOURNAMENT_LOSS = {{ tournament.number_of_points_for_loss }}
+        TOURNAMENT_DRAW = {{ tournament.number_of_points_for_draw }}
+
+        TOURNAMENT_WIN = parseFloat(TOURNAMENT_WIN)
+        TOURNAMENT_LOSS = parseFloat(TOURNAMENT_LOSS)
+        TOURNAMENT_DRAW = parseFloat(TOURNAMENT_DRAW)
     })
 </script>
 {% endblock %}
@@ -53,6 +60,8 @@ Mate | Tournaments | {{id}}
                     <th>{% trans "Fixture level" %}</th>
                     <th>{% trans "Players" %}</th>
                     <th>{% trans "Games" %}</th>
+                    <th>{% trans "Winner" %}</th>
+                    <th></th>
                 </thead>
                 <tbody>
                     {% for fixture in tournament.fixture_set.all %}
@@ -95,6 +104,14 @@ Mate | Tournaments | {{id}}
                             <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game" data-fixture-id="{{ fixture.id }}">
                                 {% trans "Add a game" %}
                             </button>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ fixture.winner }}
+                        </td>
+                        <td>
+                            {% if not fixture.finished %}
+                            <button class="btn btn-primary">{% trans "Finish" %}</button>
                             {% endif %}
                         </td>
                     </tr>
@@ -202,10 +219,10 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="new_game_white_score">{% trans "Score" %}</label>
-                        <select id="new_game_white_score" class="form-control">
-                            <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
-                            <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
-                            <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
+                        <select id="new_game_white_score" class="form-control score" data-opponent-score="#new_game_black_score">
+                            <option value={{ tournament.number_of_points_for_draw }}>{% trans "Draw" %}</option>
+                            <option value={{ tournament.number_of_points_for_win }}>{% trans "Win" %}</option>
+                            <option value={{ tournament.number_of_points_for_loss }}>{% trans "Loss" %}</option>
                         </select>
                     </div>
                 </div>
@@ -216,7 +233,7 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="new_game_black_score">{% trans "Score" %}</label>
-                        <select id="new_game_black_score" class="form-control">
+                        <select id="new_game_black_score" class="form-control score" data-opponent-score="#new_game_white_score">
                             <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
                             <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
                             <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
@@ -252,12 +269,10 @@ Mate | Tournaments | {{id}}
                     <label>{% trans "Date & Time*" %}</label>
                     <input type="text" id="game_datetime_formatted" class="form-control" readonly>
                     <input type="hidden" class="form-control" id="game_datetime">
-                    <!-- <label for="game_datetime">{% trans "Date & Time*" %}</label>
-                    <input type="datetime" class="form-control" id="game_datetime"> -->
                 </div>
                 <div class="mb-3">
                     <label for="game_minutes_per_player">{% trans "Minutes per player*" %}</label>
-                    <input type="number" step="1" class="form-control" id="game_minutes_per_player">
+                    <input type="number" step="1" class="form-control" id="game_minutes_per_player" value="20">
                 </div>
                 <div class="row">
                     <div class="col-md-8 player">
@@ -266,7 +281,7 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="game_white_score">{% trans "Score" %}</label>
-                        <select id="game_white_score" class="form-control">
+                        <select id="game_white_score" class="form-control score" data-opponent-score="#game_black_score">
                             <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
                             <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
                             <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
@@ -280,7 +295,7 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="game_black_score">{% trans "Score" %}</label>
-                        <select id="game_black_score" class="form-control">
+                        <select id="game_black_score" class="form-control score" data-opponent-score="#game_white_score">
                             <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
                             <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
                             <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
