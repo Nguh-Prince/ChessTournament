@@ -295,6 +295,7 @@ function validateObject(object) {
     // in: css selector for a datalist or select where this input's value must come from
     // notIn: css selector for a datalist or select where this input'value should not be found
     // different: css selector for an input element (textarea, input, select, etc) that should not have the same value as this object
+    // requiredIf: boolean, implies the element's value is required
     // errorContainer: a css selector for where to append the error message, if not provided parent is used
 
     let value = $(object.selector).val()
@@ -305,7 +306,7 @@ function validateObject(object) {
         alert(gettext("The in and notIn selectors of this object are the same"))
     }
 
-    if (!value && object.required) {
+    if (!value && object.required || object.requiredIf) {
         messages.push(gettext("This field is required"))
         console.log(object)
         flag = false

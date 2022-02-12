@@ -2,6 +2,8 @@ var state = {
     games: {}
 }
 
+let dateTimePicker = new SimplePicker()
+let dateTimePicker2 = new SimplePicker()
 class Node {
     constructor(data) {
         this.data = data;
@@ -97,6 +99,26 @@ $("#add-game").click(function () {
     addGameToFixture($("#new_game_fixture").val(), $("#tournament_id").val())
 })
 
+$("#new_game_datetime_formatted").click(function() {
+    let currentDate = new Date()
+    dateTimePicker.reset( currentDate )
+    dateTimePicker.open()
+
+    dateTimePicker.on('submit', function(date, readableDate) {
+        console.log("Submitting datePicker")
+        console.log(date)
+        let dt = DateTime.fromJSDate(date)
+        $("#new_game_datetime").val( dt.toISO() )
+        $("#new_game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+    })
+
+    dateTimePicker.on('close', function() {
+        let dt = DateTime.fromJSDate(currentDate)
+        $("#new_game_datetime").val( dt.toISO() )
+        $("#new_game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+    })
+})
+
 function addGameToFixture(fixtureId, tournamentId) {
     if (fixtureId && tournamentId) {
         let formData = {
@@ -128,17 +150,24 @@ function addGameToFixture(fixtureId, tournamentId) {
         for (let selector of selectors) {
             let object = {
                 playerfixture: $(`${selector}`).val(),
-                is_home: selector == "#new_game_white" ? true : false
+                is_home: selector == "#new_game_white" ? true : false,
+                score: $(`${selector}_score`).val()
             }
 
-            let validationObject = {
-                selector: selector,
-                type: 'number',
-                required: true,
-                different: selector == "#new_game_white" ? "#blnew_game_ack" : "#new_game_white"
-            }
+            let validationObjects = [
+                {
+                    selector: selector,
+                    type: 'number',
+                    different: selector == "#new_game_white" ? "#blnew_game_ack" : "#new_game_white"
+                },
+                {
+                    selector: `${selector}_score`,
+                    type: 'number',
+                    requiredIf: $(`${selector}`).val()
+                }
+            ]
 
-            if (validateObject(validationObject)) {
+            if (validateObjects(validationObjects)) {
                 formData.players.push(object)
             }
         }
@@ -182,7 +211,7 @@ function showGameDetail(gameId) {
                 type: "GET",
                 url: `${API_URL}/games/${gameId}/`,
                 success: function (data) {
-                    state.games['gameId'] = data
+                    state.games[`${gameId}`] = data
                     populateGameModal(data)
                 },
                 error: function (data) {
@@ -210,12 +239,34 @@ function populateGameModal(gameObject) {
 
     $("#game_datetime").val(gameObject["time"])
 
+    $("#game_datetime_formatted").val( getLocaleTime(gameObject["time"]) )
+
     $("#game_minutes_per_player").val(gameObject["minutes_per_player"])
 
     for (let player of gameObject["players"]) {
         player["is_home"] ? $("#game_white").val(player["playerfixture"]) : $("#game_black").val(player["playerfixture"])
     }
 }
+
+$("#game_datetime_formatted").click(function() {
+    let currentDate = new Date()
+    dateTimePicker2.reset( currentDate )
+    dateTimePicker2.open()
+
+    dateTimePicker2.on('submit', function(date, readableDate) {
+        console.log("Submitting datePicker")
+        console.log(date)
+        let dt = DateTime.fromJSDate(date)
+        $("#game_datetime").val( dt.toISO() )
+        $("#game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+    })
+
+    dateTimePicker2.on('close', function() {
+        let dt = DateTime.fromJSDate(currentDate)
+        $("#game_datetime").val( dt.toISO() )
+        $("#game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+    })
+})
 
 $("#edit-game").click(function () {
     let gameId = $("#game_id").val()
@@ -226,6 +277,7 @@ $("#edit-game").click(function () {
             time: $("#game_datetime").val(),
             minutes_per_player: $("#game_minutes_per_player").val(),
             fixture: $("#game_fixture").val(),
+            id: gameId,
             players: []
         }
         console.log(formData)
@@ -257,7 +309,8 @@ $("#edit-game").click(function () {
                 let id = $(this).attr('id')
                 formData.players.push({
                     playerfixture: $(this).val(),
-                    is_home: id == "#game_white"
+                    is_home: id == "game_white",
+                    score: $( `#${id}_score` ).val()
                 })
 
                 validationObjects.push({
