@@ -1,7 +1,7 @@
 from .utilities import is_power_of_2, a_if_and_only_if_b, a_implies_b
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -180,7 +180,8 @@ class Fixture(models.Model):
     level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
     root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
-    # finished = models.Boolen
+    finished = models.BooleanField(default=False)
+
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
     # a fixture can be the root of no more than 2 other fixtures
 
@@ -212,9 +213,9 @@ class Fixture(models.Model):
         if self.tournament.fixture_set.count() > self.tournament.number_of_fixtures():
             raise ValidationError( _("You are trying to add this fixture to a tournament that already has its total number of fixtures") )
 
+    @property
     def winner(self):
-        # queries the games in this fixture for a winner
-        pass
+        points_annotation = self.playerfixture_set.annotate(points=Sum('playerfixturegame__score'))
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (

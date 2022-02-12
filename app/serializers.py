@@ -164,4 +164,7 @@ class GameSerializer(serializers.ModelSerializer):
         return instance
 
 class FixtureSerializer(serializers.ModelSerializer):
-    pass
+    game_set = GameSerializer(many=True, read_only=True)
+    class Meta:
+        model = models.Fixture
+        fields = ('id', 'tournament', 'game_set', 'finished')
