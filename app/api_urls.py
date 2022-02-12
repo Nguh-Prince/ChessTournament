@@ -5,6 +5,7 @@ from . import api_views as views
 app_name = "api"
 
 urlpatterns = [
+    path('fixtures/<int:pk>/', views.FixtureDetail.as_view(), name='fixture-detail'),
     path('games/<int:pk>/', views.GameDetail.as_view(), name='game-detail'),
     path('players/', views.PlayersList.as_view(), name='players'),
     path('players/<int:player_id>/tournaments/', views.PlayerTournamentsList.as_view(), name='player_tournaments'),

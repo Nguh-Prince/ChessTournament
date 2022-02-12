@@ -107,11 +107,27 @@ Mate | Tournaments | {{id}}
                             {% endif %}
                         </td>
                         <td>
-                            {{ fixture.winner }}
+                            {% if fixture.get_winner %}
+                            <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}" class="form-control" type="hidden" readonly />
+                            <input type="text" value="{{ fixture.winner.player.name }}" readonly class="form-control">
+                            {% else %}
+                            {% trans "This fixture has no winner" %}
+                            <div class="mb-3">
+                                <label for="fixture_{{ fixture.id }}_winner">{% trans "Pick a winner" %}</label>
+                                <select id="fixture_{{ fixture.id }}_winner" class="form-control">
+                                    <option value="">---</option>
+                                    {% for player in fixture.playerfixture_set.all %}
+                                    <option value="{{ player.id }}">{{ player.player.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
                         </td>
                         <td>
                             {% if not fixture.finished %}
                             <button class="btn btn-primary">{% trans "Finish" %}</button>
+                            {% else %}
+                            {% trans "Finished" %}
                             {% endif %}
                         </td>
                     </tr>

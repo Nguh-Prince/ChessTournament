@@ -1,4 +1,5 @@
 from ipaddress import v4_int_to_packed
+from tkinter.tix import Tree
 from . import models
 from .utilities import is_power_of_2
 
@@ -164,7 +165,6 @@ class GameSerializer(serializers.ModelSerializer):
         return instance
 
 class FixtureSerializer(serializers.ModelSerializer):
-    game_set = GameSerializer(many=True, read_only=True)
     class Meta:
         model = models.Fixture
-        fields = ('id', 'tournament', 'game_set', 'finished')
+        fields = ('__all__')

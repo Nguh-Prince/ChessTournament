@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
+from icecream import ic
+
 import math
 
 class Player(models.Model):
@@ -181,6 +183,7 @@ class Fixture(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
     root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
     finished = models.BooleanField(default=False)
+    winner = models.ForeignKey( Player, on_delete=models.SET_NULL, null=True )
 
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
     # a fixture can be the root of no more than 2 other fixtures
@@ -212,10 +215,20 @@ class Fixture(models.Model):
         print(self.tournament.fixture_set.count(), self.tournament.number_of_fixtures())
         if self.tournament.fixture_set.count() > self.tournament.number_of_fixtures():
             raise ValidationError( _("You are trying to add this fixture to a tournament that already has its total number of fixtures") )
+        if self.winner and not self.winner.playerfixture_set.filter(fixture=self):
+            raise ValidationError( _("A fixture's winner must be a player that is participating in that fixture") )
+            pass
 
     @property
-    def winner(self):
+    def get_winner(self):
         points_annotation = self.playerfixture_set.annotate(points=Sum('playerfixturegame__score'))
+
+        if len(points_annotation) == 2:
+            if points_annotation[0].points == points_annotation[1].points:
+                return None
+            else:
+                return points_annotation[0] if points_annotation[0].points > points_annotation[1].points else points_annotation[1]
+        
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (

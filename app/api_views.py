@@ -45,6 +45,12 @@ class TournamentGames(generics.ListCreateAPIView):
     serializer_class = serializers.GameSerializer
     permission_classes = (permissions.IsTournamentCreatororReadOnly, )
 
+class FixtureDetail(generics.RetrieveUpdateAPIView):
+    queryset = models.Fixture.objects.all()
+
+    serializer_class = serializers.FixtureSerializer
+    # permission_classes = (permissions.IsTournamentCreatororReadOnly, )
+
 class GameDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Game.objects.all()
 

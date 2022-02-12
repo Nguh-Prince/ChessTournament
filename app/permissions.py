@@ -46,8 +46,12 @@ class IsTournamentCreatororReadOnly(permissions.BasePermission):  # permission e
         except Exception as e:
             print(e)
 
-        if request.method in permissions.SAFE_METHODS or obj.fixture.tournament.creator.id == player_id:
-            return True
+        if isinstance(obj, Game):
+            if request.method in permissions.SAFE_METHODS or obj.fixture.tournament.creator.id == player_id:
+                return True
+        if isinstance(obj, Fixture):
+            if request.method in permissions.SAFE_METHODS or obj.tournament.creator.id == player_id:
+                return True
 
         if not player_id:
             return False
