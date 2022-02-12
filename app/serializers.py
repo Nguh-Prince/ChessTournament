@@ -164,6 +164,11 @@ class GameSerializer(serializers.ModelSerializer):
 
         return instance
 
+class PlayerFixtureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.PlayerFixture
+        fields = ('id', 'is_winner')
+
 class FixtureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Fixture

@@ -228,7 +228,13 @@ class Fixture(models.Model):
                 return None
             else:
                 return points_annotation[0] if points_annotation[0].points > points_annotation[1].points else points_annotation[1]
-        
+    
+    def finish(self):
+        winner = self.get_winner
+
+        if winner:
+            winner.is_winner = True
+            winner.save()
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
