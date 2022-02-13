@@ -258,7 +258,6 @@ class PlayerFixture(models.Model):
     )
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
-    color = models.CharField(max_length=6, choices=())
     is_winner = models.BooleanField(default=False)
 
     def clean(self) -> None:
