@@ -109,7 +109,7 @@ Mate | Tournaments | {{id}}
                         <td>
                             {% if fixture.get_winner %}
                             <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}" class="form-control" type="hidden" readonly />
-                            <input type="text" value="{{ fixture.winner.player.name }}" readonly class="form-control">
+                            <input type="text" value="{{ fixture.get_winner.player.name }}" readonly class="form-control">
                             {% else %}
                             {% trans "This fixture has no winner" %}
                             <div class="mb-3">

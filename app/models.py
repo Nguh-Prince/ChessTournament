@@ -183,8 +183,6 @@ class Fixture(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
     root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
     finished = models.BooleanField(default=False)
-    winner = models.ForeignKey( Player, on_delete=models.SET_NULL, null=True )
-
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
     # a fixture can be the root of no more than 2 other fixtures
 
@@ -221,6 +219,10 @@ class Fixture(models.Model):
 
     @property
     def get_winner(self):
+        query = self.playerfixture_set.filter(is_winner=True)
+        if query.count() > 0:
+            return query.first()
+
         points_annotation = self.playerfixture_set.annotate(points=Sum('playerfixturegame__score'))
 
         if len(points_annotation) == 2:
@@ -244,6 +246,7 @@ class PlayerFixture(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
     color = models.CharField(max_length=6, choices=())
+    is_winner = models.BooleanField(default=False)
 
     def clean(self) -> None:
         # a fixture cannot have more than 2 player fixture entries
