@@ -256,8 +256,7 @@ class PlayerFixture(models.Model):
         ("White", _("White")),
         ("Black", _("Black"))
     )
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    tournamentplayer = models.ForeignKey(TournamentPlayer, on_delete=models.CASCADE, null=True)
+    player = models.ForeignKey(TournamentPlayer, on_delete=models.CASCADE)
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
     is_winner = models.BooleanField(default=False)
 
@@ -273,7 +272,7 @@ class PlayerFixture(models.Model):
         # a fixture in a tournament can only be played by players that have joined that tournament
         tournament = self.fixture.tournament
 
-        if tournament and self.player.tournamentplayer_set.filter(tournament=tournament).count() < 1:
+        if tournament and self.player.tournament != tournament:
             raise ValidationError( _("This fixture can only be played by players that are participating in the tournament") )
 
         return super().clean()

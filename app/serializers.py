@@ -169,7 +169,7 @@ class PlayerFixtureSerializer(serializers.ModelSerializer):
         model = models.PlayerFixture
         fields = ('id', 'is_winner')
 
-    id_regex = re.compile("playerfixtures/(\d)")
+    id_regex = re.compile("playerfixtures/(\d)+")
 
     def validate(self, attrs):
         match_object = self.id_regex.search( self.context['request'].path )
@@ -198,9 +198,16 @@ class FixtureSerializer(serializers.ModelSerializer):
     winner = PlayerFixtureSerializer( source='get_winner', read_only=True )
     winner_id = serializers.IntegerField( source='get_winner_id' )
 
+    id_regex = re.compile("fixtures/(\d)+")
     def validate(self, attrs):
         # a winner cannot be set when there are no games that have been played
-        pass
+        match_object = self.id_regex.search(self.context['request'].path)
+
+        if match_object:
+            id = match_object.group(1)
+            object = self.Meta.model.objects.get(id=1)
+
+        return attrs
 
     class Meta:
         model = models.Fixture
