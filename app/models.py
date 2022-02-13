@@ -257,6 +257,7 @@ class PlayerFixture(models.Model):
         ("Black", _("Black"))
     )
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    tournamentplayer = models.ForeignKey(TournamentPlayer, on_delete=models.CASCADE, null=True)
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
     is_winner = models.BooleanField(default=False)
 
