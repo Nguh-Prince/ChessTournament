@@ -1,8 +1,7 @@
-from ipaddress import v4_int_to_packed
-from tkinter.tix import Tree
 from . import models
 from .utilities import is_power_of_2
 
+from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from icecream import ic
@@ -163,13 +162,47 @@ class GameSerializer(serializers.ModelSerializer):
             models.PlayerFixtureGame.objects.create( **player, game=instance )
 
         return instance
+import re
 
 class PlayerFixtureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PlayerFixture
         fields = ('id', 'is_winner')
 
+    id_regex = re.compile("playerfixtures/(\d)")
+
+    def validate(self, attrs):
+        match_object = self.id_regex.search( self.context['request'].path )
+
+        if match_object:
+            id = match_object.group(1)
+            object = self.Meta.model.objects.filter(id=id)
+
+            fixture_winner = object.fixture.get_winner
+
+            if fixture_winner and fixture_winner != object:
+                raise serializers.ValidationError( _("") )
+
+            if attrs['is_winner'] and object.fixture.playerfixture_set.filter( Q(is_winner=True) & ~Q(id=object.id) ).count() > 0:
+                raise serializers.ValidationError( _("This fixture already has a winner") )
+
+    def update(self, instance, validated_data):
+        instance = self.Meta.model(**validated_data)
+
+        instance.clean()
+        instance.save()
+        return instance
+
+
 class FixtureSerializer(serializers.ModelSerializer):
+    winner = PlayerFixtureSerializer( source='get_winner', read_only=True )
+    winner_id = serializers.IntegerField( source='get_winner_id' )
+
+    def validate(self, attrs):
+        # a winner cannot be set when there are no games that have been played
+        pass
+
     class Meta:
         model = models.Fixture
-        fields = ('__all__')
+        fields = ('id', 'root', 'level', 'finished', 'winner', 'winner_id')
+        extra_kwargs = {'root': {'read_only': True}, 'level': {'read_only': True} }

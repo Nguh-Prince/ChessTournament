@@ -4,12 +4,14 @@ from django.db import models
 from django.db.models import Q, Sum
 from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+# from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from icecream import ic
 
 import math
+
+from rest_framework.serializers import ValidationError
 
 class Player(models.Model):
     GENDER_CHOICES = (
@@ -230,6 +232,17 @@ class Fixture(models.Model):
                 return None
             else:
                 return points_annotation[0] if points_annotation[0].points > points_annotation[1].points else points_annotation[1]
+        elif len(points_annotation) == 1:
+            return points_annotation.first()
+
+    def get_points_annotation(self):
+        return self.playerfixture_set.annotate(points=Sum('playerfixturegame__score'))
+
+    @property
+    def get_winner_id(self):
+        winner = self.get_winner
+
+        return winner.id if winner else None
     
     def finish(self):
         winner = self.get_winner
@@ -252,6 +265,11 @@ class PlayerFixture(models.Model):
         # a fixture cannot have more than 2 player fixture entries
         if self.fixture.playerfixture_set.all().count() > 2:
             raise ValidationError( _("Fixture already has two players") )
+
+        # two playerfixtures in the same fixture cannot have is_winner set to True
+        if self.fixture.playerfixture_set.filter(is_winner=True).count() >= 2:
+            raise ValidationError( _("A fixture can only have one winner") )
+
         # a fixture in a tournament can only be played by players that have joined that tournament
         tournament = self.fixture.tournament
 

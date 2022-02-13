@@ -125,7 +125,7 @@ Mate | Tournaments | {{id}}
                         </td>
                         <td>
                             {% if not fixture.finished %}
-                            <button class="btn btn-primary">{% trans "Finish" %}</button>
+                            <button class="btn btn-primary finish-fixture" data-winner-selector="#fixture_{{ fixture.id }}_winner" data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
                             {% else %}
                             {% trans "Finished" %}
                             {% endif %}

@@ -99,23 +99,23 @@ $("#add-game").click(function () {
     addGameToFixture($("#new_game_fixture").val(), $("#tournament_id").val())
 })
 
-$("#new_game_datetime_formatted").click(function() {
+$("#new_game_datetime_formatted").click(function () {
     let currentDate = new Date()
-    dateTimePicker.reset( currentDate )
+    dateTimePicker.reset(currentDate)
     dateTimePicker.open()
 
-    dateTimePicker.on('submit', function(date, readableDate) {
+    dateTimePicker.on('submit', function (date, readableDate) {
         console.log("Submitting datePicker")
         console.log(date)
         let dt = DateTime.fromJSDate(date)
-        $("#new_game_datetime").val( dt.toISO() )
-        $("#new_game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+        $("#new_game_datetime").val(dt.toISO())
+        $("#new_game_datetime_formatted").val(dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY))
     })
 
-    dateTimePicker.on('close', function() {
+    dateTimePicker.on('close', function () {
         let dt = DateTime.fromJSDate(currentDate)
-        $("#new_game_datetime").val( dt.toISO() )
-        $("#new_game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+        $("#new_game_datetime").val(dt.toISO())
+        $("#new_game_datetime_formatted").val(dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY))
     })
 })
 
@@ -123,18 +123,18 @@ function reloadPage() {
     location.reload()
 }
 
-$('.score').change(function() {
+$('.score').change(function () {
     let value = Number.parseFloat(($(this).val()))
 
     let opponentScore = $($(this).attr('data-opponent-score'))
 
     if (value == TOURNAMENT_WIN) {
-        opponentScore.val( TOURNAMENT_LOSS.toFixed(1) )
-    } 
+        opponentScore.val(TOURNAMENT_LOSS.toFixed(1))
+    }
     else if (value == TOURNAMENT_LOSS) {
-        opponentScore.val( TOURNAMENT_WIN.toFixed(1) )
-    } else if( value == TOURNAMENT_DRAW ) {
-        opponentScore.val( TOURNAMENT_DRAW.toFixed(1) )
+        opponentScore.val(TOURNAMENT_WIN.toFixed(1))
+    } else if (value == TOURNAMENT_DRAW) {
+        opponentScore.val(TOURNAMENT_DRAW.toFixed(1))
     }
 })
 
@@ -258,7 +258,7 @@ function populateGameModal(gameObject) {
 
     $("#game_datetime").val(gameObject["time"])
 
-    $("#game_datetime_formatted").val( getLocaleTime(gameObject["time"]) )
+    $("#game_datetime_formatted").val(getLocaleTime(gameObject["time"]))
 
     $("#game_minutes_per_player").val(gameObject["minutes_per_player"])
 
@@ -267,23 +267,23 @@ function populateGameModal(gameObject) {
     }
 }
 
-$("#game_datetime_formatted").click(function() {
+$("#game_datetime_formatted").click(function () {
     let currentDate = new Date()
-    dateTimePicker2.reset( currentDate )
+    dateTimePicker2.reset(currentDate)
     dateTimePicker2.open()
 
-    dateTimePicker2.on('submit', function(date, readableDate) {
+    dateTimePicker2.on('submit', function (date, readableDate) {
         console.log("Submitting datePicker")
         console.log(date)
         let dt = DateTime.fromJSDate(date)
-        $("#game_datetime").val( dt.toISO() )
-        $("#game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+        $("#game_datetime").val(dt.toISO())
+        $("#game_datetime_formatted").val(dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY))
     })
 
-    dateTimePicker2.on('close', function() {
+    dateTimePicker2.on('close', function () {
         let dt = DateTime.fromJSDate(currentDate)
-        $("#game_datetime").val( dt.toISO() )
-        $("#game_datetime_formatted").val( dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) )
+        $("#game_datetime").val(dt.toISO())
+        $("#game_datetime_formatted").val(dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY))
     })
 })
 
@@ -329,7 +329,7 @@ $("#edit-game").click(function () {
                 formData.players.push({
                     playerfixture: $(this).val(),
                     is_home: id == "game_white",
-                    score: $( `#${id}_score` ).val()
+                    score: $(`#${id}_score`).val()
                 })
 
                 validationObjects.push({
@@ -388,5 +388,18 @@ $(".display-game").click(function () {
     })
 
     $("#game_id").val($(this).attr('data-game-id'))
-    $("#game_fixture").val( $(this).attr('data-fixture-id') )
+    $("#game_fixture").val($(this).attr('data-fixture-id'))
+})
+
+$(".finish-fixture").click(function () {
+    let fixtureId = $(this).attr('data-fixture-id')
+    let winnerSelector = $($(this).attrs('data-winner-selector'))
+
+    if (fixtureId && playerFixtureId) {
+        $.ajax({
+            type: "PATCH",
+            url: `${API_URL}/playerfixtures/${playerFixtureId}/`,
+            data: JSON.stringify({ is_winner: True }),
+        })
+    }
 })
