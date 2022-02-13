@@ -9,6 +9,7 @@ urlpatterns = [
     path('games/<int:pk>/', views.GameDetail.as_view(), name='game-detail'),
     path('players/', views.PlayersList.as_view(), name='players'),
     path('players/<int:player_id>/tournaments/', views.PlayerTournamentsList.as_view(), name='player_tournaments'),
+    path('playerfixtures/<int:pk>/', views.PlayerFixtureDetail.as_view(), name='player-fixture-detail'),
     path('tournaments/', views.TournamentsList.as_view(), name='tournaments'),
     path('tournaments/<int:pk>/', views.TournamentDetail.as_view(), name='tournament-detail'),
     path('tournaments/enroll/', views.EnrollPlayerSerializer.as_view(), name='tournaments'),

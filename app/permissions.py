@@ -52,10 +52,30 @@ class IsTournamentCreatororReadOnly(permissions.BasePermission):  # permission e
         if isinstance(obj, Fixture):
             if request.method in permissions.SAFE_METHODS or obj.tournament.creator.id == player_id:
                 return True
+        if isinstance(obj, PlayerFixture):
+            if request.method in permissions.SAFE_METHODS or obj.fixture.tournament.creator.id == player_id:
+                return True
 
         if not player_id:
             return False
         
+        return False
+
+class UnfinishedOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        player_id = None
+
+        try:
+            player_id = request.user.player.id
+        except Exception as e:
+            print(e)
+        
+        if obj.tournament and obj.tournament.creator.id == player_id and not obj.finished:
+            return True
+
         return False
 
 class TournamnentNotStartedOrReadONly(permissions.BasePermission): # permission ensures that once a tournament is started, it cannot be modified

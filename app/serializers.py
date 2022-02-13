@@ -167,7 +167,8 @@ import re
 class PlayerFixtureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PlayerFixture
-        fields = ('id', 'is_winner')
+        fields = ('id', 'is_winner', 'fixture')
+        extra_kwargs = {'fixture': {'read_only': True}}
 
     id_regex = re.compile("playerfixtures/(\d)+")
 
@@ -186,6 +187,8 @@ class PlayerFixtureSerializer(serializers.ModelSerializer):
             if attrs['is_winner'] and object.fixture.playerfixture_set.filter( Q(is_winner=True) & ~Q(id=object.id) ).count() > 0:
                 raise serializers.ValidationError( _("This fixture already has a winner") )
 
+        return attrs
+
     def update(self, instance, validated_data):
         instance = self.Meta.model(**validated_data)
 
@@ -196,20 +199,34 @@ class PlayerFixtureSerializer(serializers.ModelSerializer):
 
 class FixtureSerializer(serializers.ModelSerializer):
     winner = PlayerFixtureSerializer( source='get_winner', read_only=True )
-    winner_id = serializers.IntegerField( source='get_winner_id' )
 
     id_regex = re.compile("fixtures/(\d)+")
     def validate(self, attrs):
         # a winner cannot be set when there are no games that have been played
         match_object = self.id_regex.search(self.context['request'].path)
-
+        ic(attrs)
         if match_object:
             id = match_object.group(1)
-            object = self.Meta.model.objects.get(id=1)
+            ic(id)
+            object = self.Meta.model.objects.get(id=id)
+            if attrs['finished'] and not object.get_winner:
+                raise serializers.ValidationError( _("A fixture cannot be finished when it has no winner") )
 
         return attrs
 
     class Meta:
         model = models.Fixture
-        fields = ('id', 'root', 'level', 'finished', 'winner', 'winner_id')
-        extra_kwargs = {'root': {'read_only': True}, 'level': {'read_only': True} }
+        fields = ('id', 'root', 'level', 'finished', 'winner')
+        extra_kwargs = {'root': {'read_only': True}, 'level': {'read_only': True}, }
+
+    def update(self, instance, validated_data):
+        ic(validated_data)
+        if validated_data['finished']:
+            winner = instance.get_winner
+            winner.is_winner = True
+            winner.save()
+            
+            instance.finished = validated_data['finished']
+            instance.save()
+
+        return instance

@@ -135,13 +135,11 @@ class Tournament(models.Model):
         outermost_fixtures = self.fixture_set.filter(children__isnull=True)
         enrolled_participants = self.enrolled_participants
         
-        print(outermost_fixtures, outermost_fixtures.count())
-        print(enrolled_participants, enrolled_participants.count())
         if enrolled_participants.count() == outermost_fixtures.count() * 2 and enrolled_participants.count() == self.total_number_of_participants:
             j = 0
             for fixture in outermost_fixtures:
                 for i in range(2):
-                    playerfixture = PlayerFixture( fixture=fixture, player=enrolled_participants[j+i].player )
+                    playerfixture = PlayerFixture( fixture=fixture, player=enrolled_participants )
                     playerfixture.clean()
                     playerfixture.save()
 
@@ -234,6 +232,8 @@ class Fixture(models.Model):
                 return points_annotation[0] if points_annotation[0].points > points_annotation[1].points else points_annotation[1]
         elif len(points_annotation) == 1:
             return points_annotation.first()
+
+        return None
 
     def get_points_annotation(self):
         return self.playerfixture_set.annotate(points=Sum('playerfixturegame__score'))
