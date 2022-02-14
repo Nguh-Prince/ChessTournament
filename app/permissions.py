@@ -1,3 +1,4 @@
+from urllib import request
 from .models import *
 
 from rest_framework import permissions
@@ -83,5 +84,32 @@ class TournamnentNotStartedOrReadONly(permissions.BasePermission): # permission 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS or not obj.started:
             return True
+
+        return False
+
+class TournamentIsStartedOrNoUpdate(permissions.BasePermission):
+    # permission ensures that a tournamentplayer, fixture, game, playerfixture, playerfixturegame can only be modified when their tournaments have started
+    ic(permissions.SAFE_METHODS)
+
+    def has_object_permission(self, request, view, obj):
+        tournament_started = False
+
+        if isinstance(obj, TournamentPlayer) or isinstance(obj, Fixture):
+            tournament_started = obj.tournament.started    
+            
+        if isinstance(obj, Game) or isinstance(obj, PlayerFixture):
+            tournament_started = obj.fixture.tournament
+        
+        if isinstance(obj, PlayerFixtureGame):
+            tournament_started = obj.game.fixture.tournament
+
+        if tournament_started:
+            return True
+            
+        if request.method not in ["PUT", "PATCH"]:
+            return True
+
+        elif not tournament_started and request.method in ["PUT", "PATCH"]:
+            return False
 
         return False

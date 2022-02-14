@@ -188,7 +188,6 @@ function addGameToFixture(fixtureId, tournamentId) {
 
             if (validateObjects(validationObjects)) {
                 formData.players.push(object)
-                alert("Error")
             }
         }
 
@@ -352,6 +351,7 @@ $("#edit-game").click(function () {
                 contentType: "application/json",
                 success: function (data) {
                     displayMessage(gettext("Game updated successfully"), ["alert-success", "alert-dismissible"])
+                    setTimeout(reloadPage, 5000)
                 },
                 error: function (data) {
                     console.log(JSON.stringify(formData))

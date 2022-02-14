@@ -25,7 +25,7 @@ Mate | Tournaments | {{id}}
     $(document).ready(function () {
         $("#list_of_participants").DataTable()
         $("#fixtures-table").DataTable({
-            "order": [ [ 0, "desc" ] ]
+            "order": [ [5, "asc"], [ 0, "desc" ] ]
         })
         TOURNAMENT_WIN = {{ tournament.number_of_points_for_win }}
         TOURNAMENT_LOSS = {{ tournament.number_of_points_for_loss }}
@@ -183,7 +183,7 @@ Mate | Tournaments | {{id}}
                                 {% elif not tournament_player.participating %}
                                 <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans
                                     "Enroll" %}</button>
-                                {% elif tournament.kicked_out %}
+                                {% elif tournament_player.kicked_out %}
                                 <button class="btn btn-outline-danger disabled">{% trans "Kicked out" %}</button>
                                 {% endif %}
                             </td>
@@ -228,7 +228,7 @@ Mate | Tournaments | {{id}}
                 </div>
                 <div class="mb-3">
                     <label for="new_game_minutes_per_player">{% trans "Minutes per player*" %}</label>
-                    <input type="number" step="1" class="form-control" id="new_game_minutes_per_player">
+                    <input type="number" step="1" class="form-control" id="new_game_minutes_per_player" value="15">
                 </div>
                 <div class="row">
                     <div class="col-md-8 player">
