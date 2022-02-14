@@ -254,8 +254,8 @@ class Fixture(models.Model):
             loser.player.kicked_out = True
             loser.player.save()
 
-            if self.root:
-                PlayerFixture.objects.create( player=winner.player, fixture=self.root )
+            if self.root and self.root.playerfixture_set.filter(player=winner.player).count() < 1:
+                PlayerFixture.objects.create( player=winner.player, fixture=Fixture.objects.get(id=self.root.id) )
 
 def terminate_fixture(sender, instance: Fixture, **kwargs):
     # if fixture is finished kick out the losing player and create a new PlayerFixture for the winning player in this fixture's root fixture
