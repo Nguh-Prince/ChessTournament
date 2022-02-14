@@ -86,7 +86,7 @@ Mate | Tournaments | {{id}}
                         </td>
                         <td>
                             {% for fixture_player in fixture.playerfixture_set.all %}
-                            <input type="hidden" class="player" id="{{ fixture_player.id }}" value="{{ fixture_player.player }}">
+                            <input type="hidden" class="player" id="{{ fixture_player.id }}" value="{{ fixture_player.player.player }}">
                             {% endfor %}
 
                             {% for game in fixture.game_set.all %}

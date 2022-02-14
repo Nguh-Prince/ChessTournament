@@ -177,7 +177,7 @@ function addGameToFixture(fixtureId, tournamentId) {
                 {
                     selector: selector,
                     type: 'number',
-                    different: selector == "#new_game_white" ? "#blnew_game_ack" : "#new_game_white"
+                    different: selector == "#new_game_white" ? "#new_game_black" : "#new_game_white"
                 },
                 {
                     selector: `${selector}_score`,
@@ -188,10 +188,12 @@ function addGameToFixture(fixtureId, tournamentId) {
 
             if (validateObjects(validationObjects)) {
                 formData.players.push(object)
+                alert("Error")
             }
         }
 
         if (validateObjects(validationObjects)) {
+            console.log(formData)
             $.ajax({
                 url: `${API_URL}/tournaments/${tournamentId}/games/`,
                 type: "POST",

@@ -306,7 +306,7 @@ function validateObject(object) {
         alert(gettext("The in and notIn selectors of this object are the same"))
     }
 
-    if (!value && object.required || object.requiredIf) {
+    if (!value && (object.required || object.requiredIf) ) {
         messages.push(gettext("This field is required"))
         console.log(object)
         flag = false
