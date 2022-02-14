@@ -49,7 +49,7 @@ class FixtureDetail(generics.RetrieveUpdateAPIView):
     queryset = models.Fixture.objects.all()
 
     serializer_class = serializers.FixtureSerializer
-    permission_classes = (permissions.IsTournamentCreatororReadOnly, )
+    permission_classes = (permissions.IsTournamentCreatororReadOnly, permissions.UnfinishedOrReadOnly)
 
 class PlayerFixtureDetail(generics.RetrieveUpdateAPIView):
     queryset = models.PlayerFixture.objects.all()

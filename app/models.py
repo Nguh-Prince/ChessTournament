@@ -250,6 +250,19 @@ class Fixture(models.Model):
         if winner:
             winner.is_winner = True
             winner.save()
+            loser = self.playerfixture_set.filter( ~Q(id=winner.id) ).first()
+            loser.player.kicked_out = True
+            loser.player.save()
+
+            if self.root:
+                PlayerFixture.objects.create( player=winner.player, fixture=self.root )
+
+def terminate_fixture(sender, instance: Fixture, **kwargs):
+    # if fixture is finished kick out the losing player and create a new PlayerFixture for the winning player in this fixture's root fixture
+    if instance.finished and instance.get_winner:
+        instance.finish()
+
+post_save.connect(terminate_fixture, Fixture)
 
 class PlayerFixture(models.Model):
     COLOR_CHOICES = (
@@ -261,6 +274,7 @@ class PlayerFixture(models.Model):
     is_winner = models.BooleanField(default=False)
 
     def clean(self) -> None:
+        ic(self)
         # a fixture cannot have more than 2 player fixture entries
         if self.fixture.playerfixture_set.all().count() > 2:
             raise ValidationError( _("Fixture already has two players") )

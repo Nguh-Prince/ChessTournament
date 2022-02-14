@@ -75,7 +75,7 @@ Mate | Tournaments | {{id}}
                         <td class="player-container">
                             <ul>
                                 {% for fixture_player in fixture.playerfixture_set.all %}
-                                <li>{{ fixture_player.player }}</li>
+                                <li>{{ fixture_player.player.player }}</li>
                                 {% empty %}
                                 <li>{% trans "This fixture has no players" %}</li>
                                 {% endfor %}
@@ -109,7 +109,7 @@ Mate | Tournaments | {{id}}
                         <td>
                             {% if fixture.get_winner %}
                             <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}" class="form-control" type="hidden" readonly />
-                            <input type="text" value="{{ fixture.get_winner.player.name }}" readonly class="form-control">
+                            <input type="text" value="{{ fixture.get_winner.player.player.name }}" readonly class="form-control">
                             {% else %}
                             {% trans "This fixture has no winner" %}
                             <div class="mb-3">
@@ -117,17 +117,19 @@ Mate | Tournaments | {{id}}
                                 <select id="fixture_{{ fixture.id }}_winner" class="form-control">
                                     <option value="">---</option>
                                     {% for player in fixture.playerfixture_set.all %}
-                                    <option value="{{ player.id }}">{{ player.player.name }}</option>
+                                    <option value="{{ player.id }}">{{ player.player.player.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             {% endif %}
                         </td>
                         <td>
-                            {% if not fixture.finished %}
-                            <button class="btn btn-primary finish-fixture" data-winner-selector="#fixture_{{ fixture.id }}_winner" data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
-                            {% else %}
+                            {% if not fixture.finished and fixture.tournament.creator.id == request.session.player.id %}
+                            <button class="btn btn-primary trigger-finish-fixture" data-bs-target="#finish-fixture" data-bs-toggle="modal" data-winner-selector="#fixture_{{ fixture.id }}_winner" data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
+                            {% elif fixture.finished %}
                             {% trans "Finished" %}
+                            {% else %}
+                            {% trans "Not Finished" %}
                             {% endif %}
                         </td>
                     </tr>
@@ -324,6 +326,23 @@ Mate | Tournaments | {{id}}
                 <button class="btn btn-primary" id="edit-game">{% trans "Submit" %}</button>
                 {% endif %}
                 <button class="btn btn-danger" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="finish-fixture" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Finish fixture?" %}</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {% trans "Once a fixture is marked as finished, it cannot be reverted. Are you sure you want to mark this fixture as finished?" %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger finish-fixture" data-bs-dismiss="modal">{% trans "Yes" %}</button>
             </div>
         </div>
     </div>

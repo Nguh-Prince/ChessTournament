@@ -62,6 +62,7 @@ class IsTournamentCreatororReadOnly(permissions.BasePermission):  # permission e
         return False
 
 class UnfinishedOrReadOnly(permissions.BasePermission):
+    # only a fixture that is finished can be modified
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True

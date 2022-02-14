@@ -391,15 +391,75 @@ $(".display-game").click(function () {
     $("#game_fixture").val($(this).attr('data-fixture-id'))
 })
 
+$('.trigger-finish-fixture').click(function() {
+    $("#finish-fixture .finish-fixture").attr('data-fixture-id', $(this).attr('data-fixture-id'))
+    $("#finish-fixture .finish-fixture").attr('data-winner-selector', $(this).attr('data-winner-selector'))
+})
+
+$("#finish-fixture .btn-close").click(function() {
+    $("#finish-fixture .finish-fixture").attr('data-fixture-id') = ''
+    $("#finish-fixture .finish-fixture").attr('data-winner-selector') = ''
+})
+
 $(".finish-fixture").click(function () {
+    console.log( $(this).attr('data-fixture-id'),  $(this).attr('data-winner-selector'))
     let fixtureId = $(this).attr('data-fixture-id')
-    let winnerSelector = $($(this).attrs('data-winner-selector'))
+    let winnerSelector = $($(this).attr('data-winner-selector'))
+
+    console.log(fixtureId, winnerSelector.val())
+
+    playerFixtureId = winnerSelector.val()
 
     if (fixtureId && playerFixtureId) {
         $.ajax({
             type: "PATCH",
             url: `${API_URL}/playerfixtures/${playerFixtureId}/`,
-            data: JSON.stringify({ is_winner: True }),
+            data: JSON.stringify({ is_winner: true }),
+            headers: {
+                "X-CSRFTOKEN": getCookie("csrftoken")
+            },
+            contentType: "application/json",
+            success: function() {
+                displayMessage(gettext("Winner set successfully"), ['alert-success', 'alert-dismissible'] )
+                // set fixture to finished
+                $.ajax({
+                    type: "PATCH",
+                    url: `${API_URL}/fixtures/${fixtureId}/`,
+                    data: JSON.stringify({ finished: true }),
+                    headers: {
+                        "X-CSRFTOKEN": getCookie("csrftoken")
+                    },
+                    contentType: "application/json",
+                    success: function (data) {
+                        displayMessage(gettext("Fixture successfully modified"), ['alert-success', 'alert-dismissible'])
+                        location.reload()
+                    },
+                    error: function (data) {
+                        displayMessage(gettext("Error modifying fixture"))
+                        if (data.status == 500) {
+                            displayMessage(ERROR_MESSAGES["500"])
+                        } else if (data.status == 403) {
+                            displayMessage(ERROR_MESSAGES["403"])
+                        } else {
+                            displayMessage(data.responseText)
+                        }
+                    }
+                })
+            },
+            error: function(data) {
+                displayMessage(gettext("Error setting winner"))
+                if (data.status == 500) {
+                    displayMessage(ERROR_MESSAGES["500"])
+                } else if (data.status == 403) {
+                    displayMessage(ERROR_MESSAGES["403"])
+                } else {
+                    displayMessage(data.responseText)
+                }
+            }
         })
+    }
+    else if (!playerFixtureId) {
+        winnerSelector.parent().addClass('has-error')
+        winnerSelector.parent().append( createHelpBlock(gettext("Select a winner before finishing the game")) )
     }
 })

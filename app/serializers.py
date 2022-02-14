@@ -170,37 +170,41 @@ class PlayerFixtureSerializer(serializers.ModelSerializer):
         fields = ('id', 'is_winner', 'fixture')
         extra_kwargs = {'fixture': {'read_only': True}}
 
-    id_regex = re.compile("playerfixtures/(\d)+")
+    id_regex = re.compile("playerfixtures/(\d+)")
 
     def validate(self, attrs):
         match_object = self.id_regex.search( self.context['request'].path )
 
         if match_object:
             id = match_object.group(1)
-            object = self.Meta.model.objects.filter(id=id)
-
+            ic(id)
+            object = self.Meta.model.objects.filter(id=id).first()
+            
+            ic(object, object.fixture)
             fixture_winner = object.fixture.get_winner
 
-            if fixture_winner and fixture_winner != object:
-                raise serializers.ValidationError( _("") )
+            if 'is_winner' in attrs:
+                if attrs['is_winner'] and object.player.kicked_out:
+                    raise serializers.ValidationError( _("A player who has been kicked out of the tournament cannot be the winner of this fixture. ") )
 
-            if attrs['is_winner'] and object.fixture.playerfixture_set.filter( Q(is_winner=True) & ~Q(id=object.id) ).count() > 0:
-                raise serializers.ValidationError( _("This fixture already has a winner") )
+                if attrs['is_winner'] and object.fixture.playerfixture_set.filter( Q(is_winner=True) & ~Q(id=object.id) ).count() > 0:
+                    raise serializers.ValidationError( _("This fixture already has a winner") )
+
+                if attrs['is_winner'] and object.fixture.game_set.count() < 1:
+                    raise serializers.ValidationError ( _("A winner cannot be set for a fixture with no games") )
 
         return attrs
 
     def update(self, instance, validated_data):
-        instance = self.Meta.model(**validated_data)
-
-        instance.clean()
-        instance.save()
-        return instance
-
-
+        if instance.is_winner:
+            instance.fixture.finished = True
+            instance.fixture.save()
+        return super().update(instance, validated_data)
+        
 class FixtureSerializer(serializers.ModelSerializer):
     winner = PlayerFixtureSerializer( source='get_winner', read_only=True )
 
-    id_regex = re.compile("fixtures/(\d)+")
+    id_regex = re.compile("fixtures/(\d+)")
     def validate(self, attrs):
         # a winner cannot be set when there are no games that have been played
         match_object = self.id_regex.search(self.context['request'].path)
@@ -209,7 +213,7 @@ class FixtureSerializer(serializers.ModelSerializer):
             id = match_object.group(1)
             ic(id)
             object = self.Meta.model.objects.get(id=id)
-            if attrs['finished'] and not object.get_winner:
+            if 'finished' in attrs and attrs['finished'] and not object.get_winner:
                 raise serializers.ValidationError( _("A fixture cannot be finished when it has no winner") )
 
         return attrs
