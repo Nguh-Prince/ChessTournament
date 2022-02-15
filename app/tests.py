@@ -38,7 +38,7 @@ class ModelCreation:
 
         return player
 
-    def create_fixture(self, tournament:models.Tournament=None, root:models.Fixture=None, children:Iterable=None) -> models.Fixture:
+    def create_fixture(self, tournament:models.Tournament, root:models.Fixture=None, children:Iterable=None) -> models.Fixture:
         level = random.choice([1, 2, 3, 4, 5])
 
         fixture = models.Fixture.objects.create(level=level)
@@ -85,10 +85,11 @@ class PlayerFixtureTest(TestCase):
 
         tournament = self.model_creation.create_tournament(player=player1)
 
-        fixture = self.model_creation.create_fixture()
+        fixture = self.model_creation.create_fixture(tournament=tournament)
 
         for player in [player1, player2, player3]:
-            playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
+            tournamentplayer = models.TournamentPlayer.objects.create(player=player, tournament=tournament)
+            playerfixture = models.PlayerFixture.objects.create(player=tournamentplayer, fixture=fixture)
 
         self.assertRaises(ValidationError, playerfixture.clean)
     
