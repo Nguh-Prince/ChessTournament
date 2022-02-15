@@ -41,10 +41,8 @@ class ModelCreation:
     def create_fixture(self, tournament:models.Tournament, root:models.Fixture=None, children:Iterable=None) -> models.Fixture:
         level = random.choice([1, 2, 3, 4, 5])
 
-        fixture = models.Fixture.objects.create(level=level)
+        fixture = models.Fixture.objects.create(level=level, tournament=tournament)
 
-        if tournament:
-            fixture.tournament = tournament
         if root:
             fixture.root = root
         if children:
@@ -56,9 +54,7 @@ class ModelCreation:
         return fixture
 
     def create_fixture_in_tournament(self, tournament: models.Tournament) -> models.Fixture:
-        fixture = self.create_fixture()
-        fixture.tournament = tournament
-        fixture.save()
+        fixture = self.create_fixture(tournament=tournament)
 
         return fixture
 
@@ -83,7 +79,7 @@ class PlayerFixtureTest(TestCase):
         player2 = self.model_creation.create_random_player()
         player3 = self.model_creation.create_random_player()
 
-        tournament = self.model_creation.create_tournament(player=player1)
+        tournament = self.model_creation.create_tournament(creator=player1)
 
         fixture = self.model_creation.create_fixture(tournament=tournament)
 
@@ -99,24 +95,33 @@ class PlayerFixtureTest(TestCase):
         """
         player1 = self.model_creation.create_random_player()
         player2 = self.model_creation.create_random_player()
-        fixture = self.model_creation.create_fixture()
+
+        tournament = self.model_creation.create_tournament(creator=player1)
+
+        fixture = self.model_creation.create_fixture(tournament=tournament)
 
         for player in [player1, player2]:
-            playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
+            tournamentplayer = models.TournamentPlayer.objects.create(player=player, tournament=tournament)
+            playerfixture = models.PlayerFixture.objects.create(player=tournamentplayer, fixture=fixture)
 
         clean_result = playerfixture.clean()
         self.assertIsNone(clean_result)
     
-    def test_fixture_with_non_tournament_players(self):
+    def test_fixture_with_player_from_a_different_tournament(self):
         """
-        fixture_with_non_tournament_players raises a ValidationError if a player that is not part of a fixture's tournament tries to play that fixture
+        fixture_with_player_from_a_different_tournament should raise a ValidationError when a fixture has playerfixture instances with players in a different tournament from the one this fixture is in
         """
         player = self.model_creation.create_random_player()
+        competitor = self.model_creation.create_random_player()
 
         tournament = self.model_creation.create_tournament(creator=player)
-        fixture = self.model_creation.create_fixture_in_tournament(tournament=tournament)
+        tournament2 = self.model_creation.create_tournament(creator=player)
 
-        playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)
+        fixture = self.model_creation.create_fixture(tournament=tournament)
+
+        tournamentplayer = models.TournamentPlayer.objects.create(player=player, tournament=tournament2)
+        playerfixture = models.PlayerFixture.objects.create(player=tournamentplayer, fixture=fixture)
+
         self.assertRaises(ValidationError, playerfixture.clean)
 
     def test_fixture_with_players_that_are_not_in_childrens_fixtureplayer_set(self):
@@ -216,16 +221,6 @@ class TournamentTest(TestCase):
         tournament.total_number_of_participants = -8
 
         self.assertRaises(ValidationError, tournament.clean)
-
-    def test_two_uncompleted_tournaments_with_same_names(self):
-        """
-        two_uncompleted_tournaments_with_same_names should raise a ValidationError
-        """
-        almighty_creator = self.model_creation.create_random_player()
-        tournament1 = self.model_creation.create_tournament(almighty_creator, "tournoi")
-        tournament2 = self.model_creation.create_tournament(almighty_creator, "tournoi")
-
-        self.assertRaises(ValidationError, tournament2.clean)
 
 class FixtureTest(TestCase):
     pass
