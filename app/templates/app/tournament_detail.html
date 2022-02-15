@@ -141,9 +141,18 @@ Mate | Tournaments | {{id}}
 </div>
 
 <div class="row p-3">
-    <button class="btn btn-primary {% if not tournament.clean %}disabled{% endif %}">
-        {% trans "Start" %}
-    </button>
+    {% if not tournament.started %}
+        {% if request.session.player.id and tournament.creator.id == request.session.player.id %}
+        <button class="btn btn-primary {% if tournament.clean %}disabled{% endif %}">
+            {% trans "Start" %}
+        </button>
+        {% else %}
+        <div class="mb-3 btn-outline-danger">
+            {% trans "This tournament has not yet started" %}
+        </div>
+        {% endif %}
+    {% endif %}
+    
 </div>
 {% endblock %}
 

@@ -4,10 +4,10 @@ from . import models
 from . import serializers
 from .utilities import is_power_of_2
 
-from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 import random
+from rest_framework.serializers import ValidationError
 
 import string
 
@@ -82,8 +82,10 @@ class PlayerFixtureTest(TestCase):
         player1 = self.model_creation.create_random_player()
         player2 = self.model_creation.create_random_player()
         player3 = self.model_creation.create_random_player()
+
+        tournament = self.model_creation.create_tournament(player=player1)
+
         fixture = self.model_creation.create_fixture()
-        print(fixture)
 
         for player in [player1, player2, player3]:
             playerfixture = models.PlayerFixture.objects.create(player=player, fixture=fixture)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-10 05:13+0100\n"
+"POT-Creation-Date: 2022-02-15 10:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,61 +22,61 @@ msgstr ""
 msgid "This value is not found on the list"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:305
+#: .\app\static\app\js\functions.js:306
 msgid "The in and notIn selectors of this object are the same"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:309 .\app\static\app\js\home.js:23
+#: .\app\static\app\js\functions.js:310 .\app\static\app\js\home.js:23
 #: .\app\static\app\js\home.js:72
 msgid "This field is required"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:317
+#: .\app\static\app\js\functions.js:318
 msgid "Expected a number"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:323
+#: .\app\static\app\js\functions.js:324
 #, javascript-format
 msgid "The value of this field must be greater than %s"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:333
+#: .\app\static\app\js\functions.js:334
 msgid "This is not a valid date "
 msgstr ""
 
-#: .\app\static\app\js\functions.js:344
+#: .\app\static\app\js\functions.js:345
 msgid "At least two names are required"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:352
+#: .\app\static\app\js\functions.js:353
 #, javascript-format
 msgid "Expected %s, got a value of %s"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:362
+#: .\app\static\app\js\functions.js:363
 #, javascript-format
 msgid "This value does not exist on the list %s"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:371
+#: .\app\static\app\js\functions.js:372
 #, javascript-format
 msgid "This value already exists in the list %s"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:380
+#: .\app\static\app\js\functions.js:381
 #, javascript-format
 msgid "The value of this input must be different from that of %s"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:454
+#: .\app\static\app\js\functions.js:455
 msgid "Item deleted successfully"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:459 .\app\static\app\js\functions.js:477
+#: .\app\static\app\js\functions.js:460 .\app\static\app\js\functions.js:478
 msgid "Error connecting to the server"
 msgstr ""
 
-#: .\app\static\app\js\functions.js:478
+#: .\app\static\app\js\functions.js:479
 msgid "You are not authorized to access this resource"
 msgstr ""
 
@@ -84,33 +84,57 @@ msgstr ""
 msgid "Must be a number that is a power of 2 e.g 4, 8, 16, etc."
 msgstr ""
 
-#: .\app\static\app\js\home.js:97
+#: .\app\static\app\js\home.js:113
 msgid "Tournament added successfully"
 msgstr ""
 
-#: .\app\static\app\js\home.js:148 .\app\static\app\js\tournaments.js:37
+#: .\app\static\app\js\home.js:164 .\app\static\app\js\tournaments.js:37
 msgid "View"
 msgstr ""
 
-#: .\app\static\app\js\home.js:156
+#: .\app\static\app\js\home.js:172
 msgid "Delete"
 msgstr ""
 
-#: .\app\static\app\js\tournament_detail.js:25
+#: .\app\static\app\js\tournament_detail.js:31
 msgid "You cannot kickout a player that has not been enrolled"
 msgstr ""
 
-#: .\app\static\app\js\tournament_detail.js:28
+#: .\app\static\app\js\tournament_detail.js:34
 msgid "enroll or kickout must be set to true"
 msgstr ""
 
-#: .\app\static\app\js\tournament_detail.js:44
-#: .\app\static\app\js\tournament_detail.js:46
+#: .\app\static\app\js\tournament_detail.js:50
+#: .\app\static\app\js\tournament_detail.js:52
 msgid "Player kicked out successfully"
 msgstr ""
 
-#: .\app\static\app\js\tournament_detail.js:140
+#: .\app\static\app\js\tournament_detail.js:207
 msgid "Game added successfully"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:353
+msgid "Game updated successfully"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:425
+msgid "Winner set successfully"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:436
+msgid "Fixture successfully modified"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:440
+msgid "Error modifying fixture"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:452
+msgid "Error setting winner"
+msgstr ""
+
+#: .\app\static\app\js\tournament_detail.js:465
+msgid "Select a winner before finishing the game"
 msgstr ""
 
 #: .\app\static\app\js\tournaments.js:54

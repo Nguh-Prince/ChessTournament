@@ -107,7 +107,6 @@ class Tournament(models.Model):
         created_fixtures = {}
         while number <= self.total_number_of_participants:
             created_fixtures.setdefault( number // 2, [] )
-            print(created_fixtures)
             rootFixtureCounter = 0
             thisLevelFixtureCounter = 0
             for i in range( number // 2 ):
@@ -180,7 +179,7 @@ class TournamentPlayer(models.Model):
 class Fixture(models.Model):
     level = models.TextField()
     level_number = models.IntegerField(null=True)
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, null=True)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     root = models.ForeignKey('self', on_delete=models.PROTECT, null=True, related_name='children', blank=True)
     finished = models.BooleanField(default=False)
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
@@ -209,8 +208,6 @@ class Fixture(models.Model):
             raise ValidationError(_("A fixture cannot be dependent on fixtures that are in another tournament or not in a tournament at all"))
         if self.children and self.children.count() > 2:
             raise ValidationError( _("A fixture should have at most 2 children") )
-        print("Printing the number of fixtures in the tournament and the number of fixtures expected")
-        print(self.tournament.fixture_set.count(), self.tournament.number_of_fixtures())
         if self.tournament.fixture_set.count() > self.tournament.number_of_fixtures():
             raise ValidationError( _("You are trying to add this fixture to a tournament that already has its total number of fixtures") )
         if self.winner and not self.winner.playerfixture_set.filter(fixture=self):

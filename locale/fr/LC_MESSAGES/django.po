@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-10 05:08+0100\n"
+"POT-Creation-Date: 2022-02-15 10:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,189 +18,272 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\app\models.py:14 .\app\templates\app\signup.html:78
+#: .\app\models.py:18 .\app\templates\app\signup.html:78
 msgid "Male"
 msgstr ""
 
-#: .\app\models.py:15
+#: .\app\models.py:19
 msgid "Non binary"
 msgstr ""
 
-#: .\app\models.py:16 .\app\templates\app\signup.html:80
+#: .\app\models.py:20 .\app\templates\app\signup.html:80
 msgid "Rather not say"
 msgstr ""
 
-#: .\app\models.py:64
+#: .\app\models.py:68
 msgid "Finals"
 msgstr ""
 
-#: .\app\models.py:64
+#: .\app\models.py:68
 msgid "Semi-finals"
 msgstr ""
 
-#: .\app\models.py:64
+#: .\app\models.py:68
 msgid "Quarter finals"
 msgstr ""
 
-#: .\app\models.py:69 .\app\serializers.py:41
+#: .\app\models.py:76 .\app\serializers.py:43
 msgid "The total number of participants must be greater than 1"
 msgstr ""
 
-#: .\app\models.py:71 .\app\serializers.py:43
+#: .\app\models.py:78 .\app\serializers.py:45
 msgid ""
 "The total number of participants must be a power of 2 i.e 2, 4, 8, 16, 32, "
 "etc."
 msgstr ""
 
-#: .\app\models.py:75 .\app\serializers.py:50
+#: .\app\models.py:82 .\app\serializers.py:49
 msgid "There is another active tournament with the same name"
 msgstr ""
 
-#: .\app\models.py:79
+#: .\app\models.py:86
 #, python-format
 msgid ""
 "Tournament can only be started when %(number)d participants have been "
 "enrolled"
 msgstr ""
 
-#: .\app\models.py:82
+#: .\app\models.py:89
 msgid "A tournament cannot be completed when it has not yet started"
 msgstr ""
 
-#: .\app\models.py:166
+#: .\app\models.py:92
+msgid "The number of points for win, loss and draw must be different."
+msgstr ""
+
+#: .\app\models.py:175
 msgid "The tournament is already full."
 msgstr ""
 
-#: .\app\models.py:191
+#: .\app\models.py:201
 msgid "A fixture cannot be dependent on more than 2 other fixtures"
 msgstr ""
 
-#: .\app\models.py:193
+#: .\app\models.py:203
 msgid ""
 "Either both the parent and child fixtures are in tournaments or neither of "
 "them are"
 msgstr ""
 
-#: .\app\models.py:195
+#: .\app\models.py:205
 msgid "This fixture hs to be in the same tournament as its parent"
 msgstr ""
 
-#: .\app\models.py:197
+#: .\app\models.py:207
 msgid "The fixture you are specifying is already dependent on 2 other fixtures"
 msgstr ""
 
-#: .\app\models.py:199
+#: .\app\models.py:209
 msgid ""
 "A fixture cannot be dependent on fixtures that are in another tournament or "
 "not in a tournament at all"
 msgstr ""
 
-#: .\app\models.py:201
+#: .\app\models.py:211
 msgid "A fixture should have at most 2 children"
 msgstr ""
 
-#: .\app\models.py:205
+#: .\app\models.py:215
 msgid ""
 "You are trying to add this fixture to a tournament that already has its "
 "total number of fixtures"
 msgstr ""
 
-#: .\app\models.py:213 .\app\templates\app\tournament_detail.html:194
+#: .\app\models.py:217
+msgid ""
+"A fixture's winner must be a player that is participating in that fixture"
+msgstr ""
+
+#: .\app\models.py:269 .\app\templates\app\tournament_detail.html:244
+#: .\app\templates\app\tournament_detail.html:306
 msgid "White"
 msgstr ""
 
-#: .\app\models.py:214 .\app\templates\app\tournament_detail.html:198
+#: .\app\models.py:270 .\app\templates\app\tournament_detail.html:258
+#: .\app\templates\app\tournament_detail.html:320
 msgid "Black"
 msgstr ""
 
-#: .\app\models.py:223
+#: .\app\models.py:280
 msgid "Fixture already has two players"
 msgstr ""
 
-#: .\app\models.py:228
+#: .\app\models.py:284
+msgid "A fixture can only have one winner"
+msgstr ""
+
+#: .\app\models.py:290
 msgid ""
 "This fixture can only be played by players that are participating in the "
 "tournament"
 msgstr ""
 
-#: .\app\models.py:238
+#: .\app\models.py:300
 msgid "Break"
 msgstr ""
 
-#: .\app\models.py:239
+#: .\app\models.py:301
 msgid "After school"
 msgstr ""
 
-#: .\app\models.py:248
+#: .\app\models.py:315
 msgid "White score must either be 0, 0.5 or 1"
 msgstr ""
 
-#: .\app\models.py:256
+#: .\app\models.py:323
 msgid "The period of the game must either be break or after school"
 msgstr ""
 
-#: .\app\models.py:259
+#: .\app\models.py:326
 msgid "The game number must be a positive integer"
 msgstr ""
 
-#: .\app\models.py:278
+#: .\app\models.py:345
 msgid "A game can have only 2 playerfixturegame records"
 msgstr ""
 
-#: .\app\models.py:280
+#: .\app\models.py:347
 msgid ""
 "More than two players with the same color, change this instance's is_home "
 "value"
 msgstr ""
 
-#: .\app\serializers.py:25
+#: .\app\serializers.py:26
 msgid ""
 "Player cannot be kicked out of a tournament they are not participating in"
 msgstr ""
 
-#: .\app\serializers.py:80
+#: .\app\serializers.py:52
+msgid ""
+"The number of points for a win, draw and loss must be different from each "
+"other"
+msgstr ""
+
+#: .\app\serializers.py:79
+#, python-format
+msgid "The score for this game must be either be %(list)s"
+msgstr ""
+
+#: .\app\serializers.py:97
 msgid ""
 "This game must have a time greater than or equal to that of the games in the "
 "previous fixtures"
 msgstr ""
 
-#: .\app\templates\app\base.html:49
+#: .\app\serializers.py:100
+msgid "A game can only have 2 players"
+msgstr ""
+
+#: .\app\serializers.py:103
+msgid ""
+"This game cannot be played before or at the same time as a game in a fixture "
+"preceding this game's fixture"
+msgstr ""
+
+#: .\app\serializers.py:106
+msgid "Another game is being played at the same time as this game"
+msgstr ""
+
+#: .\app\serializers.py:118
+msgid "This game can only be played by players in its fixture"
+msgstr ""
+
+#: .\app\serializers.py:127
+msgid "There can only be one home and one away player"
+msgstr ""
+
+#: .\app\serializers.py:130
+msgid "The number of wins and losses for a game cannot exceed 1"
+msgstr ""
+
+#: .\app\serializers.py:132
+msgid "The number of draws for a game cannot exceed 2"
+msgstr ""
+
+#: .\app\serializers.py:134
+msgid "The number of draws for a game can either be 2 or 0"
+msgstr ""
+
+#: .\app\serializers.py:136
+msgid "The number of wins must be equal to the number of losses"
+msgstr ""
+
+#: .\app\serializers.py:188
+msgid ""
+"A player who has been kicked out of the tournament cannot be the winner of "
+"this fixture. "
+msgstr ""
+
+#: .\app\serializers.py:191
+msgid "This fixture already has a winner"
+msgstr ""
+
+#: .\app\serializers.py:194
+msgid "A winner cannot be set for a fixture with no games"
+msgstr ""
+
+#: .\app\serializers.py:217
+msgid "A fixture cannot be finished when it has no winner"
+msgstr ""
+
+#: .\app\templates\app\base.html:51
 msgid "Home"
 msgstr ""
 
-#: .\app\templates\app\base.html:53
+#: .\app\templates\app\base.html:55
 msgid "Tournaments"
 msgstr ""
 
-#: .\app\templates\app\base.html:67
+#: .\app\templates\app\base.html:69
 msgid "Settings"
 msgstr ""
 
-#: .\app\templates\app\base.html:72
+#: .\app\templates\app\base.html:74
 msgid "Log out"
 msgstr ""
 
-#: .\app\templates\app\base.html:93
+#: .\app\templates\app\base.html:95
 msgid "You need to be signed in to enroll in a tournament"
 msgstr ""
 
-#: .\app\templates\app\base.html:97
+#: .\app\templates\app\base.html:99
 msgid "Sign up"
 msgstr ""
 
-#: .\app\templates\app\base.html:98
+#: .\app\templates\app\base.html:100
 msgid "Log in"
 msgstr ""
 
-#: .\app\templates\app\base.html:108
+#: .\app\templates\app\base.html:110
 msgid "Delete item"
 msgstr ""
 
-#: .\app\templates\app\base.html:111
+#: .\app\templates\app\base.html:113
 msgid "Are you sure you want to delete this item?"
 msgstr ""
 
-#: .\app\templates\app\base.html:114
+#: .\app\templates\app\base.html:116
+#: .\app\templates\app\tournament_detail.html:354
 msgid "Yes"
 msgstr ""
 
@@ -217,24 +300,37 @@ msgid "New tournament"
 msgstr ""
 
 #: .\app\templates\app\home.html:38 .\app\templates\app\signup.html:53
-#: .\app\templates\app\tournament_detail.html:128
+#: .\app\templates\app\tournament_detail.html:172
 #: .\app\templates\app\tournaments.html:55
 msgid "Name"
 msgstr ""
 
 #: .\app\templates\app\home.html:42
-#: .\app\templates\app\tournament_detail.html:53
+#: .\app\templates\app\tournament_detail.html:59
 #: .\app\templates\app\tournaments.html:59
 msgid "Number of participants"
 msgstr ""
 
-#: .\app\templates\app\home.html:49
-#: .\app\templates\app\tournament_detail.html:203
-#: .\app\templates\app\tournaments.html:67
+#: .\app\templates\app\home.html:46 .\app\templates\app\tournaments.html:63
+msgid "Number of points for win"
+msgstr ""
+
+#: .\app\templates\app\home.html:50 .\app\templates\app\tournaments.html:67
+msgid "Number of points for loss"
+msgstr ""
+
+#: .\app\templates\app\home.html:54 .\app\templates\app\tournaments.html:71
+msgid "Number of points for draw"
+msgstr ""
+
+#: .\app\templates\app\home.html:61
+#: .\app\templates\app\tournament_detail.html:272
+#: .\app\templates\app\tournament_detail.html:335
+#: .\app\templates\app\tournaments.html:78
 msgid "Submit"
 msgstr ""
 
-#: .\app\templates\app\home.html:57
+#: .\app\templates\app\home.html:69
 msgid "Mate"
 msgstr ""
 
@@ -293,43 +389,47 @@ msgid ""
 "Mate | Tournaments | %(id)s\n"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:39
+#: .\app\templates\app\tournament_detail.html:45
 msgid "Number of participants enrolled: "
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:41
+#: .\app\templates\app\tournament_detail.html:47
 msgid "Total number of participants: "
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:44
+#: .\app\templates\app\tournament_detail.html:50
 msgid "View list of enrolled participants"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:48
+#: .\app\templates\app\tournament_detail.html:54
 msgid "Tournament layout"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:54
+#: .\app\templates\app\tournament_detail.html:60
 msgid "Fixture level"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:55
+#: .\app\templates\app\tournament_detail.html:61
 msgid "Players"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:56
+#: .\app\templates\app\tournament_detail.html:62
 msgid "Games"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:72
+#: .\app\templates\app\tournament_detail.html:63
+msgid "Winner"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:80
 msgid "This fixture has no players"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:75
+#: .\app\templates\app\tournament_detail.html:83
 msgid "Add a player"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:86
+#: .\app\templates\app\tournament_detail.html:94
 #, python-format
 msgid ""
 "\n"
@@ -337,44 +437,122 @@ msgid ""
 "                                "
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:92
+#: .\app\templates\app\tournament_detail.html:100
 msgid "This fixture has no games"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:97
+#: .\app\templates\app\tournament_detail.html:105
 msgid "Add a game"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:111
-msgid "Start"
+#: .\app\templates\app\tournament_detail.html:114
+msgid "This fixture has no winner"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:121
-msgid "List of participants"
+#: .\app\templates\app\tournament_detail.html:116
+msgid "Pick a winner"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:129
-msgid "Class"
+#: .\app\templates\app\tournament_detail.html:128
+msgid "Finish"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:131
-msgid "Action"
+#: .\app\templates\app\tournament_detail.html:130
+msgid "Finished"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:132
+msgid "Not Finished"
 msgstr ""
 
 #: .\app\templates\app\tournament_detail.html:147
+msgid "Start"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:151
+msgid "This tournament has not yet started"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:165
+msgid "List of participants"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:173
+msgid "Class"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:175
+msgid "Action"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:191
 msgid "Kick out"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:152
+#: .\app\templates\app\tournament_detail.html:196
 msgid "Kicked out"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:186
+#: .\app\templates\app\tournament_detail.html:224
+msgid "New game"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:230
+#: .\app\templates\app\tournament_detail.html:292
 msgid "Classroom*"
 msgstr ""
 
-#: .\app\templates\app\tournament_detail.html:190
+#: .\app\templates\app\tournament_detail.html:234
+#: .\app\templates\app\tournament_detail.html:296
 msgid "Date & Time*"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:239
+#: .\app\templates\app\tournament_detail.html:301
+msgid "Minutes per player*"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:248
+#: .\app\templates\app\tournament_detail.html:262
+#: .\app\templates\app\tournament_detail.html:310
+#: .\app\templates\app\tournament_detail.html:324
+msgid "Score"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:250
+#: .\app\templates\app\tournament_detail.html:264
+#: .\app\templates\app\tournament_detail.html:312
+#: .\app\templates\app\tournament_detail.html:326
+msgid "Draw"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:251
+#: .\app\templates\app\tournament_detail.html:265
+#: .\app\templates\app\tournament_detail.html:313
+#: .\app\templates\app\tournament_detail.html:327
+msgid "Win"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:252
+#: .\app\templates\app\tournament_detail.html:266
+#: .\app\templates\app\tournament_detail.html:314
+#: .\app\templates\app\tournament_detail.html:328
+msgid "Loss"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:273
+#: .\app\templates\app\tournament_detail.html:337
+msgid "Close"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:347
+msgid "Finish fixture?"
+msgstr ""
+
+#: .\app\templates\app\tournament_detail.html:351
+msgid ""
+"Once a fixture is marked as finished, it cannot be reverted. Are you sure "
+"you want to mark this fixture as finished?"
 msgstr ""
 
 #: .\app\templates\app\tournaments.html:12
