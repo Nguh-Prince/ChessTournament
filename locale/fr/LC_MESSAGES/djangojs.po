@@ -20,133 +20,133 @@ msgstr ""
 
 #: .\app\static\app\js\functions.js:271
 msgid "This value is not found on the list"
-msgstr ""
+msgstr "Cette valeur est introuvable dans la liste"
 
 #: .\app\static\app\js\functions.js:306
 msgid "The in and notIn selectors of this object are the same"
-msgstr ""
+msgstr "Les sélecteurs in et notIn de cet objet sont les mêmes"
 
 #: .\app\static\app\js\functions.js:310 .\app\static\app\js\home.js:23
 #: .\app\static\app\js\home.js:72
 msgid "This field is required"
-msgstr ""
+msgstr "Cette champ est requis"
 
 #: .\app\static\app\js\functions.js:318
 msgid "Expected a number"
-msgstr ""
+msgstr "Attendu un nombre"
 
 #: .\app\static\app\js\functions.js:324
 #, javascript-format
 msgid "The value of this field must be greater than %s"
-msgstr ""
+msgstr "La valeur de ce champ doit être supérieure à %s"
 
 #: .\app\static\app\js\functions.js:334
 msgid "This is not a valid date "
-msgstr ""
+msgstr "Ceci n'est pas une date valide "
 
 #: .\app\static\app\js\functions.js:345
 msgid "At least two names are required"
-msgstr ""
+msgstr "Au moins deux noms sont requis"
 
 #: .\app\static\app\js\functions.js:353
 #, javascript-format
 msgid "Expected %s, got a value of %s"
-msgstr ""
+msgstr "Attendu %s, a obtenu une valeur de %s"
 
 #: .\app\static\app\js\functions.js:363
 #, javascript-format
 msgid "This value does not exist on the list %s"
-msgstr ""
+msgstr "Cette valeur n'existe pas dans la liste %s"
 
 #: .\app\static\app\js\functions.js:372
 #, javascript-format
 msgid "This value already exists in the list %s"
-msgstr ""
+msgstr "Cette valeur existe déjà dans la liste %s"
 
 #: .\app\static\app\js\functions.js:381
 #, javascript-format
 msgid "The value of this input must be different from that of %s"
-msgstr ""
+msgstr "La valeur de cette entrée doit être différente de celle de %s"
 
 #: .\app\static\app\js\functions.js:455
 msgid "Item deleted successfully"
-msgstr ""
+msgstr "Élément supprimé avec succès"
 
 #: .\app\static\app\js\functions.js:460 .\app\static\app\js\functions.js:478
 msgid "Error connecting to the server"
-msgstr ""
+msgstr "Erreur de connexion au serveur"
 
 #: .\app\static\app\js\functions.js:479
 msgid "You are not authorized to access this resource"
-msgstr ""
+msgstr "Vous n'êtes pas autorisé à accéder à cette ressource"
 
 #: .\app\static\app\js\home.js:34 .\app\static\app\js\home.js:62
 msgid "Must be a number that is a power of 2 e.g 4, 8, 16, etc."
-msgstr ""
+msgstr "Doit être un nombre qui est une puissance de 2, par exemple 4, 8, 16, etc."
 
 #: .\app\static\app\js\home.js:113
 msgid "Tournament added successfully"
-msgstr ""
+msgstr "Tournoi ajouté avec succès"
 
 #: .\app\static\app\js\home.js:164 .\app\static\app\js\tournaments.js:37
 msgid "View"
-msgstr ""
+msgstr "Afficher"
 
 #: .\app\static\app\js\home.js:172
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: .\app\static\app\js\tournament_detail.js:31
 msgid "You cannot kickout a player that has not been enrolled"
-msgstr ""
+msgstr "Vous ne pouvez pas expulser un joueur qui n'a pas été inscrit"
 
 #: .\app\static\app\js\tournament_detail.js:34
 msgid "enroll or kickout must be set to true"
-msgstr ""
+msgstr "l'inscription ou le retrait doit être défini sur vrai"
 
 #: .\app\static\app\js\tournament_detail.js:50
 #: .\app\static\app\js\tournament_detail.js:52
 msgid "Player kicked out successfully"
-msgstr ""
+msgstr "Joueur expulsé avec succès"
 
 #: .\app\static\app\js\tournament_detail.js:207
 msgid "Game added successfully"
-msgstr ""
+msgstr "Jeu ajouté avec succès"
 
 #: .\app\static\app\js\tournament_detail.js:353
 msgid "Game updated successfully"
-msgstr ""
+msgstr "Jeu mis à jour avec succès"
 
 #: .\app\static\app\js\tournament_detail.js:425
 msgid "Winner set successfully"
-msgstr ""
+msgstr "Gagnant défini avec succès"
 
 #: .\app\static\app\js\tournament_detail.js:436
 msgid "Fixture successfully modified"
-msgstr ""
+msgstr "Appareil modifié avec succès"
 
 #: .\app\static\app\js\tournament_detail.js:440
 msgid "Error modifying fixture"
-msgstr ""
+msgstr "Erreur lors de la modification de la fixation"
 
 #: .\app\static\app\js\tournament_detail.js:452
 msgid "Error setting winner"
-msgstr ""
+msgstr "Erreur lors de la définition du gagnant"
 
 #: .\app\static\app\js\tournament_detail.js:465
 msgid "Select a winner before finishing the game"
-msgstr ""
+msgstr "Sélectionnez un gagnant avant de terminer le jeu"
 
 #: .\app\static\app\js\tournaments.js:54
 msgid "Enroll"
-msgstr ""
+msgstr "Inscrire"
 
 #: .\app\static\app\js\tournaments.js:73
 msgid ""
 "You have been enrolled successfully. Awaiting verification from the "
 "tournament's creator."
-msgstr ""
+msgstr "Vous avez été inscrit avec succès. En attente de vérification du créateur du tournoi."
 
 #: .\app\static\app\js\tournaments.js:96
 msgid "Pending"
-msgstr ""
+msgstr "En attente"

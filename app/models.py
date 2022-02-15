@@ -138,7 +138,7 @@ class Tournament(models.Model):
             j = 0
             for fixture in outermost_fixtures:
                 for i in range(2):
-                    playerfixture = PlayerFixture( fixture=fixture, player=enrolled_participants )
+                    playerfixture = PlayerFixture( fixture=fixture, player=enrolled_participants[j+i] )
                     playerfixture.clean()
                     playerfixture.save()
 
