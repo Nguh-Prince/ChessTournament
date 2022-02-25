@@ -7,8 +7,10 @@ def is_power_of_2(number):
 
     return is_power_of_2(number / 2)
 
-def a_implies_b(a:bool, b:bool):
-    return (not a or b)
 
-def a_if_and_only_if_b(a:bool, b:bool):
+def a_implies_b(a: bool, b: bool):
+    return not a or b
+
+
+def a_if_and_only_if_b(a: bool, b: bool):
     return a_implies_b(a, b) and a_implies_b(b, a)

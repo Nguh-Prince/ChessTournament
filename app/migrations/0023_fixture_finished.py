@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0022_alter_game_options_and_more'),
+        ("app", "0022_alter_game_options_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fixture',
-            name='finished',
+            model_name="fixture",
+            name="finished",
             field=models.BooleanField(default=False),
         ),
     ]

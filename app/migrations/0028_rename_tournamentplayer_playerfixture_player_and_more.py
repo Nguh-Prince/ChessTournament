@@ -6,17 +6,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0027_alter_playerfixture_unique_together_and_more'),
+        ("app", "0027_alter_playerfixture_unique_together_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='playerfixture',
-            old_name='tournamentplayer',
-            new_name='player',
+            model_name="playerfixture",
+            old_name="tournamentplayer",
+            new_name="player",
         ),
         migrations.AlterUniqueTogether(
-            name='playerfixture',
-            unique_together={('player', 'fixture')},
+            name="playerfixture",
+            unique_together={("player", "fixture")},
         ),
     ]

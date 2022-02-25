@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0006_alter_tournament_total_number_of_participants'),
+        ("app", "0006_alter_tournament_total_number_of_participants"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='TournamentCompetitors',
-            new_name='TournamentPlayer',
+            old_name="TournamentCompetitors",
+            new_name="TournamentPlayer",
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='completed',
+            model_name="tournament",
+            name="completed",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='name',
-            field=models.CharField(default='Springles', max_length=150),
+            model_name="tournament",
+            name="name",
+            field=models.CharField(default="Springles", max_length=150),
             preserve_default=False,
         ),
     ]

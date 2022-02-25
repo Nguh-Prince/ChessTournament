@@ -7,18 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0028_rename_tournamentplayer_playerfixture_player_and_more'),
+        ("app", "0028_rename_tournamentplayer_playerfixture_player_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='fixture',
-            name='tournament',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.tournament'),
+            model_name="fixture",
+            name="tournament",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="app.tournament"
+            ),
         ),
         migrations.AlterField(
-            model_name='playerfixture',
-            name='player',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.tournamentplayer'),
+            model_name="playerfixture",
+            name="player",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="app.tournamentplayer"
+            ),
         ),
     ]

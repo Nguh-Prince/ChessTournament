@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0009_alter_fixture_level_alter_fixture_tournament'),
+        ("app", "0009_alter_fixture_level_alter_fixture_tournament"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='fixture',
-            options={'ordering': ['-level', 'tournament']},
+            name="fixture",
+            options={"ordering": ["-level", "tournament"]},
         ),
         migrations.AddField(
-            model_name='fixture',
-            name='level_number',
+            model_name="fixture",
+            name="level_number",
             field=models.IntegerField(null=True),
         ),
     ]

@@ -6,37 +6,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0007_rename_tournamentcompetitors_tournamentplayer_and_more'),
+        ("app", "0007_rename_tournamentcompetitors_tournamentplayer_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournament',
-            name='started',
+            model_name="tournament",
+            name="started",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tournamentplayer',
-            name='kicked_out',
+            model_name="tournamentplayer",
+            name="kicked_out",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tournamentplayer',
-            name='participating',
+            model_name="tournamentplayer",
+            name="participating",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='gender',
-            field=models.CharField(choices=[('m', 'Male'), ('nb', 'Non binary'), ('rns', 'Rather not say')], max_length=3),
+            model_name="player",
+            name="gender",
+            field=models.CharField(
+                choices=[
+                    ("m", "Male"),
+                    ("nb", "Non binary"),
+                    ("rns", "Rather not say"),
+                ],
+                max_length=3,
+            ),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='level',
+            model_name="player",
+            name="level",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AlterUniqueTogether(
-            name='tournamentplayer',
-            unique_together={('tournament', 'player')},
+            name="tournamentplayer",
+            unique_together={("tournament", "player")},
         ),
     ]

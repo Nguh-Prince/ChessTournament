@@ -6,27 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0021_game_minutes_per_player_alter_game_unique_together'),
+        ("app", "0021_game_minutes_per_player_alter_game_unique_together"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='game',
-            options={'ordering': ['time']},
+            name="game",
+            options={"ordering": ["time"]},
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='number_of_points_for_draw',
+            model_name="tournament",
+            name="number_of_points_for_draw",
             field=models.FloatField(default=0.5),
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='number_of_points_for_loss',
+            model_name="tournament",
+            name="number_of_points_for_loss",
             field=models.FloatField(default=0),
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='number_of_points_for_win',
+            model_name="tournament",
+            name="number_of_points_for_win",
             field=models.FloatField(default=1),
         ),
     ]

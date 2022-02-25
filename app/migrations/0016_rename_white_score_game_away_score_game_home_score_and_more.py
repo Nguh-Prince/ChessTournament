@@ -7,28 +7,38 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0015_game_away_game_home'),
+        ("app", "0015_game_away_game_home"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='game',
-            old_name='white_score',
-            new_name='away_score',
+            model_name="game",
+            old_name="white_score",
+            new_name="away_score",
         ),
         migrations.AddField(
-            model_name='game',
-            name='home_score',
+            model_name="game",
+            name="home_score",
             field=models.FloatField(null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='away',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='away', to='app.playerfixture'),
+            model_name="game",
+            name="away",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="away",
+                to="app.playerfixture",
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='home',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='home', to='app.playerfixture'),
+            model_name="game",
+            name="home",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="home",
+                to="app.playerfixture",
+            ),
         ),
     ]

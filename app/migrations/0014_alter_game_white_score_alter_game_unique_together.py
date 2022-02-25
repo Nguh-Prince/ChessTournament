@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0013_remove_fixture_dependent_on_fixture_root'),
+        ("app", "0013_remove_fixture_dependent_on_fixture_root"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='white_score',
+            model_name="game",
+            name="white_score",
             field=models.FloatField(null=True),
         ),
         migrations.AlterUniqueTogether(
-            name='game',
-            unique_together={('date', 'classroom', 'period', 'number')},
+            name="game",
+            unique_together={("date", "classroom", "period", "number")},
         ),
     ]

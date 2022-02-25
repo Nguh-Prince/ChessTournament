@@ -7,18 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0008_tournament_started_tournamentplayer_kicked_out_and_more'),
+        ("app", "0008_tournament_started_tournamentplayer_kicked_out_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='fixture',
-            name='level',
+            model_name="fixture",
+            name="level",
             field=models.TextField(),
         ),
         migrations.AlterField(
-            model_name='fixture',
-            name='tournament',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='app.tournament'),
+            model_name="fixture",
+            name="tournament",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="app.tournament",
+            ),
         ),
     ]

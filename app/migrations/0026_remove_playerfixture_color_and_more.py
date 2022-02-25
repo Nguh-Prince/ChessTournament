@@ -7,17 +7,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0025_remove_fixture_winner_playerfixture_is_winner'),
+        ("app", "0025_remove_fixture_winner_playerfixture_is_winner"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='playerfixture',
-            name='color',
+            model_name="playerfixture",
+            name="color",
         ),
         migrations.AddField(
-            model_name='playerfixture',
-            name='tournamentplayer',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='app.tournamentplayer'),
+            model_name="playerfixture",
+            name="tournamentplayer",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="app.tournamentplayer",
+            ),
         ),
     ]

@@ -7,13 +7,15 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0023_fixture_finished'),
+        ("app", "0023_fixture_finished"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fixture',
-            name='winner',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='app.player'),
+            model_name="fixture",
+            name="winner",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.SET_NULL, to="app.player"
+            ),
         ),
     ]

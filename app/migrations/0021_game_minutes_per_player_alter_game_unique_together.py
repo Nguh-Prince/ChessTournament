@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0020_alter_game_unique_together_game_time_and_more'),
+        ("app", "0020_alter_game_unique_together_game_time_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='minutes_per_player',
+            model_name="game",
+            name="minutes_per_player",
             field=models.IntegerField(default=20),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
-            name='game',
-            unique_together={('fixture', 'time')},
+            name="game",
+            unique_together={("fixture", "time")},
         ),
     ]

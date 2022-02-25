@@ -7,17 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0012_fixture_dependent_on'),
+        ("app", "0012_fixture_dependent_on"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='fixture',
-            name='dependent_on',
+            model_name="fixture",
+            name="dependent_on",
         ),
         migrations.AddField(
-            model_name='fixture',
-            name='root',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='children', to='app.fixture'),
+            model_name="fixture",
+            name="root",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="children",
+                to="app.fixture",
+            ),
         ),
     ]

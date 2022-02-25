@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0026_remove_playerfixture_color_and_more'),
+        ("app", "0026_remove_playerfixture_color_and_more"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='playerfixture',
-            unique_together={('tournamentplayer', 'fixture')},
+            name="playerfixture",
+            unique_together={("tournamentplayer", "fixture")},
         ),
         migrations.RemoveField(
-            model_name='playerfixture',
-            name='player',
+            model_name="playerfixture",
+            name="player",
         ),
     ]
