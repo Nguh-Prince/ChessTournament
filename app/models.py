@@ -1,18 +1,15 @@
-from .utilities import is_power_of_2, a_if_and_only_if_b, a_implies_b
+import math
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Sum
 from django.db.models.signals import post_save, pre_save
-from django.contrib.auth.models import User
-
 # from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
-
 from icecream import ic
-
-import math
-
 from rest_framework.serializers import ValidationError
+
+from .utilities import a_if_and_only_if_b, a_implies_b, is_power_of_2
 
 
 class Player(models.Model):
@@ -70,6 +67,11 @@ class TournamentCategory(models.Model):
     name = models.CharField(null=False, blank=False, unique=True, max_length=50)
     image = models.ImageField()
 
+    def __str__(self) -> str:
+        return self.name
+
+def tournament_directory_path(instance, filename):
+    return 'tournament_{0}/{1}' . format(instance.id, filename)
 
 class Tournament(models.Model):
     category = models.ForeignKey(
@@ -85,7 +87,7 @@ class Tournament(models.Model):
     number_of_points_for_draw = models.FloatField(default=0.5)
     number_of_points_for_win = models.FloatField(default=1)
     number_of_points_for_loss = models.FloatField(default=0)
-    image = models.ImageField()
+    image = models.ImageField(upload_to=tournament_directory_path)
 
     def clean(self) -> None:
         # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
@@ -202,7 +204,7 @@ class Tournament(models.Model):
         return self.enrolled_participants.count() if self.enrolled_participants else 0
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        return f"{self.name} : {self.category.name}"
 
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):

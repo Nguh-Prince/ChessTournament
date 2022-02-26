@@ -1,8 +1,7 @@
-from . import models, permissions, serializers
-
 from django.db.models import Q
-
 from rest_framework import generics
+
+from . import models, permissions, serializers
 
 
 class PlayersList(generics.ListCreateAPIView):

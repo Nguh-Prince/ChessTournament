@@ -1,15 +1,13 @@
-from typing import Iterable
-from django.forms import model_to_dict
-from . import models
-from . import serializers
-from .utilities import is_power_of_2
-
-from django.test import TestCase
-
 import random
+import string
+from typing import Iterable
+
+from django.forms import model_to_dict
+from django.test import TestCase
 from rest_framework.serializers import ValidationError
 
-import string
+from . import models, serializers
+from .utilities import is_power_of_2
 
 first_names = [
     "John",

@@ -1,16 +1,16 @@
-from app.forms import GameForm
-from . import models
-from . import serializers
-
-from django.contrib.auth import login as login, logout
+from django.contrib.auth import login as login
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse, response
 from django.shortcuts import redirect, render
 from django.template import context
 from django.utils.translation import gettext as _
-
 from rest_framework.generics import ListCreateAPIView
+
+from app.forms import GameForm
+
+from . import models, serializers
 
 
 def login_view(request):

@@ -116,4 +116,5 @@ function loadAllTournaments() {
 $(document).ready(function() {
     loadTournaments()
     loadAllTournaments()
+    $("#tournaments_link img").attr('src', ICONS.tournaments.active)
 })

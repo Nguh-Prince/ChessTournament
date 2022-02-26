@@ -1,10 +1,10 @@
-from app import serializers
+import re
 
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 
-import re
+from app import serializers
 
 
 class Middleware:

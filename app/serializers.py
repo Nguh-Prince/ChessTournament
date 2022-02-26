@@ -1,13 +1,11 @@
-from . import models
-from .utilities import is_power_of_2
-
 from django.db.models import Q
 from django.utils.translation import gettext as _
-
 from icecream import ic
-
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
+
+from . import models
+from .utilities import is_power_of_2
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -61,6 +59,7 @@ class TournamentSerializer(serializers.ModelSerializer):
             "number_of_points_for_draw",
             "number_of_points_for_win",
             "number_of_points_for_loss",
+            "image",
         )
 
     def validate(self, attrs):
@@ -107,6 +106,7 @@ class TournamentDetailSerializer(TournamentSerializer):
             "name",
             "total_number_of_participants",
             "participants_enrolled",
+            "image",
             "creator",
             "creator_details",
             "time_created",

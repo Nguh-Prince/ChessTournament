@@ -1,5 +1,4 @@
 import os
-
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +8,7 @@ SECRET_KEY = "django-insecure-&^2v4^41jq$&w-n%6lli&2@sfk=6gjvti^2()tgz5sqnr8o3bf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "172.20.10.5"]
 
 
 # Application definition

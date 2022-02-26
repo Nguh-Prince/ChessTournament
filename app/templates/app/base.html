@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'app/css/bootstrap-dark.min.css' %}">
     <link rel="stylesheet" href="{% static 'app/css/styles.css' %}">
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
 
@@ -24,11 +25,31 @@
             width: 100%;
             z-index: 10000;
         }
+
+        .nav-item img {
+            height: 16px;
+            width: 16px;
+            margin: 0 4px 0 4px;
+        }
     </style>
 
     <script>
         LOCALE = "{{ LANGUAGE_CODE }}"
         LOCALE = "en"
+        const ICONS = {
+            home: {
+                inactive: "{% static 'app/assets/images/home-variant-outline.svg' %}",
+                active: "{% static 'app/assets/images/home-variant.svg' %}"
+            },
+            games: {
+                inactive: "{% static 'app/assets/images/controller-classic-outline.svg' %}",
+                active: "{% static 'app/assets/images/controller-classic.svg' %}"
+            },
+            tournaments: {
+                inactive: "{% static 'app/assets/images/competition-cup-inactive.svg' %}",
+                active: "{% static 'app/assets/images/competition-cup.svg' %}"
+            }
+        }
     </script>
 
     {% block styles %}
@@ -47,12 +68,12 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link {% block home_active %}{% endblock %}" aria-current="page"
-                            href="{% url 'app:home' %}">{% trans "Home" %}</a>
+                        <a class="nav-link {% block home_active %}{% endblock %}" aria-current="page" id="home_link"
+                            href="{% url 'app:home' %}"><img src="{% static 'app/assets/images/home-variant-outline.svg' %}" alt="">{% trans "Home" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block tournaments_active %}{% endblock %}"
-                            href="{% url 'app:tournaments' %}">{% trans "Tournaments" %}</a>
+                        <a class="nav-link {% block tournaments_active %}{% endblock %}" id="tournaments_link"
+                            href="{% url 'app:tournaments' %}"><img src="{% static 'app/assets/images/competition-cup.svg' %}" alt="">{% trans "Tournaments" %}</a>
                     </li>
                 </ul>
                 <div class="d-flex">

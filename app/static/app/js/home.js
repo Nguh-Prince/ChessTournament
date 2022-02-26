@@ -126,6 +126,7 @@ $("#submit_new_tournament").click(function () {
 
 $(document).ready(function () {
     loadTournaments()
+    $("#home_link img").attr('src', ICONS.home.active)
 })
 
 function getTournamentDetailLink(tournament_id) {
@@ -145,6 +146,11 @@ function loadTournaments() {
 
                 for (let tournament of state.tournaments) {
                     card = createElement('div', ['card', ['col-md-4']])
+                    if (tournament.image) {
+                        // create image
+                        let image = createElement('img', ['card-img-top'], {src: tournament.image, alt: ""})
+                        $(card).append(image)
+                    }
                     cardBody = createElement('div', ['card-body'])
                     $(card).append(cardBody)
 
