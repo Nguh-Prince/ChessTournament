@@ -1,4 +1,6 @@
 from unicodedata import name
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
 from django.urls import include, path
 
@@ -7,6 +9,7 @@ from . import views
 app_name = "app"
 
 urlpatterns = [
+    path("", views.index, name='index'),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("signup/", views.signup, name="signup"),

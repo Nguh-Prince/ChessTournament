@@ -46,6 +46,10 @@ def login_view(request):
 
     return render(request, "app/signin.html")
 
+def index(request):
+    if request.user.is_authenticated:
+        return redirect("app:home")
+    return HttpResponse("Landing page required")
 
 def home(request):
     return render(request, "app/home.html")
