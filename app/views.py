@@ -1,3 +1,4 @@
+import re
 from django.contrib.auth import login as login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -30,6 +31,8 @@ def login_view(request):
             context["errors"].append(_("Username or password incorrect"))
             return render(request, "app/signin.html", context=context)
 
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+
         if not user.is_active:
             return HttpResponse(_("Your account is currently inactive"))
 
@@ -39,9 +42,8 @@ def login_view(request):
             response = redirect("app:home")
             response.set_cookie("player_id", user.player.id)
         except models.Player.DoesNotExist as e:
-            return HttpResponse(_("You are not a player. Error: " + str(e)))
+            return redirect("app:create-person")
 
-        login(request, user)
         return response
 
     return render(request, "app/signin.html")
@@ -119,10 +121,41 @@ def signup(request):
 
             return redirect("app:login")
 
-    return render(request, "app/signup.html", context=context)
+    return render(request, "app/create-person.html", context=context)
 
 
 @login_required
 def logout_view(request):
     logout(request)
     return redirect("app:login")
+
+@login_required
+def create_person(request):
+    context = {'errors': []}
+
+    if request.method == "POST":
+        if models.Player.objects.filter(user=request.user): # user already has a player instance
+            return redirect("app:home")
+
+        name = request.POST.get("name")
+        phone = request.POST.get("phone")
+        email = request.POST.get("email")
+        classroom = request.POST.get("classroom")
+        gender = request.POST.get("gender")
+        
+        if len(name.split(" ")) < 2:
+            context["errors"].append( _("At least two names are required") )
+        
+        if models.Player.objects.filter(phone=phone).count() > 0:
+            context["errors"].append( _("A user with this phone number already exists") )
+
+        if models.Player.objects.filter( email=email ).count() > 0:
+            context["errors"].append( _("A user with this phone number already exists") )
+
+        if len(context["errors"]) < 1:
+            names = name.split(" ")
+            models.Player.objects.create(first_name=names[0], last_name=names[-1], phone=phone, classroom=classroom, user=request.user, email=email, gender=gender)
+            return redirect("app:home")
+
+    
+    return render(request, "app/create-person.html", context=context) 

@@ -46,6 +46,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    "middleware.redirect_user_with_no_player_instance.Middleware"
 ]
 
 ROOT_URLCONF = "mysite.urls"

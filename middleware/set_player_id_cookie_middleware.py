@@ -13,6 +13,7 @@ class Middleware:
 
     def __call__(self, request) -> None:
         login_regex = re.compile("login/")
+        print("In middleware, user: " + request.user)
         if not request.user.is_authenticated and not login_regex.search(request.path):
             return redirect("app:login")
 

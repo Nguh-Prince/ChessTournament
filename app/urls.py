@@ -21,5 +21,6 @@ urlpatterns = [
         views.tournament_detail,
         name="tournament-detail",
     ),
+    path("create-person/", views.create_person, name='create-person'),
     path("api/", include("app.api_urls")),
 ]

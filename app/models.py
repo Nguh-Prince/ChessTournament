@@ -24,6 +24,7 @@ class Player(models.Model):
     level = models.IntegerField(null=True, blank=True)
     classroom = models.CharField(max_length=5, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    email = models.EmailField(null=True, blank=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
     image = models.ImageField()
 
