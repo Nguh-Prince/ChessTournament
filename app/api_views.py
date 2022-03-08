@@ -57,6 +57,20 @@ class TournamentGames(generics.ListCreateAPIView):
     permission_classes = (permissions.IsTournamentCreatororReadOnly,)
 
 
+class TournamentFixtures(generics.ListAPIView):
+    def get_queryset(self):
+        query = models.Fixture.objects.filter(
+            tournament__id=self.kwargs["tournament_id"]
+        )
+
+        if 'round' in self.kwargs:
+            query.filter(level_number=self.kwargs['round'])
+
+        return query
+
+    serializer_class = serializers.FixtureSerializer
+
+
 class FixtureDetail(generics.RetrieveUpdateAPIView):
     queryset = models.Fixture.objects.all()
 

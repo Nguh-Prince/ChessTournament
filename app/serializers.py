@@ -94,27 +94,6 @@ class TournamentSerializer(serializers.ModelSerializer):
             )
 
 
-class TournamentDetailSerializer(TournamentSerializer):
-    all_players_enrolled = TournamentPlayerSerializer(
-        read_only=True, source="tournamentplayer_set", many=True
-    )
-    # total_number_of_players_applied = serializers.IntegerField(source='tournamentplayer_set.count', read_only=True)
-    class Meta:
-        model = models.Tournament
-        fields = (
-            "id",
-            "name",
-            "total_number_of_participants",
-            "participants_enrolled",
-            "image",
-            "creator",
-            "creator_details",
-            "time_created",
-            "participants",
-            "all_players_enrolled",
-        )
-
-
 class TournamentEnrollSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TournamentPlayer
@@ -332,9 +311,10 @@ class PlayerFixtureSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class FixtureSerializer(serializers.ModelSerializer):
-    winner = PlayerFixtureSerializer(source="get_winner", read_only=True)
-
+class SimpleFixtureSerializer(serializers.ModelSerializer):
+    participants = PlayerFixtureSerializer(
+        source="playerfixture_set", read_only=True, many=True
+    )
     id_regex = re.compile("fixtures/(\d+)")
 
     def validate(self, attrs):
@@ -354,10 +334,53 @@ class FixtureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Fixture
-        fields = ("id", "root", "level", "finished", "winner")
+        fields = ("id", "root", "level", "level_number", "finished", "participants")
         extra_kwargs = {
             "root": {"read_only": True},
             "level": {"read_only": True},
+            "level_number": {"read_only": True},
+        }
+
+
+class FixtureSerializer(serializers.ModelSerializer):
+    winner = PlayerFixtureSerializer(source="get_winner", read_only=True)
+    participants = PlayerFixtureSerializer(
+        source="playerfixture_set", read_only=True, many=True
+    )
+    children = SimpleFixtureSerializer(read_only=True, many=True)
+    id_regex = re.compile("fixtures/(\d+)")
+
+    def validate(self, attrs):
+        # a winner cannot be set when there are no games that have been played
+        match_object = self.id_regex.search(self.context["request"].path)
+        ic(attrs)
+        if match_object:
+            id = match_object.group(1)
+            ic(id)
+            object = self.Meta.model.objects.get(id=id)
+            if "finished" in attrs and attrs["finished"] and not object.get_winner:
+                raise serializers.ValidationError(
+                    _("A fixture cannot be finished when it has no winner")
+                )
+
+        return attrs
+
+    class Meta:
+        model = models.Fixture
+        fields = (
+            "id",
+            "root",
+            "level",
+            "level_number",
+            "finished",
+            "participants",
+            "winner",
+            "children",
+        )
+        extra_kwargs = {
+            "root": {"read_only": True},
+            "level": {"read_only": True},
+            "level_number": {"read_only": True},
         }
 
     def update(self, instance, validated_data):
@@ -371,3 +394,26 @@ class FixtureSerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
+
+
+class TournamentDetailSerializer(TournamentSerializer):
+    all_players_enrolled = TournamentPlayerSerializer(
+        read_only=True, source="tournamentplayer_set", many=True
+    )
+    fixtures = FixtureSerializer(read_only=True, source="fixture_set", many=True)
+    # total_number_of_players_applied = serializers.IntegerField(source='tournamentplayer_set.count', read_only=True)
+    class Meta:
+        model = models.Tournament
+        fields = (
+            "id",
+            "name",
+            "total_number_of_participants",
+            "participants_enrolled",
+            "image",
+            "creator",
+            "creator_details",
+            "time_created",
+            "participants",
+            "all_players_enrolled",
+            "fixtures",
+        )

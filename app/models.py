@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Sum
 from django.db.models.signals import post_save, pre_save
+
 # from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from icecream import ic
@@ -27,6 +28,7 @@ class Player(models.Model):
     email = models.EmailField(null=True, blank=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
     image = models.ImageField()
+    telegram_username = models.CharField(max_length=256, unique=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}: {self.classroom}"
@@ -79,8 +81,10 @@ class TournamentCategory(models.Model):
         verbose_name = _("Tournament category")
         verbose_name_plural = _("Tournament categories")
 
+
 def tournament_directory_path(instance, filename):
-    return 'tournament_{0}/{1}' . format(instance.id, filename)
+    return "tournament_{0}/{1}".format(instance.id, filename)
+
 
 class Tournament(models.Model):
     category = models.ForeignKey(
@@ -467,7 +471,7 @@ class Game(models.Model):
         if self.fixture.children_set.filter(~Q(game__date__lte=self.date)):
             pass
 
-        # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e.
+    # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e.
 
 
 class PlayerFixtureGame(models.Model):

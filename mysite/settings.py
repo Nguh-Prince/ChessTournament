@@ -8,7 +8,12 @@ SECRET_KEY = "django-insecure-&^2v4^41jq$&w-n%6lli&2@sfk=6gjvti^2()tgz5sqnr8o3bf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "172.20.10.5", "chess-tournament.herokuapp.com"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "172.20.10.5",
+    "chess-tournament.herokuapp.com",
+]
 
 
 # Application definition
@@ -45,15 +50,15 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    "middleware.redirect_user_with_no_player_instance.Middleware"
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "middleware.redirect_user_with_no_player_instance.Middleware",
 ]
 
 ROOT_URLCONF = "mysite.urls"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    'allauth.account.auth_backends.AuthenticationBackend'
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -74,7 +79,7 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "offline",
         },
-    }
+    },
 }
 
 SITE_ID = 3
@@ -152,11 +157,9 @@ MODELTRANSLATION_DEFAULT_LANGUAGE = "en"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "static/"
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

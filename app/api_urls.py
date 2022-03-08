@@ -41,4 +41,14 @@ urlpatterns = [
         views.TournamentGames.as_view(),
         name="tournament-games",
     ),
+    path(
+        "tournaments/<int:tournament_id>/fixtures/",
+        views.TournamentFixtures.as_view(),
+        name="tournament-fixtures",
+    ),
+        path(
+        "tournaments/<int:tournament_id>/fixtures/<int:round>/",
+        views.TournamentFixtures.as_view(),
+        name="tournament-round-fixtures",
+    ),
 ]

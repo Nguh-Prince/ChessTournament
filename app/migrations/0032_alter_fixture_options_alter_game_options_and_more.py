@@ -6,36 +6,56 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0031_alter_tournament_image'),
+        ("app", "0031_alter_tournament_image"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='fixture',
-            options={'ordering': ['-level_number', 'tournament'], 'verbose_name': 'Fixture', 'verbose_name_plural': 'Fixtures'},
+            name="fixture",
+            options={
+                "ordering": ["-level_number", "tournament"],
+                "verbose_name": "Fixture",
+                "verbose_name_plural": "Fixtures",
+            },
         ),
         migrations.AlterModelOptions(
-            name='game',
-            options={'ordering': ['time'], 'verbose_name': 'Game', 'verbose_name_plural': 'Games'},
+            name="game",
+            options={
+                "ordering": ["time"],
+                "verbose_name": "Game",
+                "verbose_name_plural": "Games",
+            },
         ),
         migrations.AlterModelOptions(
-            name='player',
-            options={'verbose_name': 'Player', 'verbose_name_plural': 'Players'},
+            name="player",
+            options={"verbose_name": "Player", "verbose_name_plural": "Players"},
         ),
         migrations.AlterModelOptions(
-            name='playerfixture',
-            options={'verbose_name': 'Player fixture', 'verbose_name_plural': 'Player fixtures'},
+            name="playerfixture",
+            options={
+                "verbose_name": "Player fixture",
+                "verbose_name_plural": "Player fixtures",
+            },
         ),
         migrations.AlterModelOptions(
-            name='tournament',
-            options={'verbose_name': 'Tournament', 'verbose_name_plural': 'Tournaments'},
+            name="tournament",
+            options={
+                "verbose_name": "Tournament",
+                "verbose_name_plural": "Tournaments",
+            },
         ),
         migrations.AlterModelOptions(
-            name='tournamentcategory',
-            options={'verbose_name': 'Tournament category', 'verbose_name_plural': 'Tournament categories'},
+            name="tournamentcategory",
+            options={
+                "verbose_name": "Tournament category",
+                "verbose_name_plural": "Tournament categories",
+            },
         ),
         migrations.AlterModelOptions(
-            name='tournamentplayer',
-            options={'verbose_name': 'Tournament player', 'verbose_name_plural': 'Tournament players'},
+            name="tournamentplayer",
+            options={
+                "verbose_name": "Tournament player",
+                "verbose_name_plural": "Tournament players",
+            },
         ),
     ]

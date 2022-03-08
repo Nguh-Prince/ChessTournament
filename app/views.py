@@ -1,3 +1,4 @@
+import json
 import re
 from django.contrib.auth import login as login
 from django.contrib.auth import logout
@@ -8,6 +9,10 @@ from django.shortcuts import redirect, render
 from django.template import context
 from django.utils.translation import gettext as _
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer
 
 from app.forms import GameForm
 
@@ -48,10 +53,12 @@ def login_view(request):
 
     return render(request, "app/signin.html")
 
+
 def index(request):
     if request.user.is_authenticated:
         return redirect("app:home")
     return HttpResponse("Landing page required")
+
 
 def home(request):
     return render(request, "app/home.html")
@@ -129,12 +136,15 @@ def logout_view(request):
     logout(request)
     return redirect("app:login")
 
+
 @login_required
 def create_person(request):
-    context = {'errors': []}
+    context = {"errors": []}
 
     if request.method == "POST":
-        if models.Player.objects.filter(user=request.user): # user already has a player instance
+        if models.Player.objects.filter(
+            user=request.user
+        ):  # user already has a player instance
             return redirect("app:home")
 
         name = request.POST.get("name")
@@ -142,20 +152,46 @@ def create_person(request):
         email = request.POST.get("email")
         classroom = request.POST.get("classroom")
         gender = request.POST.get("gender")
-        
-        if len(name.split(" ")) < 2:
-            context["errors"].append( _("At least two names are required") )
-        
-        if models.Player.objects.filter(phone=phone).count() > 0:
-            context["errors"].append( _("A user with this phone number already exists") )
 
-        if models.Player.objects.filter( email=email ).count() > 0:
-            context["errors"].append( _("A user with this phone number already exists") )
+        if len(name.split(" ")) < 2:
+            context["errors"].append(_("At least two names are required"))
+
+        if models.Player.objects.filter(phone=phone).count() > 0:
+            context["errors"].append(_("A user with this phone number already exists"))
+
+        if models.Player.objects.filter(email=email).count() > 0:
+            context["errors"].append(_("A user with this phone number already exists"))
 
         if len(context["errors"]) < 1:
             names = name.split(" ")
-            models.Player.objects.create(first_name=names[0], last_name=names[-1], phone=phone, classroom=classroom, user=request.user, email=email, gender=gender)
+            models.Player.objects.create(
+                first_name=names[0],
+                last_name=names[-1],
+                phone=phone,
+                classroom=classroom,
+                user=request.user,
+                email=email,
+                gender=gender,
+            )
             return redirect("app:home")
 
-    
-    return render(request, "app/create-person.html", context=context) 
+    return render(request, "app/create-person.html", context=context)
+
+
+@api_view(("GET",))
+@renderer_classes([JSONRenderer])
+def get_usernames_phones_telegram(request):
+    usernames_list = [f.username for f in User.objects.all() if f.username]
+    people_phones = [f.phone for f in models.Player.objects.all() if f.phone]
+    people_telegram_usernames = [
+        f.telegram_username for f in models.Player.objects.all() if f.telegram_username
+    ]
+
+    return Response(
+        data={
+            "usernames": usernames_list,
+            "phone_numbers": people_phones,
+            "telegram_usernames": people_telegram_usernames,
+        },
+        status=status.HTTP_200_OK,
+    )
