@@ -35,6 +35,10 @@ class Player(models.Model):
     def name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
+    class Meta:
+        verbose_name = _("Player")
+        verbose_name_plural = _("Players")
+
 
 class GeometricProgression:
     def __init__(self, first_term: float, common_ratio: float) -> None:
@@ -71,6 +75,10 @@ class TournamentCategory(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    class Meta:
+        verbose_name = _("Tournament category")
+        verbose_name_plural = _("Tournament categories")
+
 def tournament_directory_path(instance, filename):
     return 'tournament_{0}/{1}' . format(instance.id, filename)
 
@@ -89,6 +97,10 @@ class Tournament(models.Model):
     number_of_points_for_win = models.FloatField(default=1)
     number_of_points_for_loss = models.FloatField(default=0)
     image = models.ImageField(upload_to=tournament_directory_path)
+
+    class Meta:
+        verbose_name = _("Tournament")
+        verbose_name_plural = _("Tournaments")
 
     def clean(self) -> None:
         # a tournament must have a total_number_participants that is a power of 2, i.e. 2, 4, 8, 16 and greater than 1 etc.
@@ -226,6 +238,7 @@ class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     kicked_out = models.BooleanField(default=False)
+    rating = models.FloatField(default=800)
     participating = models.BooleanField(
         default=False
     )  # when a player is accepted to compete in a tournament this becomes True
@@ -240,6 +253,8 @@ class TournamentPlayer(models.Model):
 
     class Meta:
         unique_together = [["tournament", "player"]]
+        verbose_name = _("Tournament participant")
+        verbose_name_plural = _("Tournament participants")
 
 
 class Fixture(models.Model):
@@ -255,6 +270,8 @@ class Fixture(models.Model):
 
     class Meta:
         ordering = ["-level_number", "tournament"]
+        verbose_name = _("Fixture")
+        verbose_name_plural = _("Fixtures")
 
     def number_of_players(self):
         count = self.playerfixture_set.count()
@@ -410,6 +427,8 @@ class PlayerFixture(models.Model):
 
     class Meta:
         unique_together = [["player", "fixture"]]
+        verbose_name = _("Fixture player")
+        verbose_name_plural = _("Fixture players")
 
 
 class Game(models.Model):
@@ -424,6 +443,8 @@ class Game(models.Model):
             ["fixture", "time"]
         ]  # games in the same fixture cannot be played at the same time
         ordering = ["time"]
+        verbose_name = _("Game")
+        verbose_name_plural = _("Games")
 
     def clean(self) -> None:
         # white score must either be 0, 0.5 or 1
@@ -457,6 +478,8 @@ class PlayerFixtureGame(models.Model):
 
     class Meta:
         unique_together = [["game", "playerfixture"]]
+        verbose_name = _("Fixture game result")
+        verbose_name_plural = _("Fixture game results")
 
     def clean(self) -> None:
         # a game can have only two playerfixturegame records
