@@ -4,26 +4,79 @@ var state = {
 
 let dateTimePicker = new SimplePicker()
 let dateTimePicker2 = new SimplePicker()
-class Node {
-    constructor(data) {
-        this.data = data;
-        this.left = null;
-        this.right = null;
-    }
-}
 
-class Player {
-    constructor(name, username, number) {
-        this.name = name
-        this.username = username
-        this.number = number
-    }
-}
+$(document).ready(function() {
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:8000/api/tournaments/8/",
+        success: function(data) {
+            generateRoundsForDisplay(data['fixtures'])
+        }
+    })
+})
 
-class Tree {
-    constructor() {
-        this.root = null
+async function generateRoundsForDisplay(fixtures) {
+    // contains the different rounds found in the tournament along with the fixtures 
+    // for each of those rounds
+    let tournamentFixturesObject = {}
+
+    for (let i=0; i<fixtures.length; i++) {
+        let fixture = fixtures[i]
+        let fixtureCount = i + 1
+        let fixtureObject = {}
+
+        let level_number = fixture.level_number
+        if (!( level_number in tournamentFixturesObject )) {
+            // add the level_number to the object
+            tournamentFixturesObject[level_number] = {"rounds": [], "title": fixture.level}
+        }
+
+        for (let i=0; i<2; i++) {
+            let object = {
+                name: `Class${fixtureCount*2 + i}`, winner: false, ID: `${fixtureCount*2 + i}`
+            }
+
+            if ( i in fixture['participants'] ) {
+                console.log("Participant found")
+                // get player details
+                player = fixture['participants'][i]
+
+                object.name = `${player['player']['first_name']} ${player['player']['last_name']} - ${player['player']['classroom']}`
+                object.winner = player['is_winner']
+                object.ID = player['player']['id']
+            }
+
+            // add player object to the fixture object
+            fixtureObject[`player${i+1}`] = object
+        }
+        console.log(fixtureObject)
+
+        // add the fixtureObject to its round
+        tournamentFixturesObject[level_number]["rounds"].push(fixtureObject)
     }
+
+    let titles = []
+    let rounds = []
+
+    for (let key in tournamentFixturesObject) {
+        titles.push(tournamentFixturesObject[key]["title"])
+        rounds.push(tournamentFixturesObject[key]["rounds"])
+    }
+
+    $(".brackets").brackets({
+        titles: titles.reverse(),
+        rounds: rounds.reverse(),
+        color_title: 'black',
+        border_color: '#00F',
+        color_player: 'black',
+        bg_player: 'white',
+        color_player_hover: 'white',
+        bg_player_hover: 'blue',
+        border_radius_player: '10px',
+        border_radius_lines: '10px',
+    })
+
+    return tournamentFixturesObject
 }
 
 function modifyTournamentPlayer(tournamentPlayerId, kickOut = false, enroll = true) {

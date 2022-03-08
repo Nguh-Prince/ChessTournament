@@ -102,7 +102,6 @@ class TournamentEnrollSerializer(serializers.ModelSerializer):
             "tournament",
         )
 
-
 class PlayerFixtureGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PlayerFixtureGame
@@ -126,7 +125,6 @@ class PlayerFixtureGameSerializer(serializers.ModelSerializer):
                 )
 
         return attrs
-
 
 class GameSerializer(serializers.ModelSerializer):
     players = PlayerFixtureGameSerializer(many=True, source="playerfixturegame_set")
@@ -255,14 +253,14 @@ class GameSerializer(serializers.ModelSerializer):
 
         return instance
 
-
 import re
 
-
 class PlayerFixtureSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer(source='player.player', read_only=True)
+
     class Meta:
         model = models.PlayerFixture
-        fields = ("id", "is_winner", "fixture")
+        fields = ("id", "is_winner", "fixture", "player")
         extra_kwargs = {"fixture": {"read_only": True}}
 
     id_regex = re.compile("playerfixtures/(\d+)")
