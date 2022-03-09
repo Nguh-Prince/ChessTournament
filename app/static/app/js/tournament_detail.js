@@ -87,38 +87,23 @@ async function generateRoundsForDisplay(fixtures) {
     let bracketLevels
     let bracketSelector = ".brackets"
 
+    // the bracketLevels in key 1 represent the brackets that will be printed to the left while those in 2 will be printed to the right of the final fixture
+    let bracketsForEachHalf = {
+        1: [],
+        2: []
+    }
+
     for (let round of rounds.reverse()) {
         count++
         if (round.length > 2) { // i.e. not the finals
             // create two bracket-levels
             bracketLevels = [createElement('div', ['bracket-level'], { id: `level_${count}_1` }), createElement('div', ['bracket-level'], { id: `level_${count}_2` })]
+            bracketsForEachHalf[2].push( bracketLevels[1] )
         } else {
             bracketLevels = [createElement('div', ['bracket-level'], { id: `level_${count}` })]
         }
 
-        let positioner = document.getElementById("positioner")
-
-        for (let i=0; i<2; i++) {
-            let level
-            if (bracketLevels.length > i) {
-                level = bracketLevels[i]
-
-                $(bracketSelector).append(level)
-                
-                i == 0 ? positionNodeToLeftOf(level, positioner) : positionNodeToRightOf(level, positioner)
-            }
-        }
-
-        // for (let level of bracketLevels) {
-        //     if (count > 1) {
-        //         break
-        //         // position the divs between the older divs
-        //     } else {
-        //         // render the divs directly
-        //         // add the .bracket-level div to the brackets selector
-        //         $(bracketSelector).append(level)
-        //     }
-        // }
+        bracketsForEachHalf[1].push(bracketLevels[0])
 
         for (let i = 0; i < round.length; i++) {
             // getting the half of this level that will contain the match details
@@ -137,6 +122,13 @@ async function generateRoundsForDisplay(fixtures) {
                 bracketName.textContent = fixture[key]['name']
                 $(bracketTeam).append(bracketName)
             }
+        }
+    }
+
+    // append all the bracketLevels in bracketsForEachHalf[1] before those of bracketsForEachHalf[2]
+    for (let key in bracketsForEachHalf) {
+        for (let level of key == 1 ? bracketsForEachHalf[key] : bracketsForEachHalf[key].reverse() ) {
+            $(bracketSelector).append(level)
         }
     }
 
