@@ -5,38 +5,58 @@ var state = {
 let dateTimePicker = new SimplePicker()
 let dateTimePicker2 = new SimplePicker()
 
-$(document).ready(function() {
+$(document).ready(function () {
     $.ajax({
         type: "GET",
         url: "http://localhost:8000/api/tournaments/8/",
-        success: function(data) {
+        success: function (data) {
             generateRoundsForDisplay(data['fixtures'])
         }
     })
 })
+
+function positionNodeToLeftOf(node, positioner) {
+    // positions node to the left of positioner node
+    let coordinates = $(positioner).position()
+    console.log("Positioner's position")
+    console.log(coordinates)
+    node.style.left = `${coordinates.left - node.offSetWidth}px`
+    // putting the div to the left of positioner
+}
+
+function positionNodeToRightOf(node, positioner) {
+    let coordinates = $(positioner).position()
+    let width = positioner.offSetWidth
+    
+    console.log("Positioner's position")
+    console.log(coordinates)
+
+    // putting the div to the right of positioner
+    node.style.left = `${coordinates.left + width}px`
+}
 
 async function generateRoundsForDisplay(fixtures) {
     // contains the different rounds found in the tournament along with the fixtures 
     // for each of those rounds
     let tournamentFixturesObject = {}
 
-    for (let i=0; i<fixtures.length; i++) {
+    for (let i = 0; i < fixtures.length; i++) {
         let fixture = fixtures[i]
         let fixtureCount = i + 1
         let fixtureObject = {}
 
         let level_number = fixture.level_number
-        if (!( level_number in tournamentFixturesObject )) {
+        if (!(level_number in tournamentFixturesObject)) {
             // add the level_number to the object
-            tournamentFixturesObject[level_number] = {"rounds": [], "title": fixture.level}
+            tournamentFixturesObject[level_number] = { "rounds": [], "title": fixture.level }
         }
 
-        for (let i=0; i<2; i++) {
+        for (let i = 0; i < 2; i++) {
             let object = {
-                name: `Class${fixtureCount*2 + i}`, winner: false, ID: `${fixtureCount*2 + i}`
+                name: `Class${fixtureCount * 2 + i}`, winner: false, ID: `${fixtureCount * 2 + i}`
             }
 
-            if ( i in fixture['participants'] ) {
+            if (i in fixture['participants']) {
                 console.log("Participant found")
                 // get player details
                 player = fixture['participants'][i]
@@ -47,7 +67,7 @@ async function generateRoundsForDisplay(fixtures) {
             }
 
             // add player object to the fixture object
-            fixtureObject[`player${i+1}`] = object
+            fixtureObject[`player${i + 1}`] = object
         }
         console.log(fixtureObject)
 
@@ -63,18 +83,62 @@ async function generateRoundsForDisplay(fixtures) {
         rounds.push(tournamentFixturesObject[key]["rounds"])
     }
 
-    $(".brackets").brackets({
-        titles: titles.reverse(),
-        rounds: rounds.reverse(),
-        color_title: 'black',
-        border_color: '#00F',
-        color_player: 'black',
-        bg_player: 'white',
-        color_player_hover: 'white',
-        bg_player_hover: 'blue',
-        border_radius_player: '10px',
-        border_radius_lines: '10px',
-    })
+    let count = 0
+    let bracketLevels
+    let bracketSelector = ".brackets"
+
+    for (let round of rounds.reverse()) {
+        count++
+        if (round.length > 2) { // i.e. not the finals
+            // create two bracket-levels
+            bracketLevels = [createElement('div', ['bracket-level'], { id: `level_${count}_1` }), createElement('div', ['bracket-level'], { id: `level_${count}_2` })]
+        } else {
+            bracketLevels = [createElement('div', ['bracket-level'], { id: `level_${count}` })]
+        }
+
+        let positioner = document.getElementById("positioner")
+
+        for (let i=0; i<2; i++) {
+            let level
+            if (bracketLevels.length > i) {
+                level = bracketLevels[i]
+
+                $(bracketSelector).append(level)
+                
+                i == 0 ? positionNodeToLeftOf(level, positioner) : positionNodeToRightOf(level, positioner)
+            }
+        }
+
+        // for (let level of bracketLevels) {
+        //     if (count > 1) {
+        //         break
+        //         // position the divs between the older divs
+        //     } else {
+        //         // render the divs directly
+        //         // add the .bracket-level div to the brackets selector
+        //         $(bracketSelector).append(level)
+        //     }
+        // }
+
+        for (let i = 0; i < round.length; i++) {
+            // getting the half of this level that will contain the match details
+            let subContainer = round.length > 2 && i >= (round.length) / 2 ? bracketLevels[1] : bracketLevels[0]
+
+            let fixture = round[i]
+
+            let bracketMatchup = createElement('div', ['bracket-matchup'])
+            $(subContainer).append(bracketMatchup)
+
+            for (let key in fixture) {
+                let bracketTeam = createElement('div', ['bracket-team', fixture[key]['winner'] ? 'winner' : 'loser'] )
+                $(bracketMatchup).append(bracketTeam)
+
+                let bracketName = createElement('div', ['bracket-name'])
+                bracketName.textContent = fixture[key]['name']
+                $(bracketTeam).append(bracketName)
+            }
+        }
+    }
 
     return tournamentFixturesObject
 }
@@ -446,18 +510,18 @@ $(".display-game").click(function () {
     $("#game_fixture").val($(this).attr('data-fixture-id'))
 })
 
-$('.trigger-finish-fixture').click(function() {
+$('.trigger-finish-fixture').click(function () {
     $("#finish-fixture .finish-fixture").attr('data-fixture-id', $(this).attr('data-fixture-id'))
     $("#finish-fixture .finish-fixture").attr('data-winner-selector', $(this).attr('data-winner-selector'))
 })
 
-$("#finish-fixture .btn-close").click(function() {
+$("#finish-fixture .btn-close").click(function () {
     $("#finish-fixture .finish-fixture").attr('data-fixture-id') = ''
     $("#finish-fixture .finish-fixture").attr('data-winner-selector') = ''
 })
 
 $(".finish-fixture").click(function () {
-    console.log( $(this).attr('data-fixture-id'),  $(this).attr('data-winner-selector'))
+    console.log($(this).attr('data-fixture-id'), $(this).attr('data-winner-selector'))
     let fixtureId = $(this).attr('data-fixture-id')
     let winnerSelector = $($(this).attr('data-winner-selector'))
 
@@ -474,8 +538,8 @@ $(".finish-fixture").click(function () {
                 "X-CSRFTOKEN": getCookie("csrftoken")
             },
             contentType: "application/json",
-            success: function() {
-                displayMessage(gettext("Winner set successfully"), ['alert-success', 'alert-dismissible'] )
+            success: function () {
+                displayMessage(gettext("Winner set successfully"), ['alert-success', 'alert-dismissible'])
                 // set fixture to finished
                 $.ajax({
                     type: "PATCH",
@@ -501,7 +565,7 @@ $(".finish-fixture").click(function () {
                     }
                 })
             },
-            error: function(data) {
+            error: function (data) {
                 displayMessage(gettext("Error setting winner"))
                 if (data.status == 500) {
                     displayMessage(ERROR_MESSAGES["500"])
@@ -515,6 +579,6 @@ $(".finish-fixture").click(function () {
     }
     else if (!playerFixtureId) {
         winnerSelector.parent().addClass('has-error')
-        winnerSelector.parent().append( createHelpBlock(gettext("Select a winner before finishing the game")) )
+        winnerSelector.parent().append(createHelpBlock(gettext("Select a winner before finishing the game")))
     }
 })
