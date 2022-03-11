@@ -1,6 +1,12 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700);
 @import url(https://fonts.googleapis.com/css?family=Dosis);
 
+:root {
+    --secondary-bg-color: #303030;
+    --secondary-border-color: #444;
+    --text-color: white;
+}
+
 .header {
     height: 10%;
 }
@@ -46,7 +52,7 @@
 .bracket-team {
     height: 45%;
     width: 100%;
-    background-color: #F5F5F5;
+    background-color: var(--secondary-bg-color);
     box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
     display: flex;
     flex-direction: row;
@@ -62,7 +68,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #2B2B2B;
+    color: var(--text-color);
     text-align: center;
 }
 
@@ -73,7 +79,7 @@
     line-height: 1.5em;
     white-space: nowrap;
     overflow: hidden;
-    color: #2B2B2B;
+    color: var(--text-color);
     text-align: center;
 }
 
@@ -86,6 +92,10 @@
     background-color: #E8E8E8;
     height: 100%;
     transition: all ease .5s;
+}
+
+.bracket-team:hover .bracket-name {
+    color: #444;
 }
 
 .bracket-team:hover>.bracket-name {

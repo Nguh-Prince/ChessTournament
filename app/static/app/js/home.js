@@ -104,7 +104,7 @@ $("#submit_new_tournament").click(function () {
 
         $.ajax({
             type: "POST",
-            url: `${API_URL}/tournaments/`,
+            url: `http://localhost:8000/${API_URL}/tournaments/`,
             data: formData,
             headers: {
                 "X-CSRFTOKEN": getCookie("csrftoken")
@@ -138,7 +138,7 @@ function loadTournaments() {
         console.log("Player id set")
         $.ajax({
             type: "GET",
-            url: `${API_URL}/players/${getCookie("player_id")}/tournaments/`,
+            url: `http://localhost:8000/${API_URL}/players/${getCookie("player_id")}/tournaments/`,
             success: function (data) {
                 console.log(data)
                 $("#tournaments").html('')

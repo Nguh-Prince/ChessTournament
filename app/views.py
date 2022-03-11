@@ -74,11 +74,15 @@ def tournament_detail(request, tournament_id):
     if check_query.count() < 1:
         raise Http404
 
-    return render(
+    response = render(
         request,
         "app/tournament_detail.html",
         context={"tournament": check_query.first(), "game_form": GameForm},
     )
+
+    response.set_cookie("tournament_id", tournament_id)
+
+    return response
 
 
 def signup(request):

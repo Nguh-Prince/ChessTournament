@@ -6,20 +6,25 @@ let dateTimePicker = new SimplePicker()
 let dateTimePicker2 = new SimplePicker()
 
 $(document).ready(function () {
-    $.ajax({
-        type: "GET",
-        url: "http://localhost:8000/api/tournaments/8/",
-        success: function (data) {
-            generateRoundsForDisplay(data['fixtures'])
-        }
-    })
+
+    if (getCookie("tournament_id")) {
+        $.ajax({
+            type: "GET",
+            url: `http://localhost:8000/${API_URL}/tournaments/${getCookie("tournament_id")}/`,
+            success: function (data) {
+                generateRoundsForDisplay(data['fixtures'])
+            },
+            error: function(data) {
+                console.log(data.responseText)
+                console.log(`http://localhost:8000/${API_URL}/tournaments/${getCookie("tournament_id")}/`)
+            }
+        })
+    }
 })
 
 function positionNodeToLeftOf(node, positioner) {
     // positions node to the left of positioner node
     let coordinates = $(positioner).position()
-    console.log("Positioner's position")
-    console.log(coordinates)
     node.style.left = `${coordinates.left - node.offSetWidth}px`
     // putting the div to the left of positioner
 }
@@ -27,9 +32,6 @@ function positionNodeToLeftOf(node, positioner) {
 function positionNodeToRightOf(node, positioner) {
     let coordinates = $(positioner).position()
     let width = positioner.offSetWidth
-    
-    console.log("Positioner's position")
-    console.log(coordinates)
 
     // putting the div to the right of positioner
     node.style.left = `${coordinates.left + width}px`
@@ -57,7 +59,6 @@ async function generateRoundsForDisplay(fixtures) {
             }
 
             if (i in fixture['participants']) {
-                console.log("Participant found")
                 // get player details
                 player = fixture['participants'][i]
 
@@ -69,7 +70,6 @@ async function generateRoundsForDisplay(fixtures) {
             // add player object to the fixture object
             fixtureObject[`player${i + 1}`] = object
         }
-        console.log(fixtureObject)
 
         // add the fixtureObject to its round
         tournamentFixturesObject[level_number]["rounds"].push(fixtureObject)
@@ -106,8 +106,9 @@ async function generateRoundsForDisplay(fixtures) {
         bracketsForEachHalf[1].push(bracketLevels[0])
 
         for (let i = 0; i < round.length; i++) {
+
             // getting the half of this level that will contain the match details
-            let subContainer = round.length > 2 && i >= (round.length) / 2 ? bracketLevels[1] : bracketLevels[0]
+            let subContainer = round.length >= 2 && i >= (round.length) / 2 ? bracketLevels[1] : bracketLevels[0]
 
             let fixture = round[i]
 
@@ -145,7 +146,7 @@ function modifyTournamentPlayer(tournamentPlayerId, kickOut = false, enroll = tr
     else if (tournamentPlayerId) {
         $.ajax({
             type: "PATCH",
-            url: `${API_URL}/tournamentplayers/${tournamentPlayerId}/`,
+            url: `http://localhost:8000/${API_URL}/tournamentplayers/${tournamentPlayerId}/`,
             contentType: "application/json",
             data: JSON.stringify({
                 kicked_out: kickOut,
@@ -214,8 +215,6 @@ $("#new_game_datetime_formatted").click(function () {
     dateTimePicker.open()
 
     dateTimePicker.on('submit', function (date, readableDate) {
-        console.log("Submitting datePicker")
-        console.log(date)
         let dt = DateTime.fromJSDate(date)
         $("#new_game_datetime").val(dt.toISO())
         $("#new_game_datetime_formatted").val(dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY))
@@ -301,9 +300,8 @@ function addGameToFixture(fixtureId, tournamentId) {
         }
 
         if (validateObjects(validationObjects)) {
-            console.log(formData)
             $.ajax({
-                url: `${API_URL}/tournaments/${tournamentId}/games/`,
+                url: `http://localhost:8000/${API_URL}/tournaments/${tournamentId}/games/`,
                 type: "POST",
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
@@ -312,12 +310,10 @@ function addGameToFixture(fixtureId, tournamentId) {
                 encode: true,
                 contentType: "application/json",
                 success: function (data) {
-                    console.log(data)
                     displayMessage(gettext("Game added successfully"), ['alert-success', 'alert-dismissible'])
                     setTimeout(reloadPage, 15000)
                 },
                 error: function (data) {
-                    console.log(JSON.stringify(formData))
                     if (data.status == 500) {
                         displayMessage(ERROR_MESSAGES["500"])
                     }
@@ -338,7 +334,7 @@ function showGameDetail(gameId) {
         if (!(gameId in state.games)) {
             $.ajax({
                 type: "GET",
-                url: `${API_URL}/games/${gameId}/`,
+                url: `http://localhost:8000/${API_URL}/games/${gameId}/`,
                 success: function (data) {
                     state.games[`${gameId}`] = data
                     populateGameModal(data)
@@ -383,8 +379,6 @@ $("#game_datetime_formatted").click(function () {
     dateTimePicker2.open()
 
     dateTimePicker2.on('submit', function (date, readableDate) {
-        console.log("Submitting datePicker")
-        console.log(date)
         let dt = DateTime.fromJSDate(date)
         $("#game_datetime").val(dt.toISO())
         $("#game_datetime_formatted").val(dt.setLocale(LOCALE).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY))
@@ -409,7 +403,6 @@ $("#edit-game").click(function () {
             id: gameId,
             players: []
         }
-        console.log(formData)
         let validationObjects = [
             {
                 selector: "#game_classroom",
@@ -452,7 +445,7 @@ $("#edit-game").click(function () {
         if (validateObjects(validationObjects)) {
             $.ajax({
                 type: "PUT",
-                url: `${API_URL}/games/${gameId}/`,
+                url: `http://localhost:8000/${API_URL}/games/${gameId}/`,
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
                 },
@@ -463,7 +456,6 @@ $("#edit-game").click(function () {
                     setTimeout(reloadPage, 5000)
                 },
                 error: function (data) {
-                    console.log(JSON.stringify(formData))
                     if (data.status == 500) {
                         displayMessage(ERROR_MESSAGES["500"])
                     } else if (data.status == 403) {
@@ -513,18 +505,15 @@ $("#finish-fixture .btn-close").click(function () {
 })
 
 $(".finish-fixture").click(function () {
-    console.log($(this).attr('data-fixture-id'), $(this).attr('data-winner-selector'))
     let fixtureId = $(this).attr('data-fixture-id')
     let winnerSelector = $($(this).attr('data-winner-selector'))
-
-    console.log(fixtureId, winnerSelector.val())
 
     playerFixtureId = winnerSelector.val()
 
     if (fixtureId && playerFixtureId) {
         $.ajax({
             type: "PATCH",
-            url: `${API_URL}/playerfixtures/${playerFixtureId}/`,
+            url: `http://localhost:8000/${API_URL}/playerfixtures/${playerFixtureId}/`,
             data: JSON.stringify({ is_winner: true }),
             headers: {
                 "X-CSRFTOKEN": getCookie("csrftoken")
@@ -535,7 +524,7 @@ $(".finish-fixture").click(function () {
                 // set fixture to finished
                 $.ajax({
                     type: "PATCH",
-                    url: `${API_URL}/fixtures/${fixtureId}/`,
+                    url: `http://localhost:8000/${API_URL}/fixtures/${fixtureId}/`,
                     data: JSON.stringify({ finished: true }),
                     headers: {
                         "X-CSRFTOKEN": getCookie("csrftoken")

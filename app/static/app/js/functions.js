@@ -185,7 +185,7 @@ function toast(message) {
     return toast
 }
 
-API_URL = "/api"
+API_URL = "api"
 
 function format_time(number) {
     if (number <= 9) {

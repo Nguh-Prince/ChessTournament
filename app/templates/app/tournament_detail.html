@@ -27,7 +27,7 @@ Mate | Tournaments | {{id}}
     $(document).ready(function () {
         $("#list_of_participants").DataTable()
         $("#fixtures-table").DataTable({
-            "order": [ [5, "asc"], [ 0, "desc" ] ]
+            "order": [[5, "asc"], [0, "desc"]]
         })
         TOURNAMENT_WIN = {{ tournament.number_of_points_for_win }}
         TOURNAMENT_LOSS = {{ tournament.number_of_points_for_loss }}
@@ -49,11 +49,21 @@ Mate | Tournaments | {{id}}
         <span>{% trans "Total number of participants: " %} {{ tournament.total_number_of_participants }}</span>
     </div>
     <div class="col-md-8 text-end p-3">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list
+            of enrolled participants" %}</button>
     </div>
 </div>
 <div class="row p-3">
-    <span>{% trans "Tournament layout" %}</span>
+
+    <!-- <div class="mb-3 col-md-3"> -->
+        <label for="layout-select">{% trans "Tournament layout" %}</label>
+
+        <!-- <select id="layout-select" class="form-control select">
+            <option value="1">{% trans "Table layout" %}</option>
+            <option value="2">{% trans "Bracket layout" %}</option>
+        </select> -->
+    <!-- </div> -->
+
     <div class="row">
         <div class="col-md-12">
             <table class="table table-striped" id="fixtures-table">
@@ -81,18 +91,23 @@ Mate | Tournaments | {{id}}
                                 {% empty %}
                                 <li>{% trans "This fixture has no players" %}</li>
                                 {% endfor %}
-                                {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} <button class="btn btn-primary">
+
+                                {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} 
+                                <button class="btn btn-primary">
                                     {% trans "Add a player" %}</button>
-                                    {% endif %}
+                                {% endif %}
                             </ul>
                         </td>
                         <td>
                             {% for fixture_player in fixture.playerfixture_set.all %}
-                            <input type="hidden" class="player" id="{{ fixture_player.id }}" value="{{ fixture_player.player.player }}">
+                            <input type="hidden" class="player" id="{{ fixture_player.id }}"
+                                value="{{ fixture_player.player.player }}">
                             {% endfor %}
 
                             {% for game in fixture.game_set.all %}
-                            <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )" data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}" data-fixture-id="{{ fixture.id }}">
+                            <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )"
+                                data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}"
+                                data-fixture-id="{{ fixture.id }}">
                                 {% blocktranslate with game_number=forloop.counter %}
                                 Game #{{ game_number }}
                                 {% endblocktranslate %}
@@ -103,15 +118,18 @@ Mate | Tournaments | {{id}}
                             </ul>
                             {% endfor %}
                             {% if request.session.player and tournament.creator.id == request.session.player.id %}
-                            <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game" data-fixture-id="{{ fixture.id }}">
+                            <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game"
+                                data-fixture-id="{{ fixture.id }}">
                                 {% trans "Add a game" %}
                             </button>
                             {% endif %}
                         </td>
                         <td>
                             {% if fixture.get_winner %}
-                            <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}" class="form-control" type="hidden" readonly />
-                            <input type="text" value="{{ fixture.get_winner.player.player.name }}" readonly class="form-control">
+                            <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}"
+                                class="form-control" type="hidden" readonly />
+                            <input type="text" value="{{ fixture.get_winner.player.player.name }}" readonly
+                                class="form-control">
                             {% else %}
                             {% trans "This fixture has no winner" %}
                             <div class="mb-3">
@@ -127,7 +145,9 @@ Mate | Tournaments | {{id}}
                         </td>
                         <td>
                             {% if not fixture.finished and fixture.tournament.creator.id == request.session.player.id %}
-                            <button class="btn btn-primary trigger-finish-fixture" data-bs-target="#finish-fixture" data-bs-toggle="modal" data-winner-selector="#fixture_{{ fixture.id }}_winner" data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
+                            <button class="btn btn-primary trigger-finish-fixture" data-bs-target="#finish-fixture"
+                                data-bs-toggle="modal" data-winner-selector="#fixture_{{ fixture.id }}_winner"
+                                data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
                             {% elif fixture.finished %}
                             {% trans "Finished" %}
                             {% else %}
@@ -140,30 +160,31 @@ Mate | Tournaments | {{id}}
             </table>
         </div>
     </div>
-    <div class="bracket-container brackets">
+
+    <div class="bracket-container brackets hide" id="bracket-layout">
         <div id="positioner"></div>
     </div>
 </div>
 
 <div class="row p-3">
     {% if not tournament.started %}
-        {% if request.session.player.id and tournament.creator.id == request.session.player.id %}
-        <button class="btn btn-primary {% if tournament.clean %}disabled{% endif %}">
-            {% trans "Start" %}
-        </button>
-        {% else %}
-        <div class="mb-3 btn-outline-danger">
-            {% trans "This tournament has not yet started" %}
-        </div>
-        {% endif %}
+    {% if request.session.player.id and tournament.creator.id == request.session.player.id %}
+    <button class="btn btn-primary {% if tournament.clean %}disabled{% endif %}">
+        {% trans "Start" %}
+    </button>
+    {% else %}
+    <div class="mb-3 btn-outline-danger">
+        {% trans "This tournament has not yet started" %}
+    </div>
     {% endif %}
-    
+    {% endif %}
+
 </div>
 {% endblock %}
 
 {% block modals %}
 <div id="participants_list" class="modal">
-    
+
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -193,7 +214,8 @@ Mate | Tournaments | {{id}}
                             </td>
                             <td>
                                 {% if tournament_player.participating and not tournament_player.kicked_out %}
-                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans "Kick out" %}</button>
+                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans
+                                    "Kick out" %}</button>
                                 {% elif not tournament_player.participating %}
                                 <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans
                                     "Enroll" %}</button>
@@ -251,7 +273,8 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="new_game_white_score">{% trans "Score" %}</label>
-                        <select id="new_game_white_score" class="form-control score" data-opponent-score="#new_game_black_score">
+                        <select id="new_game_white_score" class="form-control score"
+                            data-opponent-score="#new_game_black_score">
                             <option value={{ tournament.number_of_points_for_draw }}>{% trans "Draw" %}</option>
                             <option value={{ tournament.number_of_points_for_win }}>{% trans "Win" %}</option>
                             <option value={{ tournament.number_of_points_for_loss }}>{% trans "Loss" %}</option>
@@ -265,7 +288,8 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="new_game_black_score">{% trans "Score" %}</label>
-                        <select id="new_game_black_score" class="form-control score" data-opponent-score="#new_game_white_score">
+                        <select id="new_game_black_score" class="form-control score"
+                            data-opponent-score="#new_game_white_score">
                             <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
                             <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
                             <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
@@ -313,7 +337,8 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="game_white_score">{% trans "Score" %}</label>
-                        <select id="game_white_score" class="form-control score" data-opponent-score="#game_black_score">
+                        <select id="game_white_score" class="form-control score"
+                            data-opponent-score="#game_black_score">
                             <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
                             <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
                             <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
@@ -327,7 +352,8 @@ Mate | Tournaments | {{id}}
                     </div>
                     <div class="col-md-4">
                         <label for="game_black_score">{% trans "Score" %}</label>
-                        <select id="game_black_score" class="form-control score" data-opponent-score="#game_white_score">
+                        <select id="game_black_score" class="form-control score"
+                            data-opponent-score="#game_white_score">
                             <option value="{{ tournament.number_of_points_for_draw }}">{% trans "Draw" %}</option>
                             <option value="{{ tournament.number_of_points_for_win }}">{% trans "Win" %}</option>
                             <option value="{{ tournament.number_of_points_for_loss }}">{% trans "Loss" %}</option>
@@ -353,7 +379,8 @@ Mate | Tournaments | {{id}}
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                {% trans "Once a fixture is marked as finished, it cannot be reverted. Are you sure you want to mark this fixture as finished?" %}
+                {% trans "Once a fixture is marked as finished, it cannot be reverted. Are you sure you want to mark
+                this fixture as finished?" %}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger finish-fixture" data-bs-dismiss="modal">{% trans "Yes" %}</button>
