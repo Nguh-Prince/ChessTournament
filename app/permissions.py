@@ -9,6 +9,9 @@ class IsCreatorOr403(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         player_id = None
 
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
         try:
             player_id = request.user.player.id
         except Exception as e:

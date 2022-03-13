@@ -475,8 +475,8 @@ class Game(models.Model):
 
 
 class PlayerFixtureGame(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    playerfixture = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE)
+    game: Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    playerfixture: PlayerFixture = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE)
     score = models.FloatField(null=False, default=0.5)
     is_home = models.BooleanField(default=False)
 
@@ -484,6 +484,14 @@ class PlayerFixtureGame(models.Model):
         unique_together = [["game", "playerfixture"]]
         verbose_name = _("Fixture game result")
         verbose_name_plural = _("Fixture game results")
+
+    # this method returns the sum of scores from all the games
+    #  in fixtures preceding this game's fixture
+    @property
+    def get_sum_of_scores_before_game(self):
+        total_score = self.game.fixture.children.aggregate( score=models.Sum( models.F('game__playerfixturegame__score') ) ) ['score']
+
+        return total_score if total_score else 0
 
     def clean(self) -> None:
         # a game can have only two playerfixturegame records
@@ -494,4 +502,8 @@ class PlayerFixtureGame(models.Model):
                 _(
                     "More than two players with the same color, change this instance's is_home value"
                 )
+            )
+        if self.playerfixture.fixture != self.game.fixture:
+            raise ValidationError(
+                _("The players of a game must be from the fixture the game is found in")
             )

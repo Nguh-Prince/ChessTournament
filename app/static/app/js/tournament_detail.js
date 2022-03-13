@@ -95,7 +95,7 @@ async function generateRoundsForDisplay(fixtures) {
 
     for (let round of rounds.reverse()) {
         count++
-        if (round.length > 2) { // i.e. not the finals
+        if (round.length >= 2) { // i.e. not the finals
             // create two bracket-levels
             bracketLevels = [createElement('div', ['bracket-level'], { id: `level_${count}_1` }), createElement('div', ['bracket-level'], { id: `level_${count}_2` })]
             bracketsForEachHalf[2].push( bracketLevels[1] )
@@ -109,7 +109,8 @@ async function generateRoundsForDisplay(fixtures) {
 
             // getting the half of this level that will contain the match details
             let subContainer = round.length >= 2 && i >= (round.length) / 2 ? bracketLevels[1] : bracketLevels[0]
-
+            console.log("Number of fixtures in the round: " + round.length)
+            console.log(bracketLevels)
             let fixture = round[i]
 
             let bracketMatchup = createElement('div', ['bracket-matchup'])

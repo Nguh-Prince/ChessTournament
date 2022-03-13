@@ -49,8 +49,7 @@ Mate | Tournaments | {{id}}
         <span>{% trans "Total number of participants: " %} {{ tournament.total_number_of_participants }}</span>
     </div>
     <div class="col-md-8 text-end p-3">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list
-            of enrolled participants" %}</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
     </div>
 </div>
 <div class="row p-3">
@@ -214,11 +213,9 @@ Mate | Tournaments | {{id}}
                             </td>
                             <td>
                                 {% if tournament_player.participating and not tournament_player.kicked_out %}
-                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans
-                                    "Kick out" %}</button>
+                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans "Kick out" %}</button>
                                 {% elif not tournament_player.participating %}
-                                <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans
-                                    "Enroll" %}</button>
+                                <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans "Enroll" %}</button>
                                 {% elif tournament_player.kicked_out %}
                                 <button class="btn btn-outline-danger disabled">{% trans "Kicked out" %}</button>
                                 {% endif %}
