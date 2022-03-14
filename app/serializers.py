@@ -368,6 +368,7 @@ class FixtureSerializer(serializers.ModelSerializer):
         model = models.Fixture
         fields = (
             "id",
+            "__str__",
             "root",
             "level",
             "level_number",

@@ -21,5 +21,7 @@ class Middleware:
                 user=request.user
             ).count() < 1 and not regex.search(request.path):
                 return redirect("app:create-person")
+            else:
+                response.set_cookie("player_id", models.Player.objects.get(user=request.user).id)
 
         return response

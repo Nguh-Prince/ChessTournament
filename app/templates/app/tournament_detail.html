@@ -19,6 +19,24 @@ Mate | Tournaments | {{id}}
 <script src="{% static 'app/js/jquery.datatables.min.js' %}"></script>
 <script src="{% static 'app/js/datatables.bootstrap5.min.js' %}"></script>
 <script src="{% static 'app/js/brackets.min.js' %}"></script>
+
+<style>
+    #layout-container {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+    }
+    #layout-container>div {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    #layout-container>div.hide {
+        display: none;
+    }
+</style>
 {% endblock %}
 
 {% block js %}
@@ -50,118 +68,121 @@ Mate | Tournaments | {{id}}
     </div>
     <div class="col-md-8 text-end p-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fixture_detail">{% trans "View fixture detail" %}</button>
     </div>
 </div>
 <div class="row p-3">
-
-    <!-- <div class="mb-3 col-md-3"> -->
+    <div class="mb-3 col-md-3">
         <label for="layout-select">{% trans "Tournament layout" %}</label>
 
-        <!-- <select id="layout-select" class="form-control select">
+        <select id="layout-select" class="form-control select">
             <option value="1">{% trans "Table layout" %}</option>
             <option value="2">{% trans "Bracket layout" %}</option>
-        </select> -->
-    <!-- </div> -->
-
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-striped" id="fixtures-table">
-                <thead>
-                    <th>{% trans "Number of participants" %}</th>
-                    <th>{% trans "Fixture level" %}</th>
-                    <th>{% trans "Players" %}</th>
-                    <th>{% trans "Games" %}</th>
-                    <th>{% trans "Winner" %}</th>
-                    <th></th>
-                </thead>
-                <tbody>
-                    {% for fixture in tournament.fixture_set.all %}
-                    <tr>
-                        <td>
-                            {{ fixture.level_number }}
-                        </td>
-                        <td>
-                            {{ fixture.level }}
-                        </td>
-                        <td class="player-container">
-                            <ul>
-                                {% for fixture_player in fixture.playerfixture_set.all %}
-                                <li>{{ fixture_player.player.player }}</li>
-                                {% empty %}
-                                <li>{% trans "This fixture has no players" %}</li>
-                                {% endfor %}
-
-                                {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} 
-                                <button class="btn btn-primary">
-                                    {% trans "Add a player" %}</button>
-                                {% endif %}
-                            </ul>
-                        </td>
-                        <td>
-                            {% for fixture_player in fixture.playerfixture_set.all %}
-                            <input type="hidden" class="player" id="{{ fixture_player.id }}"
-                                value="{{ fixture_player.player.player }}">
-                            {% endfor %}
-
-                            {% for game in fixture.game_set.all %}
-                            <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )"
-                                data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}"
-                                data-fixture-id="{{ fixture.id }}">
-                                {% blocktranslate with game_number=forloop.counter %}
-                                Game #{{ game_number }}
-                                {% endblocktranslate %}
-                            </button>
-                            {% empty %}
-                            <ul>
-                                <li>{% trans "This fixture has no games" %}</li>
-                            </ul>
-                            {% endfor %}
-                            {% if request.session.player and tournament.creator.id == request.session.player.id %}
-                            <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game"
-                                data-fixture-id="{{ fixture.id }}">
-                                {% trans "Add a game" %}
-                            </button>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if fixture.get_winner %}
-                            <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}"
-                                class="form-control" type="hidden" readonly />
-                            <input type="text" value="{{ fixture.get_winner.player.player.name }}" readonly
-                                class="form-control">
-                            {% else %}
-                            {% trans "This fixture has no winner" %}
-                            <div class="mb-3">
-                                <label for="fixture_{{ fixture.id }}_winner">{% trans "Pick a winner" %}</label>
-                                <select id="fixture_{{ fixture.id }}_winner" class="form-control">
-                                    <option value="">---</option>
-                                    {% for player in fixture.playerfixture_set.all %}
-                                    <option value="{{ player.id }}">{{ player.player.player.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not fixture.finished and fixture.tournament.creator.id == request.session.player.id %}
-                            <button class="btn btn-primary trigger-finish-fixture" data-bs-target="#finish-fixture"
-                                data-bs-toggle="modal" data-winner-selector="#fixture_{{ fixture.id }}_winner"
-                                data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
-                            {% elif fixture.finished %}
-                            {% trans "Finished" %}
-                            {% else %}
-                            {% trans "Not Finished" %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        </select>
     </div>
 
-    <div class="bracket-container brackets hide" id="bracket-layout">
-        <div id="positioner"></div>
+    <div id="layout-container">
+        <div class="row" id="table-layout">
+            <div class="col-md-12">
+                <table class="table table-striped" id="fixtures-table">
+                    <thead>
+                        <th>{% trans "Number of participants" %}</th>
+                        <th>{% trans "Fixture level" %}</th>
+                        <th>{% trans "Players" %}</th>
+                        <th>{% trans "Games" %}</th>
+                        <th>{% trans "Winner" %}</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {% for fixture in tournament.fixture_set.all %}
+                        <tr>
+                            <td>
+                                {{ fixture.level_number }}
+                            </td>
+                            <td>
+                                {{ fixture.level }}
+                            </td>
+                            <td class="player-container">
+                                <ul>
+                                    {% for fixture_player in fixture.playerfixture_set.all %}
+                                    <li>{{ fixture_player.player.player }}</li>
+                                    {% empty %}
+                                    <li>{% trans "This fixture has no players" %}</li>
+                                    {% endfor %}
+    
+                                    {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} 
+                                    <button class="btn btn-primary">
+                                        {% trans "Add a player" %}</button>
+                                    {% endif %}
+                                </ul>
+                            </td>
+                            <td>
+                                {% for fixture_player in fixture.playerfixture_set.all %}
+                                <input type="hidden" class="player" id="{{ fixture_player.id }}"
+                                    value="{{ fixture_player.player.player }}">
+                                {% endfor %}
+    
+                                {% for game in fixture.game_set.all %}
+                                <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )"
+                                    data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}"
+                                    data-fixture-id="{{ fixture.id }}">
+                                    {% blocktranslate with game_number=forloop.counter %}
+                                    Game #{{ game_number }}
+                                    {% endblocktranslate %}
+                                </button>
+                                {% empty %}
+                                <ul>
+                                    <li>{% trans "This fixture has no games" %}</li>
+                                </ul>
+                                {% endfor %}
+                                {% if request.session.player and tournament.creator.id == request.session.player.id %}
+                                <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game"
+                                    data-fixture-id="{{ fixture.id }}">
+                                    {% trans "Add a game" %}
+                                </button>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if fixture.get_winner %}
+                                <input id="fixture_{{ fixture.id }}_winner" value="{{ fixture.get_winner.id }}"
+                                    class="form-control" type="hidden" readonly />
+                                <input type="text" value="{{ fixture.get_winner.player.player.name }}" readonly
+                                    class="form-control">
+                                {% else %}
+                                {% trans "This fixture has no winner" %}
+                                    {% if fixture.tournament.creator.id == request.user.player.id %}
+                                    <div class="mb-3">
+                                        <label for="fixture_{{ fixture.id }}_winner">{% trans "Pick a winner" %}</label>
+                                        <select id="fixture_{{ fixture.id }}_winner" class="form-control">
+                                            <option value="">---</option>
+                                            {% for player in fixture.playerfixture_set.all %}
+                                            <option value="{{ player.id }}">{{ player.player.player.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not fixture.finished and fixture.tournament.creator.id == request.session.player.id %}
+                                <button class="btn btn-primary trigger-finish-fixture" data-bs-target="#finish-fixture"
+                                    data-bs-toggle="modal" data-winner-selector="#fixture_{{ fixture.id }}_winner"
+                                    data-fixture-id="{{ fixture.id }}">{% trans "Finish" %}</button>
+                                {% elif fixture.finished %}
+                                {% trans "Finished" %}
+                                {% else %}
+                                {% trans "Not Finished" %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bracket-container brackets" id="brackets-layout">
+        </div>
     </div>
 </div>
 
@@ -183,7 +204,6 @@ Mate | Tournaments | {{id}}
 
 {% block modals %}
 <div id="participants_list" class="modal">
-
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -240,6 +260,7 @@ Mate | Tournaments | {{id}}
         </div>
     </div>
 </div>
+
 {% if request.session.player and tournament.creator.id == request.session.player.id %}
 <div id="new_game" class="modal">
     <div class="modal-dialog">
@@ -381,6 +402,69 @@ Mate | Tournaments | {{id}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger finish-fixture" data-bs-dismiss="modal">{% trans "Yes" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="fixture_detail" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Test Player 1 vs Test Player 2</h5>
+                <button class="btn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        Winner: 
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" readonly value="Test Player 1">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% trans "Games" %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Date & Time" %}</th>
+                                    <th>{% trans "White" %}</th>
+                                    <th>{% trans "Black" %}</th>
+                                    <th>{% trans "Score" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sun. 12 March 2022, 18:23</td>
+                                    <td>Test Player 1</td>
+                                    <td>Test Player 2</td>
+                                    <td>{% trans "1-0" %}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sun. 19 March 2022, 18:23</td>
+                                    <td>Test Player 2</td>
+                                    <td>Test Player 1</td>
+                                    <td>{% trans "1-0" %}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sun. 26 March 2022, 18:23</td>
+                                    <td>Test Player 1</td>
+                                    <td>Test Player 2</td>
+                                    <td>{% trans "1/2-1/2" %}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <button class="col-md-3 btn btn-primary">{% trans "Add a game" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-danger">{% trans "Finish" %}</button>
             </div>
         </div>
     </div>

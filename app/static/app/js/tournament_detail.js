@@ -5,6 +5,12 @@ var state = {
 let dateTimePicker = new SimplePicker()
 let dateTimePicker2 = new SimplePicker()
 
+const TABLE_LAYOUT_OPTION = 1
+const BRACKETS_LAYOUT_OPTION = 2
+
+const TABLE_LAYOUT_SELECTOR = "#table-layout"
+const BRACKETS_LAYOUT_SELECTOR = "#brackets-layout"
+
 $(document).ready(function () {
 
     if (getCookie("tournament_id")) {
@@ -12,6 +18,7 @@ $(document).ready(function () {
             type: "GET",
             url: `http://localhost:8000/${API_URL}/tournaments/${getCookie("tournament_id")}/`,
             success: function (data) {
+                pickLayout(TABLE_LAYOUT_OPTION)
                 generateRoundsForDisplay(data['fixtures'])
             },
             error: function(data) {
@@ -22,19 +29,29 @@ $(document).ready(function () {
     }
 })
 
-function positionNodeToLeftOf(node, positioner) {
-    // positions node to the left of positioner node
-    let coordinates = $(positioner).position()
-    node.style.left = `${coordinates.left - node.offSetWidth}px`
-    // putting the div to the left of positioner
-}
+$("#layout-select").change(function() {
+    console.log("Select's value: " + this.value)
+    pickLayout(this.value)
+})
 
-function positionNodeToRightOf(node, positioner) {
-    let coordinates = $(positioner).position()
-    let width = positioner.offSetWidth
+function pickLayout(value) {
+    console.log(`Picking layout #${value}`)
 
-    // putting the div to the right of positioner
-    node.style.left = `${coordinates.left + width}px`
+    let selectedLayout = ''
+    switch( parseFloat(value) ) {
+        case TABLE_LAYOUT_OPTION:
+            selectedLayout = TABLE_LAYOUT_SELECTOR
+            break;
+        case BRACKETS_LAYOUT_OPTION:
+            selectedLayout = BRACKETS_LAYOUT_SELECTOR
+            break;
+        default:
+            selectedLayout = TABLE_LAYOUT_SELECTOR
+            break;
+    }
+    console.log("Selected layout: " + selectedLayout)
+    $("#layout-container>div").css('visibility', 'hidden')
+    $(selectedLayout).css('visibility', 'visible')
 }
 
 async function generateRoundsForDisplay(fixtures) {

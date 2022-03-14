@@ -80,7 +80,7 @@ $("#new_tournament_number_of_participants").on("input", function () {
 
 $("#submit_new_tournament").click(function () {
     if (getCookie("player_id")) {
-        formData = {
+        let formData = {
             name: $("#new_tournament_name").val(),
             total_number_of_participants: $("#new_tournament_number_of_participants").val(),
             creator: getCookie("player_id"),
@@ -102,23 +102,25 @@ $("#submit_new_tournament").click(function () {
             }
         ]
 
-        $.ajax({
-            type: "POST",
-            url: `http://localhost:8000/${API_URL}/tournaments/`,
-            data: formData,
-            headers: {
-                "X-CSRFTOKEN": getCookie("csrftoken")
-            },
-            success: function (data) {
-                displayMessage(gettext("Tournament added successfully"), ["alert-success", "alert-dismissible"])
-                $(".btn-close").click()
-                loadTournaments()
-            },
-            error: function (data) {
-                displayMessage(data.responseText)
-                console.log(data.responseText)
-            }
-        })
+        if (validateObjects(validationObjects)) {
+            $.ajax({
+                type: "POST",
+                url: `http://localhost:8000/${API_URL}/tournaments/`,
+                data: formData,
+                headers: {
+                    "X-CSRFTOKEN": getCookie("csrftoken")
+                },
+                success: function (data) {
+                    displayMessage(gettext("Tournament added successfully"), ["alert-success", "alert-dismissible"])
+                    $(".btn-close").click()
+                    loadTournaments()
+                },
+                error: function (data) {
+                    displayMessage(data.responseText)
+                    console.log(data.responseText)
+                }
+            })
+        }
     } else {
         $("#show-sign-in-prompt").click()
     }
@@ -148,7 +150,7 @@ function loadTournaments() {
                     card = createElement('div', ['card', ['col-md-4']])
                     if (tournament.image) {
                         // create image
-                        let image = createElement('img', ['card-img-top'], {src: tournament.image, alt: ""})
+                        let image = createElement('img', ['card-img-top'], { src: tournament.image, alt: "" })
                         $(card).append(image)
                     }
                     cardBody = createElement('div', ['card-body'])
@@ -180,6 +182,13 @@ function loadTournaments() {
                     }
 
                     $("#tournaments").append(card)
+                }
+
+                if (state.tournaments.length < 1) {
+                    console.log("No tournaments")
+                    let span = createElement('span')
+                    span.textContent = gettext("You have not created or enrolled in any tournament")
+                    $("#tournaments").append(span)
                 }
             },
             error: function (data) {

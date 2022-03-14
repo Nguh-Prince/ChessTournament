@@ -31,7 +31,7 @@ class Player(models.Model):
     telegram_username = models.CharField(max_length=256, unique=True, null=True)
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}: {self.classroom}"
+        return f"{self.first_name} {self.last_name} ({self.classroom})"
 
     @property
     def name(self) -> str:
@@ -40,7 +40,6 @@ class Player(models.Model):
     class Meta:
         verbose_name = _("Player")
         verbose_name_plural = _("Players")
-
 
 class GeometricProgression:
     def __init__(self, first_term: float, common_ratio: float) -> None:
@@ -65,7 +64,6 @@ class GeometricProgression:
         n = math.log((self.common_ratio * number) / self.first_term, self.common_ratio)
 
         return n if n.is_integer() else None
-
 
 class TournamentCategory(models.Model):
     number_of_points_for_draw = models.FloatField()
@@ -282,7 +280,13 @@ class Fixture(models.Model):
         return 0 if not count else count
 
     def __str__(self) -> str:
-        return f"{self.level} - {self.level_number}"
+        string =  f"{self.level} - {self.level_number}"
+        query = self.playerfixture_set.all()
+
+        if query.count() >= 1:
+            string = f"{ query.first().player.player.__str__() } vs. { query.last().player.player.__str__() if query.count() > 1 else '---' }"
+
+        return string
 
     def clean(self) -> None:
         if self.children.count() > 2:
@@ -472,7 +476,6 @@ class Game(models.Model):
             pass
 
     # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e.
-
 
 class PlayerFixtureGame(models.Model):
     game: Game = models.ForeignKey(Game, on_delete=models.CASCADE)
