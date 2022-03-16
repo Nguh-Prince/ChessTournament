@@ -86,6 +86,9 @@ def tournament_detail(request, tournament_id):
 
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect("app:home")
+
     context = {"errors": []}
     if request.method == "POST":
         names = request.POST.get("name")
@@ -125,7 +128,7 @@ def signup(request):
                 gender=gender,
                 phone=phone,
             )
-            user = User.objects.create(username=username, is_active=False, email=email)
+            user = User.objects.create(username=username, is_active=True, email=email)
             user.set_password(password)
             player.user = user
             player.save()
