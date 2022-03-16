@@ -11,7 +11,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% trans "Mate" %}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
-    <link rel="stylesheet" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/font-awesome/css/all.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/css/styles.css' %}">
+    <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
 
     <style>
@@ -21,6 +24,11 @@
             top: 0;
             width: 80%;
             margin-left: 10%;
+        }
+
+        .signin_validate>.row {
+            padding-top: 16px;
+            padding-bottom: 16px;
         }
     </style>
 </head>
@@ -48,33 +56,74 @@
                         <div class="card-body">
                             <form method="post" name="myform" class="signin_validate row g-3">
                                 {% csrf_token %}
-                                <div class="col-12">
-                                    <label class="form-label">{% trans "First and last name" %}</label>
-                                    <input type="text" class="form-control" placeholder="{% trans 'Name' %}"
-                                        name="name">
+                                <div class="row hide" id="personal-info">
+                                    <div class="col-12">
+                                        <label class="form-label">{% trans "First and last name" %}</label>
+                                        <input type="text" class="form-control" placeholder="{% trans 'Name' %}"
+                                            name="name">
+                                    </div>
+                                    <div class=" col-12 ">
+                                        <label class=" form-label">{% trans "Phone" %}</label>
+                                        <input type="tel" class="form-control" placeholder="679001234" name="phone">
+                                    </div>
+                                    <div class="col-12 ">
+                                        <label class="form-label">{% trans "Class" %}</label>
+                                        <input type="text" class="form-control" placeholder="SE3" name="class">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="gender" class="form-label">{% trans "Gender" %}</label>
+                                        <select name="gender" id="gender" class="form-control select">
+                                            <option value="f">{% trans "Female" %}</option>
+                                            <option value="m">{% trans "Male" %}</option>
+                                            <option value="nb">{% trans "Non-binary" %}</option>
+                                            <option value="rns">{% trans "Rather not say" %}</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class=" col-12 ">
-                                    <label class=" form-label">{% trans "Phone" %}</label>
-                                    <input type="tel" class="form-control" placeholder="679001234" name="phone">
-                                </div>
-                                <div class="col-12 ">
-                                    <label class="form-label">{% trans "Email" %}</label>
-                                    <input type="email" class="form-control" placeholder="hello@example.com"
-                                        name="email">
-                                </div>
-                                <div class="col-12 ">
-                                    <label class="form-label">{% trans "Class" %}</label>
-                                    <input type="text" class="form-control" placeholder="SE3"
-                                        name="class">
-                                </div>
-                                <div class="col-12">
-                                    <label for="gender" class="form-label">{% trans "Gender" %}</label>
-                                    <select name="gender" id="gender" class="form-control select">
-                                        <option value="f">{% trans "Female" %}</option>
-                                        <option value="m">{% trans "Male" %}</option>
-                                        <option value="nb">{% trans "Non-binary" %}</option>
-                                        <option value="rns">{% trans "Rather not say" %}</option>
-                                    </select>
+
+                                <div class="row" id="user-info">
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input type="text" id="username" class="form-control"
+                                            placeholder="{% trans 'Username e.g john_doe' %}">
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                        <input type="email" class="form-control" placeholder="hello@example.com"
+                                            name="email">
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-at"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="telegram-username"
+                                            name="telegram_username" placeholder="{% trans 'Telegram username' %}">
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                        <input type="password" name="password" id="password"
+                                            placeholder="{% trans 'Password' %}" class="form-control">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                        <input type="password" name="password"
+                                            placeholder="{% trans 'Confirm password' %}" id="confirm_password"
+                                            class="form-control">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div class="d-grid gap-2">
@@ -82,9 +131,10 @@
                                 </div>
                             </form>
                             <div class="text-center">
-                                <p class="mt-3 mb-0"> <a class="text-primary" href="{% url 'app:login' %}">{% trans 'Sign in' %}</a> {% trans "to your account" %}</p>
+                                <p class="mt-3 mb-0"> <a class="text-primary" href="{% url 'app:login' %}">{% trans
+                                        'Sign in' %}</a> {% trans "to your account" %}</p>
                                 <p>
-                                    <a href="{% provider_login_url 'github' %}">Login with GitHub</a>
+                                    <a href="{% provider_login_url 'github' %}">{% trans "Login with GitHub" %}</a>
                                 </p>
                             </div>
                         </div>
@@ -94,5 +144,21 @@
         </div>
     </div>
 </body>
+
+<script>
+    // reveal/hide password
+    $(".fa-eye").click(function () {
+        let inputSelector = $(this).parent().parent().children('input').first()
+        console.log(inputSelector)
+
+        if (inputSelector.val()) {
+            if (inputSelector.attr('type') == 'password') {
+                inputSelector[0].type = "text";
+            } else {
+                inputSelector[0].type = "password";
+            }
+        }
+    })
+</script>
 
 </html>

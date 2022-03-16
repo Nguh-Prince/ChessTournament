@@ -1,5 +1,8 @@
 import os
 from pathlib import Path
+import mimetypes
+
+mimetypes.add_type("text/css", ".css", True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,6 +39,14 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "modeltranslation",
+    "pwa",
+    "corsheaders",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.8.105:8000",
+    "http://172.20.10.5:8000",
+    "http://localhost:8000",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -171,3 +182,33 @@ LOGOUT_REDIRECT_URL = "/"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+PWA_APP_NAME = 'mate'
+PWA_APP_DESCRIPTION = "Mate PWA"
+PWA_APP_THEME_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/home'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/home'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+	{
+		'src': 'static/images/chess-clock.png',
+		'sizes': '150x150'
+	}
+]
+PWA_APP_ICONS_APPLE = [
+	{
+		'src': 'static/images/chess-clock.png',
+		'sizes': '150x150'
+	}
+]
+PWA_APP_SPLASH_SCREEN = [
+	{
+		'src': 'static/images/chess-clock.png',
+		'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+	}
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
