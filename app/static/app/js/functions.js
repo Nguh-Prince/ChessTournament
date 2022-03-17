@@ -486,3 +486,7 @@ $('.form-control').on('input', function () {
 })
 
 var state = {}
+
+function getServerHostAndPort() {
+    return self.location.host
+}

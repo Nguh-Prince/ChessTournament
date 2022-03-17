@@ -16,14 +16,14 @@ $(document).ready(function () {
     if (getCookie("tournament_id")) {
         $.ajax({
             type: "GET",
-            url: `http://localhost:8000/${API_URL}/tournaments/${getCookie("tournament_id")}/`,
+            url: `http://${getServerHostAndPort()}/${API_URL}/tournaments/${getCookie("tournament_id")}/`,
             success: function (data) {
                 pickLayout(TABLE_LAYOUT_OPTION)
                 generateRoundsForDisplay(data['fixtures'])
             },
             error: function(data) {
                 console.log(data.responseText)
-                console.log(`http://localhost:8000/${API_URL}/tournaments/${getCookie("tournament_id")}/`)
+                console.log(`http://${getServerHostAndPort()}/${API_URL}/tournaments/${getCookie("tournament_id")}/`)
             }
         })
     }
@@ -164,7 +164,7 @@ function modifyTournamentPlayer(tournamentPlayerId, kickOut = false, enroll = tr
     else if (tournamentPlayerId) {
         $.ajax({
             type: "PATCH",
-            url: `http://localhost:8000/${API_URL}/tournamentplayers/${tournamentPlayerId}/`,
+            url: `http://${getServerHostAndPort()}/${API_URL}/tournamentplayers/${tournamentPlayerId}/`,
             contentType: "application/json",
             data: JSON.stringify({
                 kicked_out: kickOut,
@@ -319,7 +319,7 @@ function addGameToFixture(fixtureId, tournamentId) {
 
         if (validateObjects(validationObjects)) {
             $.ajax({
-                url: `http://localhost:8000/${API_URL}/tournaments/${tournamentId}/games/`,
+                url: `http://${getServerHostAndPort()}/${API_URL}/tournaments/${tournamentId}/games/`,
                 type: "POST",
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
@@ -352,7 +352,7 @@ function showGameDetail(gameId) {
         if (!(gameId in state.games)) {
             $.ajax({
                 type: "GET",
-                url: `http://localhost:8000/${API_URL}/games/${gameId}/`,
+                url: `http://${getServerHostAndPort()}/${API_URL}/games/${gameId}/`,
                 success: function (data) {
                     state.games[`${gameId}`] = data
                     populateGameModal(data)
@@ -463,7 +463,7 @@ $("#edit-game").click(function () {
         if (validateObjects(validationObjects)) {
             $.ajax({
                 type: "PUT",
-                url: `http://localhost:8000/${API_URL}/games/${gameId}/`,
+                url: `http://${getServerHostAndPort()}/${API_URL}/games/${gameId}/`,
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
                 },
@@ -531,7 +531,7 @@ $(".finish-fixture").click(function () {
     if (fixtureId && playerFixtureId) {
         $.ajax({
             type: "PATCH",
-            url: `http://localhost:8000/${API_URL}/playerfixtures/${playerFixtureId}/`,
+            url: `http://${getServerHostAndPort()}/${API_URL}/playerfixtures/${playerFixtureId}/`,
             data: JSON.stringify({ is_winner: true }),
             headers: {
                 "X-CSRFTOKEN": getCookie("csrftoken")
@@ -542,7 +542,7 @@ $(".finish-fixture").click(function () {
                 // set fixture to finished
                 $.ajax({
                     type: "PATCH",
-                    url: `http://localhost:8000/${API_URL}/fixtures/${fixtureId}/`,
+                    url: `http://${getServerHostAndPort()}/${API_URL}/fixtures/${fixtureId}/`,
                     data: JSON.stringify({ finished: true }),
                     headers: {
                         "X-CSRFTOKEN": getCookie("csrftoken")

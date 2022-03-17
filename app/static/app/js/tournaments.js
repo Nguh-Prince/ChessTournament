@@ -6,7 +6,7 @@ var state = {
 function loadAllTournaments() {
     $.ajax({
         type: "GET",
-        url: `http://localhost:8000/${API_URL}/tournaments/`,
+        url: `http://${getServerHostAndPort()}/${API_URL}/tournaments/`,
         success: function(data) {
             $("#all-tournaments").html('')
             
@@ -61,7 +61,7 @@ function loadAllTournaments() {
                         } else {
                             $.ajax({
                                 type: "POST",
-                                url: `http://localhost:8000/${API_URL}/tournaments/enroll/`,
+                                url: `http://${getServerHostAndPort()}/${API_URL}/tournaments/enroll/`,
                                 data: {
                                     player: getCookie("player_id"),
                                     tournament: tournament["id"]

@@ -1,4 +1,4 @@
-{% load i18n static socialaccount %}
+{% load i18n static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -93,9 +93,6 @@
                             </form>
                             <div class="text-center">
                                 <p class="mt-3 mb-0"> <a class="text-primary" href="{% url 'app:login' %}">{% trans 'Sign in' %}</a> {% trans "to your account" %}</p>
-                                <p>
-                                    <a href="{% provider_login_url 'github' %}">Login with GitHub</a>
-                                </p>
                             </div>
                         </div>
                     </div>

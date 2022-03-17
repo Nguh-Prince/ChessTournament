@@ -19,7 +19,7 @@ $(".fa-eye").click(function () {
 function getUniqueValues() {
     $.ajax({
         type: "GET",
-        url: `http://localhost:8000/get-unique-values`,
+        url: `http://${getServerHostAndPort()}/get-unique-values`,
         success: function (data) {
             state = data
         },
@@ -109,6 +109,7 @@ $("#next").click(function () {
     $(this).addClass('hide')
     $("#submit").removeClass("hide")
     $("#previous").removeClass("hide").removeClass("disabled")
+    $("#card-title").text(gettext("User information"))
 })
 
 $("#previous").click(function () {
@@ -118,6 +119,7 @@ $("#previous").click(function () {
     $("#submit").addClass("hide")
     $("#next").removeClass('hide')
     $("#previous").addClass("hide").addClass("disabled")
+    $("#card-title").text(gettext("Personal information"))
 })
 
 function validateUnique(jquerySelector) {
