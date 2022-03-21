@@ -1,4 +1,9 @@
 const DateTime = luxon.DateTime
+let db;
+
+const dbName = "pwa_db";
+const version = 17;
+const storeName = "pwa_store";
 
 function createElement(htmlTag, classes = null, attributes = null) {
     node = document.createElement(htmlTag)
@@ -429,7 +434,8 @@ function validateObjects(objectList) {
 
 function displayMessage(message, classes = ['alert-danger', 'alert-dismissible'], timeout = 10000) {
     let alert = createElement('div', ['alert'].concat(classes), { role: "alert" })
-    $(alert).append(message)
+    let messageNode = document.createTextNode(message)
+    $(alert).append(messageNode)
 
     button = createElement('button', ['btn-close'], { "data-bs-dismiss": "alert", "aria-label": "Close" })
     $(alert).append(button)
@@ -489,4 +495,62 @@ var state = {}
 
 function getServerHostAndPort() {
     return self.location.host
+}
+
+const storeNames = [
+	"crypt_key_store",
+	"tournaments_store",
+	"games_store",
+	"fixtures_store"
+]
+
+async function openDB(callback, callbackParams=[]) {
+    let req = indexedDB.open(dbName, version);
+
+    req.onerror = (err) => {
+        console.warn(err);
+    }
+
+    req.onsuccess = (event) => {
+        db = event.target.result;
+
+        if (callback) {
+            callback(...callbackParams);
+        }
+    }
+}
+
+async function addToStore(key, value, storeName=storeNames[0]) {
+	// start a transaction of actions you want to submit
+	const transaction = db.transaction(storeName, "readwrite")
+
+	// create an object store
+	const store = transaction.objectStore(storeName);
+
+	// add key and value to the store
+	const request = store.put({ key, value });
+
+	request.onsuccess = function() {
+		console.log("added to the store", {key: value}, request.result);
+	};
+
+	request.onerror = function () {
+		console.log("Error did not save to store", request.error);
+	};
+
+	transaction.onerror = function (event) {
+		console.log("Trans failed", event);
+	};
+
+	transaction.oncomplete = function (event) {
+		console.log("Trans completed", event);
+	}
+}
+
+async function getAllItems(storeName) {
+    const transaction = db.transaction(storeName, "readwrite")
+
+    const store = transaction.objectStore(storeName);
+
+    let request = store.getAll();
 }

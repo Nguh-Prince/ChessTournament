@@ -44,6 +44,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     participants = TournamentPlayerSerializer(
         read_only=True, source="tournamentplayer_set", many=True
     )
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = models.Tournament
@@ -63,6 +64,7 @@ class TournamentSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
+        ic(attrs)
         value = attrs["total_number_of_participants"]
         # must be a power of 2 and greater than 1
         if value <= 1:
@@ -84,7 +86,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 
         if (
             attrs["number_of_points_for_win"] == attrs["number_of_points_for_loss"]
-            or attrs["number_of_points_for_loss"] == attrs["number_of_points_draw"]
+            or attrs["number_of_points_for_loss"] == attrs["number_of_points_for_draw"]
             or attrs["number_of_points_for_draw"] == attrs["number_of_points_for_win"]
         ):
             raise ValidationError(
@@ -92,6 +94,8 @@ class TournamentSerializer(serializers.ModelSerializer):
                     "The number of points for a win, draw and loss must be different from each other"
                 )
             )
+
+        return attrs
 
 
 class TournamentEnrollSerializer(serializers.ModelSerializer):

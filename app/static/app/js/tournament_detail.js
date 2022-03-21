@@ -406,7 +406,7 @@ function populateFixtureModal(fixtureObject) {
 
         $(input).append( createElement('option', [], {value: optionObjects.value}) )
         for (let item of fixtureObject["participants"]) {
-            option = createElement('option', [], {value: })
+            // option = createElement('option', [], {value: })
         }
     }
 }
