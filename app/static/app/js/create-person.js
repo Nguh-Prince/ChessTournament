@@ -90,7 +90,9 @@ $("#user-info input, #user-info select").on("input", function () {
 
     if ($(this).attr('name') === 'confirm-password') {
         flag = validateValueEquals($("#password").val(), $(this)) ? flag : false
-
+        $(this).parent().remove('.invalid-feedback')
+        $("#password").removeClass("is-invalid")
+        
         if (!flag) {
             $("#password").addClass("is-invalid")
             let feedback = createElement('div', ['invalid-feedback'])

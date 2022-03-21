@@ -391,6 +391,26 @@ function populateGameModal(gameObject) {
     }
 }
 
+function populateFixtureModal(fixtureObject) {
+    $("#fixture_detail .modal-header").text(fixtureObject["__str__"])
+    let input
+
+    if (fixtureObject["winner"]) {
+        // add an input
+        input = createElement('input', ['form-control'], {'readonly': true})
+    } else {
+        // add a select
+        input = createElement('select', ['form-control', 'select'])
+        let option = createElement('option', [], {value: ""})
+        option.textContent = "---"
+
+        $(input).append( createElement('option', [], {value: optionObjects.value}) )
+        for (let item of fixtureObject["participants"]) {
+            option = createElement('option', [], {value: })
+        }
+    }
+}
+
 $("#game_datetime_formatted").click(function () {
     let currentDate = new Date()
     dateTimePicker2.reset(currentDate)

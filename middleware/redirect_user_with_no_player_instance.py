@@ -16,6 +16,7 @@ class Middleware:
         print("In redirect middleware")
         response = self.get_response(request)
         regex = re.compile("/create-person")
+        
         if request.user.is_authenticated:
             if models.Player.objects.filter(
                 user=request.user

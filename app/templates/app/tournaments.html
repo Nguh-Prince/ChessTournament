@@ -1,5 +1,10 @@
 {% extends 'app/base.html' %}
-{% load i18n static %}
+{% load i18n static pwa %}
+
+{% block styles %}
+<meta name="description" content="{% trans 'List of tournaments' %}">
+{% progressive_web_app_meta %}
+{% endblock %}
 
 {% block tournaments_active %}active{% endblock %}
 

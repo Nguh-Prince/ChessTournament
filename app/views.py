@@ -55,9 +55,10 @@ def login_view(request):
 
 
 def index(request):
-    if request.user.is_authenticated:
-        return redirect("app:home")
-    return HttpResponse("Landing page required")
+    print("Running index")
+    # if request.user.is_authenticated:
+    #     return redirect("app:home")
+    return render(request, "app/index.html")
 
 
 def home(request):
@@ -98,6 +99,7 @@ def signup(request):
         gender = request.POST.get("gender")
         password = request.POST.get("password")
         username = request.POST.get("username")
+        telegram_username = request.POST.get("telegram_username")
 
         if len(names) < 2:
             context["errors"].append(_("First and last name required"))
@@ -127,6 +129,7 @@ def signup(request):
                 classroom=classroom,
                 gender=gender,
                 phone=phone,
+                telegram_username=telegram_username
             )
             user = User.objects.create(username=username, is_active=True, email=email)
             user.set_password(password)

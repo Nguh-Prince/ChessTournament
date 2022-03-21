@@ -1,5 +1,5 @@
 {% extends 'app/base.html' %}
-{% load crispy_forms_tags i18n static %}
+{% load crispy_forms_tags i18n static pwa %}
 
 {% block tournaments_active %}
 active
@@ -15,10 +15,11 @@ Mate | Tournaments | {{id}}
 <link rel="stylesheet" type="text/css" href="{% static 'app/css/datatables.bootstrap5.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'app/css/bracket-codepen.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'app/simplepicker/dist/simplepicker.css' %}">
+<meta name="description" content="{% trans 'Tournament detail' %}">
 <script src="{% static 'app/simplepicker/dist/simplepicker.js' %}"></script>
 <script src="{% static 'app/js/jquery.datatables.min.js' %}"></script>
 <script src="{% static 'app/js/datatables.bootstrap5.min.js' %}"></script>
-<script src="{% static 'app/js/brackets.min.js' %}"></script>
+{% progressive_web_app_meta %}
 
 <style>
     #layout-container {
@@ -267,7 +268,7 @@ Mate | Tournaments | {{id}}
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{% trans "New game" %}</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="new_game_fixture" readonly>
@@ -317,7 +318,9 @@ Mate | Tournaments | {{id}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="add-game">{% trans "Submit" %}</button>
-                <button class="btn btn-danger" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    {% trans "Close" %}
+                </button>
             </div>
         </div>
     </div>
@@ -383,7 +386,9 @@ Mate | Tournaments | {{id}}
                 {% if tournament.creator.id == request.session.player.id %}
                 <button class="btn btn-primary" id="edit-game">{% trans "Submit" %}</button>
                 {% endif %}
-                <button class="btn btn-danger" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    {% trans "Close" %}
+                </button>
             </div>
         </div>
     </div>
@@ -394,7 +399,8 @@ Mate | Tournaments | {{id}}
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{% trans "Finish fixture?" %}</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                </button>
             </div>
             <div class="modal-body">
                 {% trans "Once a fixture is marked as finished, it cannot be reverted. Are you sure you want to mark
@@ -412,14 +418,15 @@ Mate | Tournaments | {{id}}
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Test Player 1 vs Test Player 2</h5>
-                <button class="btn-close"></button>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                </button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-3">
-                        Winner: 
+                        {% trans 'Winner: ' %}
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-9" class="winner-container">
                         <input type="text" class="form-control" readonly value="Test Player 1">
                     </div>
                 </div>

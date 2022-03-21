@@ -4,12 +4,18 @@ import mimetypes
 
 mimetypes.add_type("text/css", ".css", True)
 
+import environ
+
+env = environ.Env()
+
+environ.Env.read_env()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-&^2v4^41jq$&w-n%6lli&2@sfk=6gjvti^2()tgz5sqnr8o3bf"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -27,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.sites",
     "django.contrib.staticfiles",
     "app",
     "rest_framework",
@@ -90,8 +95,12 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env("DATABASE_NAME"),
+        "USER": env("DATABASE_USER"),
+        "PASSWORD": env("DATABASE_PASSWORD"),
+        "HOST": env("DATABASE_HOST"),
+        "PORT": env("DATABASE_PORT"),
         "ATOMIC_REQUESTS": True,
     }
 }
@@ -154,6 +163,7 @@ LOGOUT_REDIRECT_URL = "/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
 PWA_APP_NAME = 'mate'
 PWA_APP_DESCRIPTION = "Mate PWA"
 PWA_APP_THEME_COLOR = '#000000'
@@ -165,19 +175,19 @@ PWA_APP_START_URL = '/home'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
 	{
-		'src': 'static/images/chess-clock.png',
+		'src': 'static/images/chess-clock.svg',
 		'sizes': '150x150'
 	}
 ]
 PWA_APP_ICONS_APPLE = [
 	{
-		'src': 'static/images/chess-clock.png',
+		'src': 'static/images/chess-clock.svg',
 		'sizes': '150x150'
 	}
 ]
 PWA_APP_SPLASH_SCREEN = [
 	{
-		'src': 'static/images/chess-clock.png',
+		'src': 'static/images/chess-clock.svg',
 		'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
 	}
 ]
