@@ -99,6 +99,7 @@ class Tournament(models.Model):
     number_of_points_for_win = models.FloatField(default=1)
     number_of_points_for_loss = models.FloatField(default=0)
     image = models.ImageField(upload_to=tournament_directory_path)
+    terms = models.FileField(upload_to=tournament_directory_path, blank=True, null=True)
 
     class Meta:
         verbose_name = _("Tournament")

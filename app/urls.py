@@ -14,9 +14,9 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path("signup/", views.signup, name="signup"),
     path("home/", views.home, name="home"),
-    path("tournaments/", views.tournaments, name="tournaments"),
+    path("home/tournaments/", views.tournaments, name="tournaments"),
     path(
-        "tournaments/<int:tournament_id>/",
+        "home/tournaments/<int:tournament_id>/",
         views.tournament_detail,
         name="tournament-detail",
     ),
