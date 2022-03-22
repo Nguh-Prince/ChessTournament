@@ -1,6 +1,8 @@
 from django.db.models import Q
 from rest_framework import generics
 
+from icecream import ic
+
 from . import models, permissions, serializers
 
 
@@ -15,7 +17,6 @@ class TournamentsList(generics.ListCreateAPIView):
     queryset = models.Tournament.objects.all()
 
     serializer_class = serializers.TournamentSerializer
-
 
 class PlayerTournamentsList(generics.ListAPIView):
     # get a list of tournaments that a certain player either created or is participating in

@@ -45,6 +45,7 @@ class TournamentSerializer(serializers.ModelSerializer):
         read_only=True, source="tournamentplayer_set", many=True
     )
     image = serializers.ImageField(required=False)
+    terms = serializers.FileField(required=False)
 
     class Meta:
         model = models.Tournament
@@ -61,6 +62,7 @@ class TournamentSerializer(serializers.ModelSerializer):
             "number_of_points_for_win",
             "number_of_points_for_loss",
             "image",
+            "terms",
         )
 
     def validate(self, attrs):

@@ -103,17 +103,34 @@ $("#submit_new_tournament").click(function () {
         ]
 
         if (validateObjects(validationObjects)) {
-            console.log(formData)
-            console.log(JSON.stringify(formData))
+            let form = new FormData();
+            Object.keys(formData).forEach( (key, index) => {
+                form[key] = formData[key]
+            } )
+
+            let termFiles = $("#new_tournament_terms").prop('files');
+            let imageFiles = $("#new_tournament_image").prop('files');
+
+            // termFiles && termFiles[0] ? form["terms"] = termFiles[0] : form['terms'] = null
+
+            // imageFiles && imageFiles[0] ? form["image"] = imageFiles[0] :form['image'] = null
+
+            console.log( JSON.stringify(form) )
+            console.log( form )
             $.ajax({
+                method: "POST",
                 type: "POST",
                 url: `http://${getServerHostAndPort()}/${API_URL}/tournaments/`,
-                data: JSON.stringify(formData),
-                contentType: "application/json",
+                data: form,
                 processData: false,
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
                 },
+                cache: false,
+                contentType: false,
+                processData: false,
+                mimeType: "multipart/form-data",
+                encType: "multipart/form-data",
                 success: function (data) {
                     displayMessage(gettext("Tournament added successfully"), ["alert-success", "alert-dismissible"])
                     $(".btn-close").click()
@@ -130,13 +147,18 @@ $("#submit_new_tournament").click(function () {
     }
 })
 
+$("#new_tournament_image").change(function() {
+    console.log("image changing...")
+    readImage(this, '#new_tournament_image_preview')
+})
+
 $(document).ready(function () {
     loadTournaments()
     $("#home_link img").attr('src', ICONS.home.active)
 })
 
 function getTournamentDetailLink(tournament_id) {
-    return `/tournaments/${tournament_id}/`
+    return `/home/tournaments/${tournament_id}/`
 }
 
 async function addTournamentsToIndexedDB(tournaments) {

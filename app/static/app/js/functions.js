@@ -5,6 +5,13 @@ const dbName = "pwa_db";
 const version = 17;
 const storeName = "pwa_store";
 
+var storeNames = [
+    "crypt_key_store",
+    "tournaments_store",
+    "games_store",
+    "fixtures_store"
+]
+
 function createElement(htmlTag, classes = null, attributes = null) {
     node = document.createElement(htmlTag)
     if (classes && typeof classes === 'object')
@@ -25,8 +32,8 @@ function createElement(htmlTag, classes = null, attributes = null) {
     return node
 }
 
-function createErrorMessage(message, id=null) {
-    div = createElement('div', ['invalid-feedback'], id ? {id: id} : null)
+function createErrorMessage(message, id = null) {
+    div = createElement('div', ['invalid-feedback'], id ? { id: id } : null)
     div.textContent = message
 
     return div
@@ -311,7 +318,7 @@ function validateObject(object) {
         alert(gettext("The in and notIn selectors of this object are the same"))
     }
 
-    if (!value && (object.required || object.requiredIf) ) {
+    if (!value && (object.required || object.requiredIf)) {
         messages.push(gettext("This field is required"))
         console.log(object)
         flag = false
@@ -382,8 +389,8 @@ function validateObject(object) {
             }
         }
         if (object.different) {
-            if ( value && $(`${object.different}`).val() == value ) {
-                message = gettext( "The value of this input must be different from that of %s" )
+            if (value && $(`${object.different}`).val() == value) {
+                message = gettext("The value of this input must be different from that of %s")
                 message = interpolate(message, [object.different])
 
                 messages.push(message)
@@ -465,7 +472,8 @@ function deleteItem(url) {
             if (data.status == 500) {
                 displayMessage(gettext("Error connecting to the server"))
             } else {
-                for (error in data.error) {PaymentMethodChangeEvent
+                for (error in data.error) {
+                    PaymentMethodChangeEvent
                     displayMessage(error)
                 }
             }
@@ -497,14 +505,23 @@ function getServerHostAndPort() {
     return self.location.host
 }
 
-const storeNames = [
-	"crypt_key_store",
-	"tournaments_store",
-	"games_store",
-	"fixtures_store"
-]
+function readImage(input, imageNodeSelector=null) {
+    console.log("Reading from input and putting image in " + imageNodeSelector)
+    // reads the file and places it in the image
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
 
-async function openDB(callback, callbackParams=[]) {
+        reader.onload = function (e) {
+            console.log("Reader loading...")
+            $(imageNodeSelector).attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+
+}
+
+async function openDB(callback, callbackParams = []) {
     let req = indexedDB.open(dbName, version);
 
     req.onerror = (err) => {
@@ -520,31 +537,31 @@ async function openDB(callback, callbackParams=[]) {
     }
 }
 
-async function addToStore(key, value, storeName=storeNames[0]) {
-	// start a transaction of actions you want to submit
-	const transaction = db.transaction(storeName, "readwrite")
+async function addToStore(key, value, storeName = storeNames[0]) {
+    // start a transaction of actions you want to submit
+    const transaction = db.transaction(storeName, "readwrite")
 
-	// create an object store
-	const store = transaction.objectStore(storeName);
+    // create an object store
+    const store = transaction.objectStore(storeName);
 
-	// add key and value to the store
-	const request = store.put({ key, value });
+    // add key and value to the store
+    const request = store.put({ key, value });
 
-	request.onsuccess = function() {
-		console.log("added to the store", {key: value}, request.result);
-	};
+    request.onsuccess = function () {
+        console.log("added to the store", { key: value }, request.result);
+    };
 
-	request.onerror = function () {
-		console.log("Error did not save to store", request.error);
-	};
+    request.onerror = function () {
+        console.log("Error did not save to store", request.error);
+    };
 
-	transaction.onerror = function (event) {
-		console.log("Trans failed", event);
-	};
+    transaction.onerror = function (event) {
+        console.log("Trans failed", event);
+    };
 
-	transaction.oncomplete = function (event) {
-		console.log("Trans completed", event);
-	}
+    transaction.oncomplete = function (event) {
+        console.log("Trans completed", event);
+    }
 }
 
 async function getAllItems(storeName) {

@@ -30,7 +30,8 @@ active
                 {% trans "You have not created or been enrolled into any tournament." %}
             </div>
             <div class="col-md-12 text-center">
-                <a href="{% url 'app:tournaments' %}" class="btn btn-primary col-md-2">{% trans "View all tournaments" %}</a>
+                <a href="{% url 'app:tournaments' %}" class="btn btn-primary col-md-2">{% trans "View all tournaments"
+                    %}</a>
             </div>
         </div>
     </div>
@@ -46,7 +47,7 @@ active
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post">
+                <div class="row" id="tournament-info">
                     <div class="mb-3">
                         <label for="name" class="form-label">{% trans "Name" %}</label>
                         <input type="text" name="name" class="form-control" id="new_tournament_name" required>
@@ -71,11 +72,26 @@ active
                         <input type="number" id="new_tournament_number_of_points_for_draw" class="form-control"
                             value="0.5">
                     </div>
-                </form>
+                    <div class="mb-3">
+                        <label for="new_tournament_terms">{% trans "Terms & Conditions" %}</label>
+                        <input class="form-control" type="file" id="new_tournament_terms">
+                    </div>
+                </div>
+                <form action="" enctype=""></form>
+                <div class="row" id="tournament-image">
+                    <div class="card">
+                        <img src="{% static 'images/no-image.svg' %}" id="new_tournament_image_preview" class="card-img-top">
+                        <div class="col-md-12 text-center">
+                            <label for="new_tournament_image" class="btn btn-secondary">{% trans "Select an image" %}</label>
+                            <input type="file" id="new_tournament_image" style="display: none;">
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary disabled" id="submit_new_tournament">{% trans "Submit" %}</button>
+                <button type="button" class="btn btn-primary disabled" id="submit_new_tournament">{% trans "Submit"
+                    %}</button>
             </div>
         </div>
     </div>
