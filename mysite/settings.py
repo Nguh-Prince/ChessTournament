@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import mimetypes
+import dj_database_url
 
 mimetypes.add_type("text/css", ".css", True)
 
@@ -104,6 +105,8 @@ DATABASES = {
         "ATOMIC_REQUESTS": True,
     }
 }
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES["default"].update(db_from_env)
 
 
 # Password validation
