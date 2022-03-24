@@ -522,6 +522,21 @@ function readImage(input, imageNodeSelector = null) {
 
 }
 
+function getBase64(file) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = function() {
+        console.log(reader.result)
+        return reader.result
+    }
+
+    reader.onerror = function(error) {
+        console.log(error);
+        alert(error)
+    }
+}
+
 async function openDB(callback, callbackParams = []) {
     let req = indexedDB.open(dbName, db_version);
 

@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 from icecream import ic
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
+from drf_extra_fields.fields import Base64ImageField, Base64FileField
 
 from . import models
 from .utilities import is_power_of_2
@@ -11,7 +12,19 @@ from .utilities import is_power_of_2
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
-        fields = ("first_name", "last_name", "phone", "level", "classroom", "email", "gender", "image", "telegram_username", "name")
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+            "phone",
+            "level",
+            "classroom",
+            "email",
+            "gender",
+            "image",
+            "telegram_username",
+            "name",
+        )
 
 
 class TournamentPlayerSerializer(serializers.ModelSerializer):
@@ -44,8 +57,8 @@ class TournamentSerializer(serializers.ModelSerializer):
     participants = TournamentPlayerSerializer(
         read_only=True, source="tournamentplayer_set", many=True
     )
-    image = serializers.ImageField(required=False)
-    terms = serializers.FileField(required=False)
+    image = Base64ImageField(required=False)
+    terms = Base64FileField(required=False)
 
     class Meta:
         model = models.Tournament
@@ -108,11 +121,15 @@ class TournamentEnrollSerializer(serializers.ModelSerializer):
             "tournament",
         )
 
+
 class PlayerFixtureGameSerializer(serializers.ModelSerializer):
-    scores = serializers.FloatField(source='get_sum_of_scores_before_game', read_only=True)
+    scores = serializers.FloatField(
+        source="get_sum_of_scores_before_game", read_only=True
+    )
+
     class Meta:
         model = models.PlayerFixtureGame
-        fields = ("id", "playerfixture", "score", "is_home", 'scores')
+        fields = ("id", "playerfixture", "score", "is_home", "scores")
 
     def validate(self, attrs):
         ic(attrs)
@@ -132,6 +149,7 @@ class PlayerFixtureGameSerializer(serializers.ModelSerializer):
                 )
 
         return attrs
+
 
 class GameSerializer(serializers.ModelSerializer):
     players = PlayerFixtureGameSerializer(many=True, source="playerfixturegame_set")
@@ -260,10 +278,12 @@ class GameSerializer(serializers.ModelSerializer):
 
         return instance
 
+
 import re
 
+
 class PlayerFixtureSerializer(serializers.ModelSerializer):
-    player = PlayerSerializer(source='player.player', read_only=True)
+    player = PlayerSerializer(source="player.player", read_only=True)
 
     class Meta:
         model = models.PlayerFixture

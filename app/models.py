@@ -41,6 +41,7 @@ class Player(models.Model):
         verbose_name = _("Player")
         verbose_name_plural = _("Players")
 
+
 class GeometricProgression:
     def __init__(self, first_term: float, common_ratio: float) -> None:
         self.first_term = first_term
@@ -64,6 +65,7 @@ class GeometricProgression:
         n = math.log((self.common_ratio * number) / self.first_term, self.common_ratio)
 
         return n if n.is_integer() else None
+
 
 class TournamentCategory(models.Model):
     number_of_points_for_draw = models.FloatField()
@@ -265,7 +267,7 @@ class Fixture(models.Model):
     level_number = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     root = models.ForeignKey(
-        "self", on_delete=models.PROTECT, null=True, related_name="children", blank=True
+        "self", on_delete=models.CASCADE, null=True, related_name="children", blank=True
     )
     finished = models.BooleanField(default=False)
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
@@ -281,7 +283,7 @@ class Fixture(models.Model):
         return 0 if not count else count
 
     def __str__(self) -> str:
-        string =  f"{self.level} - {self.level_number}"
+        string = f"{self.level} - {self.level_number}"
         query = self.playerfixture_set.all()
 
         if query.count() >= 1:
@@ -478,9 +480,12 @@ class Game(models.Model):
 
     # a game cannot have a time_to_play less than that of the games in the predecessors of its fixture i.e.
 
+
 class PlayerFixtureGame(models.Model):
     game: Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    playerfixture: PlayerFixture = models.ForeignKey(PlayerFixture, on_delete=models.CASCADE)
+    playerfixture: PlayerFixture = models.ForeignKey(
+        PlayerFixture, on_delete=models.CASCADE
+    )
     score = models.FloatField(null=False, default=0.5)
     is_home = models.BooleanField(default=False)
 
@@ -493,7 +498,9 @@ class PlayerFixtureGame(models.Model):
     #  in fixtures preceding this game's fixture
     @property
     def get_sum_of_scores_before_game(self):
-        total_score = self.game.fixture.children.aggregate( score=models.Sum( models.F('game__playerfixturegame__score') ) ) ['score']
+        total_score = self.game.fixture.children.aggregate(
+            score=models.Sum(models.F("game__playerfixturegame__score"))
+        )["score"]
 
         return total_score if total_score else 0
 

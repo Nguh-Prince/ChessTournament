@@ -68,7 +68,7 @@ function displayAllTournaments(tournamentsList) {
         }
 
         if (!playerId || !flag) { // show enroll button
-            let button = createElement('button', ['btn', 'btn-primary'])
+            let button = playerId ? createElement('button', ['btn', 'btn-primary'], {'data-bs-toggle': 'modal', 'data-bs-target': '#accept-notifications'}) : createElement('button', ['btn', 'btn-primary'])
             button.textContent = gettext("Enroll")
             $(cardBody).append(button)
 
@@ -77,31 +77,7 @@ function displayAllTournaments(tournamentsList) {
                     // show sign in prompt
                     $("#show-sign-in-prompt").click()
                 } else {
-                    $.ajax({
-                        type: "POST",
-                        url: `/${API_URL}/tournaments/enroll/`,
-                        data: {
-                            player: getCookie("player_id"),
-                            tournament: tournament["id"]
-                        },
-                        headers: {
-                            "X-CSRFTOKEN": getCookie("csrftoken")
-                        },
-                        success: function () {
-                            displayMessage(gettext("You have been enrolled successfully. Awaiting verification from the tournament's creator.", ['alert-success', 'alert-dismissible']))
-                            loadAllTournaments()
-                        },
-                        error: function (data) {
-                            if (data.status == 500) {
-                                displayMessage(ERROR_MESSAGES["500"])
-                            } else if (data.status == 403) {
-                                displayMessage(ERROR_MESSAGES["403"])
-                            } else {
-                                displayMessage(data.responseText)
-                            }
-                            console.log(data.responseText)
-                        }
-                    })
+                    console.log("You're logged in")
                 }
             })
 

@@ -129,7 +129,7 @@ def signup(request):
                 classroom=classroom,
                 gender=gender,
                 phone=phone,
-                telegram_username=telegram_username
+                telegram_username=telegram_username,
             )
             user = User.objects.create(username=username, is_active=True, email=email)
             user.set_password(password)

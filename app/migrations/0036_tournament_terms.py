@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0035_player_telegram_username'),
+        ("app", "0035_player_telegram_username"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournament',
-            name='terms',
-            field=models.FileField(blank=True, null=True, upload_to=app.models.tournament_directory_path),
+            model_name="tournament",
+            name="terms",
+            field=models.FileField(
+                blank=True, null=True, upload_to=app.models.tournament_directory_path
+            ),
         ),
     ]

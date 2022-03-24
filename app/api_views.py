@@ -1,5 +1,8 @@
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+
 from rest_framework import generics
+from rest_framework import viewsets
 
 from icecream import ic
 
@@ -12,11 +15,28 @@ class PlayersList(generics.ListCreateAPIView):
     serializer_class = serializers.PlayerSerializer
 
 
+class TournamentViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.TournamentSerializer
+    permission_classes = [
+        permissions.IsCreatorOr403,
+    ]
+    queryset = models.Tournament.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        ic(request.data)
+        ic(args)
+        ic(kwargs)
+        if 'pk' in kwargs:
+            tournament = get_object_or_404(models.Tournament, pk=kwargs['pk'])
+            # delete fixtures starting with the
+        return super().destroy(request, *args, **kwargs)
+
 class TournamentsList(generics.ListCreateAPIView):
     # get a list of tournaments or add a tournament
     queryset = models.Tournament.objects.all()
 
     serializer_class = serializers.TournamentSerializer
+
 
 class PlayerTournamentsList(generics.ListAPIView):
     # get a list of tournaments that a certain player either created or is participating in
@@ -64,8 +84,8 @@ class TournamentFixtures(generics.ListAPIView):
             tournament__id=self.kwargs["tournament_id"]
         )
 
-        if 'round' in self.kwargs:
-            query.filter(level_number=self.kwargs['round'])
+        if "round" in self.kwargs:
+            query.filter(level_number=self.kwargs["round"])
 
         return query
 

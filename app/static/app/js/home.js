@@ -111,26 +111,19 @@ $("#submit_new_tournament").click(function () {
             let termFiles = $("#new_tournament_terms").prop('files');
             let imageFiles = $("#new_tournament_image").prop('files');
 
-            // termFiles && termFiles[0] ? form["terms"] = termFiles[0] : form['terms'] = null
+            formData["terms"] = termFiles && termFiles[0] ?  getBase64(termFiles[0]) : null
 
-            // imageFiles && imageFiles[0] ? form["image"] = imageFiles[0] :form['image'] = null
+            formData["image"] = imageFiles && imageFiles[0] ? getBase64(imageFiles[0]) : null
 
-            console.log( JSON.stringify(form) )
-            console.log( form )
+            console.log( JSON.stringify(formData) )
+            console.log( formData )
             $.ajax({
-                method: "POST",
                 type: "POST",
                 url: `/${API_URL}/tournaments/`,
-                data: form,
-                processData: false,
+                data: formData,
                 headers: {
                     "X-CSRFTOKEN": getCookie("csrftoken")
                 },
-                cache: false,
-                contentType: false,
-                processData: false,
-                mimeType: "multipart/form-data",
-                encType: "multipart/form-data",
                 success: function (data) {
                     displayMessage(gettext("Tournament added successfully"), ["alert-success", "alert-dismissible"])
                     $(".btn-close").click()
@@ -242,6 +235,11 @@ function displayTournaments() {
             let deleteButton = createElement('button', ['btn', 'btn-danger'], { 'data-bs-target': '#delete-item-prompt', 'data-bs-toggle': 'modal' })
             deleteButton.textContent = gettext("Delete")
             $(actionButtons).append(deleteButton)
+
+            $(deleteButton).click(function() {
+                let deleteItemButton = document.getElementById("delete-item-confirmed")
+                deleteItemButton.setAttribute("data-delete-url", `/api/tournaments/${tournament["id"]}/`)
+            })
         }
 
         $("#tournaments").append(card)
@@ -254,3 +252,31 @@ function displayTournaments() {
         $("#tournaments").append(span)
     }
 }
+
+$("#delete-item-confirmed").click(function() {
+    console.log("Clicked delete item")
+    let url = this.getAttribute("data-delete-url")
+    console.log(url)
+    if (url) {
+        $.ajax({
+            url: url,
+            type: "DELETE",
+            headers: {
+                "X-CSRFTOKEN": getCookie("csrftoken")
+            },
+            success: function(data) {
+                displayMessage(gettext("Tournament deleted successfully"), ['alert-success', 'alert-dismissible'])
+            },
+            error: function(data) {
+                if (data.status == 500) {
+                    displayMessage( ERROR_MESSAGES["500"] )
+                } else if (data.status == 403) {
+                    displayMessage( ERROR_MESSAGES["403"] )
+                } else {
+                    displayMessage( data.responseText )
+                }
+                console.log(data.responseText)
+            }
+        })
+    }
+})

@@ -166,33 +166,23 @@ LOGOUT_REDIRECT_URL = "/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
-PWA_APP_NAME = 'mate'
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, "static/js", "serviceworker.js")
+PWA_APP_NAME = "mate"
 PWA_APP_DESCRIPTION = "Mate PWA"
-PWA_APP_THEME_COLOR = '#000000'
-PWA_APP_BACKGROUND_COLOR = '#ffffff'
-PWA_APP_DISPLAY = 'standalone'
-PWA_APP_SCOPE = '/home'
-PWA_APP_ORIENTATION = 'any'
-PWA_APP_START_URL = '/home'
-PWA_APP_STATUS_BAR_COLOR = 'default'
-PWA_APP_ICONS = [
-	{
-		'src': '/static/images/chess-clock.svg',
-		'sizes': '150x150'
-	}
-]
-PWA_APP_ICONS_APPLE = [
-	{
-		'src': '/static/images/chess-clock.svg',
-		'sizes': '150x150'
-	}
-]
+PWA_APP_THEME_COLOR = "#000000"
+PWA_APP_BACKGROUND_COLOR = "#ffffff"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_SCOPE = "/home"
+PWA_APP_ORIENTATION = "any"
+PWA_APP_START_URL = "/home"
+PWA_APP_STATUS_BAR_COLOR = "default"
+PWA_APP_ICONS = [{"src": "/static/images/chess-clock.svg", "sizes": "150x150"}]
+PWA_APP_ICONS_APPLE = [{"src": "/static/images/chess-clock.svg", "sizes": "150x150"}]
 PWA_APP_SPLASH_SCREEN = [
-	{
-		'src': '/static/images/chess-clock.svg',
-		'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
-	}
+    {
+        "src": "/static/images/chess-clock.svg",
+        "media": "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
+    }
 ]
-PWA_APP_DIR = 'ltr'
-PWA_APP_LANG = 'en-US'
+PWA_APP_DIR = "ltr"
+PWA_APP_LANG = "en-US"
