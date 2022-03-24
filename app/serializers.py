@@ -11,7 +11,7 @@ from .utilities import is_power_of_2
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
-        fields = "__all__"
+        fields = ("first_name", "last_name", "phone", "level", "classroom", "email", "gender", "image", "telegram_username", "name")
 
 
 class TournamentPlayerSerializer(serializers.ModelSerializer):

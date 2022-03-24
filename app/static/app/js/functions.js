@@ -2,7 +2,8 @@ const DateTime = luxon.DateTime
 let db;
 
 const dbName = "pwa_db";
-const version = 17;
+const version = 19;
+const db_version = 18;
 const storeName = "pwa_store";
 
 var storeNames = [
@@ -505,7 +506,7 @@ function getServerHostAndPort() {
     return self.location.host
 }
 
-function readImage(input, imageNodeSelector=null) {
+function readImage(input, imageNodeSelector = null) {
     console.log("Reading from input and putting image in " + imageNodeSelector)
     // reads the file and places it in the image
     if (input.files && input.files[0]) {
@@ -522,7 +523,7 @@ function readImage(input, imageNodeSelector=null) {
 }
 
 async function openDB(callback, callbackParams = []) {
-    let req = indexedDB.open(dbName, version);
+    let req = indexedDB.open(dbName, db_version);
 
     req.onerror = (err) => {
         console.warn(err);
@@ -535,32 +536,48 @@ async function openDB(callback, callbackParams = []) {
             callback(...callbackParams);
         }
     }
+
+    req.onupgradeneeded = function (event) {
+        db = event.target.result
+
+        for (let storeName of storeNames) {
+            if (!db.objectStoreNames.contains(storeName)) {
+                // if there's no store of 'storeName' create a new object store
+                db.createObjectStore(storeName, { keyPath: "key" })
+            }
+        }
+    };
 }
 
 async function addToStore(key, value, storeName = storeNames[0]) {
+    console.log(storeName)
     // start a transaction of actions you want to submit
-    const transaction = db.transaction(storeName, "readwrite")
+    try {
+        const transaction = db.transaction(storeName, "readwrite")
 
-    // create an object store
-    const store = transaction.objectStore(storeName);
+        // create an object store
+        const store = transaction.objectStore(storeName);
 
-    // add key and value to the store
-    const request = store.put({ key, value });
+        // add key and value to the store
+        const request = store.put({ key, value });
 
-    request.onsuccess = function () {
-        console.log("added to the store", { key: value }, request.result);
-    };
+        request.onsuccess = function () {
+            console.log("added to the store", { key: value }, request.result);
+        };
 
-    request.onerror = function () {
-        console.log("Error did not save to store", request.error);
-    };
+        request.onerror = function () {
+            console.log("Error did not save to store", request.error);
+        };
 
-    transaction.onerror = function (event) {
-        console.log("Trans failed", event);
-    };
+        transaction.onerror = function (event) {
+            console.log("Trans failed", event);
+        };
 
-    transaction.oncomplete = function (event) {
-        console.log("Trans completed", event);
+        transaction.oncomplete = function (event) {
+            console.log("Trans completed", event);
+        }
+    } catch (error) {
+        console.log("Error encountered when adding to store: " + storeName)
     }
 }
 

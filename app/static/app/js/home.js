@@ -120,7 +120,7 @@ $("#submit_new_tournament").click(function () {
             $.ajax({
                 method: "POST",
                 type: "POST",
-                url: `http://${getServerHostAndPort()}/${API_URL}/tournaments/`,
+                url: `/${API_URL}/tournaments/`,
                 data: form,
                 processData: false,
                 headers: {
@@ -172,7 +172,7 @@ function loadTournaments() {
         console.log("Player id set")
         $.ajax({
             type: "GET",
-            url: `http://${getServerHostAndPort()}/${API_URL}/players/${getCookie("player_id")}/tournaments/`,
+            url: `/${API_URL}/players/${getCookie("player_id")}/tournaments/`,
             success: function (data) {
                 console.log(data)
                 $("#tournaments").html('')
@@ -208,6 +208,7 @@ function loadTournaments() {
 }
 
 function displayTournaments() {
+    $("#tournaments").html("")
     for (let tournament of state.tournaments) {
         card = createElement('div', ['card', ['col-md-4']])
         if (tournament.image) {

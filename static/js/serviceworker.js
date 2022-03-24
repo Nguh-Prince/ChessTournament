@@ -1,5 +1,6 @@
 const dbName = "pwa_db";
-const version = 17;
+const version = 19;
+const db_version = 18;
 const storeName = "pwa_store";
 
 const storeNames = [
@@ -45,17 +46,9 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {
 	console.log('[Service Worker] Fetching')
 	event.respondWith(
-		caches.open(staticCacheName).then( function (cache) {
-			return cache.match(event.request).then( function (response) {
-				return (
-					response || 
-					fetch(event.request).then(function (response) {
-						cache.put(event.request, response.clone());
-						return response;
-					})
-				);
-			} );
-		} ),
+		fetch(event.request).catch(function() {
+			return caches.match(event.request)
+		})
 	);
 });
 
@@ -86,7 +79,7 @@ self.addEventListener('activate', (ev) => {
 } )
 
 async function openDB(callback, callbackParams = []) {
-	const openRequest = self.indexedDB.open(dbName, version);
+	const openRequest = self.indexedDB.open(dbName, db_version);
 
 	openRequest.onerror = function(event) {
 		console.log("Every hour isn't allowed to use IndexedDB?! " + event.target.errorCode);
