@@ -45,6 +45,10 @@
                 </div>
             </div>
         </header>
+        <div class="phone nav-buttons">
+            <a href="{% url 'app:login' %}">{% trans 'Login' %}</a>
+            <a href="{% url 'app:signup' %}" class="btn btn-primary" id="mobile-sign-up">{% trans 'Sign up' %}</a>
+        </div>
         <!-- Landing -->
         <section class="landing">
             <div class="landing-text">
@@ -70,10 +74,6 @@
                     </div>
                     <div class="more-features-content">
                         <div class="feature">
-                            <div class="feature-illustration">
-                                <img src="https://raw.githubusercontent.com/MohamedAridah/frontendmentor_url-shortening-api/main/images/icon-brand-recognition.svg"
-                                    alt="Feature Illustration Icon" />
-                            </div>
                             <div class="feature-details">
                                 <h3>{% trans "Participant notifications" %}</h3>
                                 <p>

@@ -78,7 +78,7 @@ $("#new_tournament_number_of_participants").on("input", function () {
     }
 })
 
-$("#submit_new_tournament").click(function () {
+$("#submit_new_tournament").click(async function () {
     if (getCookie("player_id")) {
         let formData = {
             name: $("#new_tournament_name").val(),
@@ -111,9 +111,8 @@ $("#submit_new_tournament").click(function () {
             let termFiles = $("#new_tournament_terms").prop('files');
             let imageFiles = $("#new_tournament_image").prop('files');
 
-            formData["terms"] = termFiles && termFiles[0] ?  getBase64(termFiles[0]) : null
-
-            formData["image"] = imageFiles && imageFiles[0] ? getBase64(imageFiles[0]) : null
+            await getBase64(termFiles[0], formData, "terms")
+            await getBase64(imageFiles[0], formData, "image")
 
             console.log( JSON.stringify(formData) )
             console.log( formData )
@@ -266,6 +265,8 @@ $("#delete-item-confirmed").click(function() {
             },
             success: function(data) {
                 displayMessage(gettext("Tournament deleted successfully"), ['alert-success', 'alert-dismissible'])
+                loadTournaments()
+                loadAllTournaments()
             },
             error: function(data) {
                 if (data.status == 500) {

@@ -523,18 +523,12 @@ function readImage(input, imageNodeSelector = null) {
 }
 
 function getBase64(file) {
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = function() {
-        console.log(reader.result)
-        return reader.result
-    }
-
-    reader.onerror = function(error) {
-        console.log(error);
-        alert(error)
-    }
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
 }
 
 async function openDB(callback, callbackParams = []) {

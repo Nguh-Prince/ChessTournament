@@ -109,3 +109,33 @@ $("#tournament-search").on('input', function() {
         return tournament.name.toUpperCase().includes(value) || tournament.creator_details.name.toUpperCase().includes(value)
     } ) : state.allTournaments )
 })
+
+// $("#delete-item-confirmed").click(function() {
+//     console.log("Clicked delete item")
+//     let url = this.getAttribute("data-delete-url")
+//     console.log(url)
+//     if (url) {
+//         $.ajax({
+//             url: url,
+//             type: "DELETE",
+//             headers: {
+//                 "X-CSRFTOKEN": getCookie("csrftoken")
+//             },
+//             success: function(data) {
+//                 displayMessage(gettext("Tournament deleted successfully"), ['alert-success', 'alert-dismissible'])
+//                 loadTournaments()
+//                 loadAllTournaments()
+//             },
+//             error: function(data) {
+//                 if (data.status == 500) {
+//                     displayMessage( ERROR_MESSAGES["500"] )
+//                 } else if (data.status == 403) {
+//                     displayMessage( ERROR_MESSAGES["403"] )
+//                 } else {
+//                     displayMessage( data.responseText )
+//                 }
+//                 console.log(data.responseText)
+//             }
+//         })
+//     }
+// })

@@ -15,7 +15,9 @@ body {
   font-weight: 500;
   outline: none;
 }
-
+.phone {
+  display: none;
+}
 h1,
 h2,
 h3,
@@ -118,6 +120,23 @@ img {
 @media (max-width: 992px) {
   .section-header p {
     width: 70%;
+  }
+  .phone {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin-top: 2%;
+    margin-right: 2%;
+  }
+
+  .phone a {
+    text-decoration: none;
+    color: #9e9aa7;
+  }
+
+  #mobile-sign-up {
+    color: white;
   }
 }
 

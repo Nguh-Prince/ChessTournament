@@ -22,15 +22,6 @@ class TournamentViewSet(viewsets.ModelViewSet):
     ]
     queryset = models.Tournament.objects.all()
 
-    def destroy(self, request, *args, **kwargs):
-        ic(request.data)
-        ic(args)
-        ic(kwargs)
-        if 'pk' in kwargs:
-            tournament = get_object_or_404(models.Tournament, pk=kwargs['pk'])
-            # delete fixtures starting with the
-        return super().destroy(request, *args, **kwargs)
-
 class TournamentsList(generics.ListCreateAPIView):
     # get a list of tournaments or add a tournament
     queryset = models.Tournament.objects.all()
