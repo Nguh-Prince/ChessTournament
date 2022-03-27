@@ -83,7 +83,7 @@
                 <div class="d-flex">
                     <a href="" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false"
                         class="d-block link-dark text-decoration-none dropdown-toggle">
-                        <img src="{% static 'app/assets/images/rick-and-morty.jpg' %}" alt="" width="32" height="32"
+                        <img src="{% if request.session.player and request.session.player.image %} {{ request.session.player.image }} {% else %} {% static 'app/assets/images/no-image.png' %} {% endif %}" alt="" width="32" height="32"
                             class="rounded-circle">
                         <span>{{ request.user.username }}</span>
                     </a>

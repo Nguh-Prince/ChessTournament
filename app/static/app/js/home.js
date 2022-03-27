@@ -139,10 +139,10 @@ $("#submit_new_tournament").click(async function () {
     }
 })
 
-$("#new_tournament_image").change(function() {
-    console.log("image changing...")
-    readImage(this, '#new_tournament_image_preview')
-})
+// $("#new_tournament_image").change(function() {
+//     console.log("image changing...")
+//     readImage(this, '#new_tournament_image_preview')
+// })
 
 $(document).ready(function () {
     loadTournaments()
@@ -167,7 +167,6 @@ function loadTournaments() {
             url: `/${API_URL}/players/${getCookie("player_id")}/tournaments/`,
             success: function (data) {
                 console.log(data)
-                $("#tournaments").html('')
                 state.tournaments = data
 
                 openDB(addTournamentsToIndexedDB, [data])
@@ -200,55 +199,50 @@ function loadTournaments() {
 }
 
 function displayTournaments() {
-    $("#tournaments").html("")
-    for (let tournament of state.tournaments) {
-        card = createElement('div', ['card', ['col-md-4']])
-        if (tournament.image) {
-            // create image
-            let image = createElement('img', ['card-img-top'], { src: tournament.image, alt: "" })
-            $(card).append(image)
+    if (state.tournaments.length >= 1) {
+        $("#tournaments").html("")
+        for (let tournament of state.tournaments) {
+            card = createElement('div', ['card', ['col-md-4']])
+            if (tournament.image) {
+                // create image
+                let image = createElement('img', ['card-img-top'], { src: tournament.image, alt: "" })
+                $(card).append(image)
+            }
+            cardBody = createElement('div', ['card-body'])
+            $(card).append(cardBody)
+    
+            cardTitle = createElement('div', ['card-title'])
+            $(cardBody).append(cardTitle)
+            cardTitle.textContent = tournament["name"]
+    
+            texts = [`Created by <strong>${tournament["creator_details"]["first_name"]} ${tournament["creator_details"]["last_name"]}</strong>`, `Created on <strong>${getLocaleTime(tournament["time_created"])}</strong>`]
+    
+            for (let text of texts) {
+                p = createElement('p', ['card-title'])
+                p.innerHTML = text
+                $(cardBody).append(p)
+            }
+            let actionButtons = createElement('div', ['container'])
+            let link = createElement('a', ['btn', 'btn-primary'], { href: getTournamentDetailLink(tournament.id) })
+            link.textContent = gettext("View")
+    
+            $(cardBody).append(actionButtons)
+            $(actionButtons).append(link)
+    
+            if (tournament["creator"] == getCookie("player_id")) {
+                // delete tournament button
+                let deleteButton = createElement('button', ['btn', 'btn-danger'], { 'data-bs-target': '#delete-item-prompt', 'data-bs-toggle': 'modal' })
+                deleteButton.textContent = gettext("Delete")
+                $(actionButtons).append(deleteButton)
+    
+                $(deleteButton).click(function() {
+                    let deleteItemButton = document.getElementById("delete-item-confirmed")
+                    deleteItemButton.setAttribute("data-delete-url", `/api/tournaments/${tournament["id"]}/`)
+                })
+            }
+    
+            $("#tournaments").append(card)
         }
-        cardBody = createElement('div', ['card-body'])
-        $(card).append(cardBody)
-
-        cardTitle = createElement('div', ['card-title'])
-        $(cardBody).append(cardTitle)
-        cardTitle.textContent = tournament["name"]
-
-        texts = [`Created by <strong>${tournament["creator_details"]["first_name"]} ${tournament["creator_details"]["last_name"]}</strong>`, `Created on <strong>${getLocaleTime(tournament["time_created"])}</strong>`]
-
-        for (let text of texts) {
-            p = createElement('p', ['card-title'])
-            p.innerHTML = text
-            $(cardBody).append(p)
-        }
-        let actionButtons = createElement('div', ['container'])
-        let link = createElement('a', ['btn', 'btn-primary'], { href: getTournamentDetailLink(tournament.id) })
-        link.textContent = gettext("View")
-
-        $(cardBody).append(actionButtons)
-        $(actionButtons).append(link)
-
-        if (tournament["creator"] == getCookie("player_id")) {
-            // delete tournament button
-            let deleteButton = createElement('button', ['btn', 'btn-danger'], { 'data-bs-target': '#delete-item-prompt', 'data-bs-toggle': 'modal' })
-            deleteButton.textContent = gettext("Delete")
-            $(actionButtons).append(deleteButton)
-
-            $(deleteButton).click(function() {
-                let deleteItemButton = document.getElementById("delete-item-confirmed")
-                deleteItemButton.setAttribute("data-delete-url", `/api/tournaments/${tournament["id"]}/`)
-            })
-        }
-
-        $("#tournaments").append(card)
-    }
-
-    if (state.tournaments.length < 1) {
-        console.log("No tournaments")
-        let span = createElement('span')
-        span.textContent = gettext("You have not created or enrolled in any tournament")
-        $("#tournaments").append(span)
     }
 }
 

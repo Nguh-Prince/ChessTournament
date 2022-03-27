@@ -597,3 +597,17 @@ async function getAllItems(storeName) {
 
     let request = store.getAll();
 }
+
+// image preview functionality
+$("input.image-input").change( function() {
+    console.log("Image input changed")
+    let previewElement = $( $(this).prop("data-preview-element") )
+
+    if (previewElement.length >= 1) {
+        file = this.files
+
+        if (file && file[0]) {
+            previewElement.prop( "src", URL.createObjectURL(file[0]) )
+        }
+    }
+} )

@@ -3,7 +3,8 @@ import math
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Sum
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
+from django.utils.text import slugify
 
 # from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -12,10 +13,14 @@ from rest_framework.serializers import ValidationError
 
 from .utilities import a_if_and_only_if_b, a_implies_b, is_power_of_2
 
+def profile_image_directory(instance, filename):
+    ic(instance.name)
+    return "players/{0}/{1}".format( slugify(f"{instance.name} {instance.phone}"), filename )
 
 class Player(models.Model):
     GENDER_CHOICES = (
         ("m", _("Male")),
+        ("f", _("Female")),
         ("nb", _("Non binary")),
         ("rns", _("Rather not say")),
     )
@@ -24,11 +29,11 @@ class Player(models.Model):
     phone = models.CharField(max_length=20, unique=True)
     level = models.IntegerField(null=True, blank=True)
     classroom = models.CharField(max_length=5, null=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
-    image = models.ImageField()
-    telegram_username = models.CharField(max_length=256, unique=True, null=True)
+    image = models.ImageField(null=True, blank=True, upload_to=profile_image_directory)
+    telegram_username = models.CharField(max_length=256, unique=True, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name} ({self.classroom})"

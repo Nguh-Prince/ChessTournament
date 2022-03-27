@@ -8,3 +8,8 @@ class GameForm(forms.ModelForm):
     class Meta:
         model = models.Game
         fields = ("time", "classroom")
+
+class PlayerForm(forms.ModelForm):
+    class Meta:
+        model = models.Player
+        exclude = ['first_name', 'last_name']

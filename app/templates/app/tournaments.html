@@ -23,7 +23,6 @@ Mate | Tournaments
 <div class="row">
     <div class="mt-3 ms-3">
         <button class="btn btn-primary" data-bs-target="#new_tournament" data-bs-toggle="modal">{% trans "Add tournament" %}</button>
-        <button class="btn btn-secondary" data-bs-target="#accept-notifications" data-bs-toggle="modal">{% trans "Test?" %}</button>
     </div>
 </div>
 
@@ -37,7 +36,8 @@ Mate | Tournaments
     <span>{% trans "All tournaments" %}</span>
 
     <div class="p-3 d-flex col-md-4">
-        <input id="tournament-search" type="search" class="form-control me-2" placeholder="{% trans 'Search' %}" aria-label="Search">
+        <input id="tournament-search" type="search" class="form-control me-2" placeholder="{% trans 'Search' %}"
+            aria-label="Search">
     </div>
 
     <div class="row g-2" id="all-tournaments">
@@ -55,36 +55,51 @@ Mate | Tournaments
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">{% trans "Name" %}</label>
-                        <input type="text" name="name" class="form-control" id="new_tournament_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="number_of_participants" class="form-label">{% trans "Number of participants" %}</label>
-                        <input type="number" name="number_of_participants" class="form-control" id="new_tournament_number_of_participants" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="new_tournament_number_of_points_for_win">{% trans "Number of points for win" %}</label>
-                        <input type="number" id="new_tournament_number_of_points_for_win" class="form-control" value="1" step="0.1">
-                    </div>
-                    <div class="mb-3">
-                        <label for="new_tournament_number_of_points_for_loss">{% trans "Number of points for loss" %}</label>
-                        <input type="number" id="new_tournament_number_of_points_for_loss" class="form-control" value="0" step="0.1">
-                    </div>
-                    <div class="mb-3">
-                        <label for="new_tournament_number_of_points_for_draw">{% trans "Number of points for draw" %}</label>
-                        <input type="number" id="new_tournament_number_of_points_for_draw" class="form-control" value="0.5" step="0.1">
-                    </div>
-                    <div class="mb-3">
-                        <label for="new_tournament_terms">{% trans "Terms & conditions" %}</label>
-                        <input type="file" name="new_tournament_terms" id="new_tournament_terms" class="form-control" accept=".md,.txt">
-                    </div>
-
-                    <div class="row" id="image-container">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row hide" id="new_tournament_info">
                         <div class="mb-3">
-                            <label for="new_tournament_image">{% trans "Image" %}</label>
-                            <input type="file" name="new_tournament_image" id="new_tournament_image" accept="image/*" class="form-control">
+                            <label for="name" class="form-label">{% trans "Name" %}</label>
+                            <input type="text" name="name" class="form-control" id="new_tournament_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="number_of_participants" class="form-label">{% trans "Number of participants"
+                                %}</label>
+                            <input type="number" name="number_of_participants" class="form-control"
+                                id="new_tournament_number_of_participants" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_tournament_number_of_points_for_win">{% trans "Number of points for win"
+                                %}</label>
+                            <input type="number" id="new_tournament_number_of_points_for_win" class="form-control"
+                                value="1" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_tournament_number_of_points_for_loss">{% trans "Number of points for loss"
+                                %}</label>
+                            <input type="number" id="new_tournament_number_of_points_for_loss" class="form-control"
+                                value="0" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_tournament_number_of_points_for_draw">{% trans "Number of points for draw"
+                                %}</label>
+                            <input type="number" id="new_tournament_number_of_points_for_draw" class="form-control"
+                                value="0.5" step="0.1">
+                        </div>
+                    </div>
+                    <div class="row" id="new_tournament_files">
+                        <div class="row" id="image-container">
+                            <div class="card mb-3 text-center">
+                                <img src="{% static 'app/assets/images/no-image.png' %}" class="card-img-top rounded-2" id="tournament-img-preview">
+                                <label class="btn btn-primary my-3" for="new_tournament_image">{% trans "Upload an image" %}</label>
+                                <input type="file" name="new_tournament_image" id="new_tournament_image"
+                                    accept="image/*" class="hide image-input" data-preview-element="#tournament-img-preview">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_tournament_terms">{% trans "Terms &conditions" %}</label>
+                            <input type="file" name="new_tournament_terms" id="new_tournament_terms"
+                                class="form-control" accept=".md,.txt">
                         </div>
                     </div>
                 </form>

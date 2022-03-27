@@ -12,7 +12,12 @@
     <title>{% trans "Mate" %}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/font-awesome/css/all.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/css/styles.css' %}">
+    <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'app/js/functions.js' %}"></script>
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% url 'javascript-catalog' %}"></script>
 
     <style>
         #errors {
@@ -21,6 +26,15 @@
             top: 0;
             width: 80%;
             margin-left: 10%;
+        }
+
+        .signin_validate>.row {
+            padding-top: 16px;
+            padding-bottom: 16px;
+        }
+
+        img.card-img-top {
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -42,53 +56,102 @@
             <div class="row justify-content-center h-100 align-items-center">
                 <div class="col-xl-5 col-md-6">
                     <div class="mini-logo text-center my-4">
-                        <h4 class="card-title mt-5">{% trans "Create your account" %}</h4>
+                        <h4 class="card-title mt-5" id="card-title">{% trans "Personal information" %}</h4>
                     </div>
                     <div class="auth-form card">
                         <div class="card-body">
-                            <form method="post" name="myform" class="signin_validate row g-3">
+                            <form method="post" name="myform" class="signin_validate row g-3" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="col-12">
-                                    <label class="form-label">{% trans "First and last name" %}</label>
-                                    <input type="text" class="form-control" placeholder="{% trans 'Name' %}"
-                                        name="name">
+                                <div class="row" id="personal-info">
+                                    <div class="col-12">
+                                        <label class="form-label">{% trans "First and last name" %}</label>
+                                        <input type="text" class="form-control required"
+                                            placeholder="{% trans 'Name' %}" name="name">
+                                    </div>
+                                    <div class=" col-12 ">
+                                        <label class=" form-label">{% trans "Phone" %}</label>
+                                        <input type="tel" class="form-control required" placeholder="679001234"
+                                            name="phone">
+                                    </div>
+                                    <div class="col-12 ">
+                                        <label class="form-label">{% trans "Class" %}</label>
+                                        <select name="classroom" class="form-control select">
+                                            <option value="">{% trans "No class" %}</option>
+                                            {% for classroom in classrooms %}
+                                            <option value="{{ classroom}}">{{ classroom}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="gender" class="form-label">{% trans "Gender" %}</label>
+                                        <select name="gender" id="gender" class="form-control select required">
+                                            <option value="f">{% trans "Female" %}</option>
+                                            <option value="m">{% trans "Male" %}</option>
+                                            <option value="nb">{% trans "Non-binary" %}</option>
+                                            <option value="rns">{% trans "Rather not say" %}</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label">{% trans "Username" %}</label>
-                                    <input type="text" class="form-control" placeholder="{% trans 'Username' %}"
-                                        name="username">
+
+                                <div class="row hide" id="user-info">
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input type="text" id="username" name="username" class="form-control required"
+                                            placeholder="{% trans 'Username e.g john_doe' %}">
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                        <input type="email" class="form-control" placeholder="hello@example.com"
+                                            name="email">
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-at"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="telegram-username"
+                                            name="telegram_username" placeholder="{% trans 'Telegram username' %}">
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                        <input type="password" name="password" id="password"
+                                            placeholder="{% trans 'Password' %}" class="form-control required">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
+                                    <div class="col-12 input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                        <input type="password" name="confirm-password"
+                                            placeholder="{% trans 'Confirm password' %}" id="confirm_password"
+                                            class="form-control required">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label">{% trans "Telegram username" %}</label>
-                                    <input type="text" class="form-control" placeholder="{% trans 'Telegram username' %}"
-                                        name="username">
-                                </div>
-                                <div class=" col-12 ">
-                                    <label class=" form-label">{% trans "Phone" %}</label>
-                                    <input type="tel" class="form-control" placeholder="679001234" name="phone">
-                                </div>
-                                <div class="col-12 ">
-                                    <label class="form-label">{% trans "Email" %}</label>
-                                    <input type="email" class="form-control" placeholder="hello@example.com"
-                                        name="email">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">{% trans "Password" %}</label>
-                                    <input type="password" class="form-control" placeholder="{% trans 'Password' %}"
-                                        name="password">
-                                </div>
-                                <div class="col-12">
-                                    <label for="gender" class="form-label">{% trans "Gender" %}</label>
-                                    <select name="gender" id="gender" class="form-control select">
-                                        <option value="f">{% trans "Female" %}</option>
-                                        <option value="m">{% trans "Male" %}</option>
-                                        <option value="nb">{% trans "Non-binary" %}</option>
-                                        <option value="rns">{% trans "Rather not say" %}</option>
-                                    </select>
+
+                                <div class="row gy-3 hide" id="user-image">
+                                    <div class="col-12 text-center">
+                                        <img src="{% static 'app/assets/images/no-image.png' %}" class="card-img-top" alt="" id="profile-image-preview">
+                                        <input type="file" name="image" id="profile-image" class="hide">
+                                        <label for="profile-image" class="btn btn-primary my-3">{% trans "Upload image" %}</label>
+                                    </div>
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">{% trans 'Create account' %}</button>
+                                    <button id="submit" type="submit" class="btn btn-primary disabled hide">{% trans 'Create account' %}</button>
+                                    <button type="button" class="btn btn-primary disabled" id="next">{% trans "Next" %}</button>
+                                    <button type="button" id="previous" class="btn btn-primary disabled hide">
+                                        <i class="fas fa-chevron-circle-left"></i>
+                                    </button>
                                 </div>
                             </form>
                             <div class="text-center">
@@ -101,5 +164,7 @@
         </div>
     </div>
 </body>
+
+<script src="{% static 'app/js/signup.js' %}"></script>
 
 </html>

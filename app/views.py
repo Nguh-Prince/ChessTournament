@@ -1,23 +1,22 @@
-import json
-import re
 from django.contrib.auth import login as login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import Http404, HttpResponse, response
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
-from django.template import context
 from django.utils.translation import gettext as _
-from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer
 
-from app.forms import GameForm
+from app.forms import GameForm, PlayerForm
 
 from . import models, serializers
 
+from icecream import ic
+
+CLASSROOMS = ["B1A", "B1B", "L1A", "L1B", "L1C", "L1D", "L1E", "L1F", "L1G", "L1H", "B2", "L2A", "L2B", "L2C", "L2D", "L2E", "SE3", "GL3A", "GL3B", "GL3C", "SR3A", "SR3B", "SR3C"]
 
 def login_view(request):
     context = {"errors": [], "successes": []}
@@ -52,7 +51,6 @@ def login_view(request):
         return response
 
     return render(request, "app/signin.html")
-
 
 def index(request):
     print("Running index")
@@ -90,55 +88,50 @@ def signup(request):
     if request.user.is_authenticated:
         return redirect("app:home")
 
-    context = {"errors": []}
+    context = {"errors": [], "classrooms": CLASSROOMS}
+    
     if request.method == "POST":
         names = request.POST.get("name")
-        phone = request.POST.get("phone")
-        email = request.POST.get("email")
-        classroom = request.POST.get("classroom")
-        gender = request.POST.get("gender")
-        password = request.POST.get("password")
         username = request.POST.get("username")
-        telegram_username = request.POST.get("telegram_username")
+        password = request.POST.get("password")
+        ic(request.POST)
+        form = PlayerForm(request.POST, request.FILES)
 
-        if len(names) < 2:
+        if len(names.split(' ')) < 2:
             context["errors"].append(_("First and last name required"))
         else:
             names = names.split()
 
-        if not phone:
-            context["errors"].append(_("Phone number required"))
-
-        if not gender:
-            context["errors"].append(_("Gender required"))
-
-        if not password:
-            context["errors"].append(_("Password required"))
-
         if not username:
             context["errors"].append(_("Username required"))
+
+        if not password:
+            context["errors"].append( _("Password required") )
+
 
         if User.objects.filter(username=username).count() > 0:
             context["errors"].append(_("Username already exists"))
 
-        if len(context["errors"]) < 1:  # no errors in the form
-            # create the player and an inactive user
-            player = models.Player.objects.create(
-                first_name=names[0],
-                last_name=names[-1],
-                classroom=classroom,
-                gender=gender,
-                phone=phone,
-                telegram_username=telegram_username,
-            )
-            user = User.objects.create(username=username, is_active=True, email=email)
+        if len(context["errors"]) < 1 and form.is_valid():  # no errors in the form
+            # create the player and a user
+            player = form.save()
+            player.first_name = names[0]
+            player.last_name = names[-1]
+            player.email = player.email if player.email is not None else ""
+
+            user = User.objects.create(username=username, is_active=True, email=player.email)
             user.set_password(password)
+            user.save()
             player.user = user
             player.save()
 
             return redirect("app:login")
+        else:
+            ic( len(context["errors"]), form.is_valid() )
+            context["errors"] = form.errors
+            print(form.errors)
 
-    return render(request, "app/create-person.html", context=context)
+    return render(request, "app/signup.html", context=context)
 
 
 @login_required
@@ -149,7 +142,7 @@ def logout_view(request):
 
 @login_required
 def create_person(request):
-    context = {"errors": []}
+    context = {"errors": [], 'classrooms': CLASSROOMS}
 
     if request.method == "POST":
         if models.Player.objects.filter(

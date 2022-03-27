@@ -1,6 +1,9 @@
+var SECTION = 0
+
 $(document).ready(function () {
     getUniqueValues()
 })
+
 var state = {}
 // reveal/hide password
 $(".fa-eye").click(function () {
@@ -104,24 +107,47 @@ $("#user-info input, #user-info select").on("input", function () {
     flag ? $("#submit").removeClass('disabled') : flag
 })
 
+var CARD_TITLES = [ gettext("Personal information"), gettext("User information"), gettext("Profile image") ]
+
 $("#next").click(function () {
     console.log("Clicked next button")
     $("#personal-info").addClass('hide')
-    $("#user-info").removeClass('hide')
-    $(this).addClass('hide')
-    $("#submit").removeClass("hide")
     $("#previous").removeClass("hide").removeClass("disabled")
-    $("#card-title").text(gettext("User information"))
+    SECTION = ++SECTION % 3
+
+    if (SECTION == 1) {
+        $("#user-info").removeClass("hide")
+        $("#user-image").addClass("hide")
+    } else if (SECTION == 2) {
+        $("#user-info").addClass("hide")
+        $("#user-image").removeClass('hide')
+        $(this).addClass('hide')
+        $("#submit").removeClass("hide")
+    } else {
+        console.log(SECTION)
+    }
+    $("#card-title").text(CARD_TITLES[SECTION])
 })
 
 $("#previous").click(function () {
-    $("#personal-info").removeClass('hide')
-    $("#user-info").addClass('hide')
-    $(this).addClass('hide')
+    SECTION -= 1
     $("#submit").addClass("hide")
     $("#next").removeClass('hide')
-    $("#previous").addClass("hide").addClass("disabled")
-    $("#card-title").text(gettext("Personal information"))
+
+    if (SECTION == 0) {
+        $("#personal-info").removeClass('hide')
+        $("#previous").addClass("hide").addClass("disabled")
+        $("#user-info").addClass('hide')
+        $("#user-image").addClass('hide')
+    } else if (SECTION == 1) {
+        $("#personal-info").addClass('hide')
+        $("#previous").removeClass("hide").removeClass("disabled")
+        $("#user-info").removeClass('hide')
+    } else {
+        console.log(SECTION)
+    }
+
+    $("#card-title").text(CARD_TITLES[SECTION])
 })
 
 function validateUnique(jquerySelector) {
@@ -177,3 +203,20 @@ function validateValueEquals(value, jquerySelector, message = gettext(THE_PASSWO
 
     return flag
 }
+
+$("#profile-image").change(function() {
+    console.log("Profile image has changed")
+    const file = this.files
+    const image = document.getElementById("profile-image-preview")
+
+    if (file && file[0]) {
+        console.log(file[0])
+
+        if ( 'srcObject' in image ) {
+            image.srcObject = file
+        }
+        else {
+            image.src = URL.createObjectURL( file[0] )
+        }
+    }
+})
