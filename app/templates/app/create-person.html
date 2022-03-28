@@ -12,13 +12,12 @@
     <title>{% trans "Mate" %}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <link rel="stylesheet" type="text/css" href="{% static 'app/bootstrap/css/bootstrap.min.css' %}">
-    <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'app/font-awesome/css/all.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'app/css/styles.css' %}">
+    <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'app/js/functions.js' %}"></script>
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% url 'javascript-catalog' %}"></script>
-    <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
     <style>
         #errors {
@@ -119,5 +118,5 @@
         </div>
     </div>
 </body>
-<script src="{% static 'app/js/signup.js' %}"></script>
+<script type="text/javascript" src="{% static 'app/js/signup.js' %}"></script>
 </html>

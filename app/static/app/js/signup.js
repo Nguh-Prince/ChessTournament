@@ -1,6 +1,7 @@
 var SECTION = 0
 
 $(document).ready(function () {
+    console.log("Doc is ready...")
     getUniqueValues()
 })
 

@@ -4,6 +4,7 @@ import mimetypes
 import dj_database_url
 
 mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("text/javascript", ".js", True)
 
 import environ
 
@@ -161,7 +162,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/login"
 LOGOUT_REDIRECT_URL = "/"
 
 MEDIA_URL = "/media/"

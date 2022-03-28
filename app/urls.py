@@ -22,5 +22,6 @@ urlpatterns = [
     ),
     path("create-person/", views.create_person, name="create-person"),
     path("get-unique-values/", views.get_usernames_phones_telegram),
+    path("signup/check/", views.check_uniqueness),
     path("api/", include("app.api_urls")),
 ]

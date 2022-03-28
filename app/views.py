@@ -2,9 +2,11 @@ from django.contrib.auth import login as login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
@@ -139,47 +141,36 @@ def logout_view(request):
     logout(request)
     return redirect("app:login")
 
-
-@login_required
+# @login_required
 def create_person(request):
     context = {"errors": [], 'classrooms': CLASSROOMS}
 
     if request.method == "POST":
-        if models.Player.objects.filter(
-            user=request.user
-        ):  # user already has a player instance
-            return redirect("app:home")
+        names = request.POST.get("name")
 
-        name = request.POST.get("name")
-        phone = request.POST.get("phone")
-        email = request.POST.get("email")
-        classroom = request.POST.get("classroom")
-        gender = request.POST.get("gender")
+        ic(request.POST)
+        form = PlayerForm(request.POST, request.FILES)
 
-        if len(name.split(" ")) < 2:
-            context["errors"].append(_("At least two names are required"))
+        if len(names.split(' ')) < 2:
+            context["errors"].append(_("First and last name required"))
+        else:
+            names = names.split()
 
-        if models.Player.objects.filter(phone=phone).count() > 0:
-            context["errors"].append(_("A user with this phone number already exists"))
+        if len(context["errors"]) < 1 and form.is_valid():  # no errors in the form
+            # create the player and a user
+            player = form.save()
+            player.first_name = names[0]
+            player.last_name = names[-1]
+            player.email = player.email if player.email is not None else ""
+            player.save()
 
-        if models.Player.objects.filter(email=email).count() > 0:
-            context["errors"].append(_("A user with this phone number already exists"))
-
-        if len(context["errors"]) < 1:
-            names = name.split(" ")
-            models.Player.objects.create(
-                first_name=names[0],
-                last_name=names[-1],
-                phone=phone,
-                classroom=classroom,
-                user=request.user,
-                email=email,
-                gender=gender,
-            )
-            return redirect("app:home")
+            return redirect("app:login")
+        else:
+            ic( len(context["errors"]), form.is_valid() )
+            context["errors"] = form.errors
+            print(form.errors)
 
     return render(request, "app/create-person.html", context=context)
-
 
 @api_view(("GET",))
 @renderer_classes([JSONRenderer])
@@ -198,3 +189,49 @@ def get_usernames_phones_telegram(request):
         },
         status=status.HTTP_200_OK,
     )
+
+@csrf_exempt
+@api_view(["POST", ])
+def check_uniqueness(request):
+    """
+    Checks if the field  
+    """
+    try:
+        person = request.user.person
+    except Exception:
+        person = None
+
+    ic(request)
+
+    data = serializers.LookupSerializer(request.data)
+    ic(data.data)
+    queryset = None
+    model_name, field_name = '', ''
+
+    if data.data["field"].lower() == "email":
+        queryset = models.Player.objects.filter(email=data.data["value"])
+        if person:
+            queryset = queryset.filter(~Q(email=person.email))
+        model_name = _("player")
+        field_name = _("email")
+    elif data.data["field"].lower() == "phone":
+        queryset = models.Player.objects.filter(phone=data.data["value"])
+        if person:
+            queryset = queryset.filter(~Q(phone=person.phone))
+        model_name = _("player")
+        field_name = _("phone")
+    elif data.data["field"].lower() == "username":
+        queryset = User.objects.filter(Q(username=data.data["value"]) & ~Q(username=request.user.username) )
+        model_name = _("user")
+        field_name = _("username")
+
+    if queryset.count() > 0:
+        message = _( "A %(model_name)s already exists with this %(field)s" % {'model_name': model_name, 'field': field_name} )
+        return Response(
+            data={
+                "error": message
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    return Response(status=status.HTTP_200_OK)
