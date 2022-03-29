@@ -9,6 +9,9 @@ from django.utils.translation import gettext as _
 from icecream import ic
 from rest_framework.serializers import ValidationError
 
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+
 from .utilities import a_if_and_only_if_b, a_implies_b, is_power_of_2
 
 def profile_image_directory(instance, filename):
@@ -31,6 +34,7 @@ class Player(models.Model):
     email = models.EmailField(null=True, blank=True)
     gender = models.CharField(max_length=3, choices=GENDER_CHOICES)
     image = models.ImageField(null=True, blank=True, upload_to=profile_image_directory)
+    thumbnail = ImageSpecField( [ResizeToFill(50, 50)], source='image', format='JPEG', options={'quality': 90})
     telegram_username = models.CharField(max_length=256, unique=True, null=True, blank=True)
 
     def __str__(self) -> str:
@@ -76,6 +80,7 @@ class TournamentCategory(models.Model):
     number_of_points_for_loss = models.FloatField()
     name = models.CharField(null=False, blank=False, unique=True, max_length=50)
     image = models.ImageField(null=True, blank=True)
+    thumbnail = ImageSpecField( [ResizeToFill(50, 50)], source='image', format='JPEG', options={'quality': 90})
 
     def __str__(self) -> str:
         return self.name
@@ -104,6 +109,7 @@ class Tournament(models.Model):
     number_of_points_for_win = models.FloatField(default=1)
     number_of_points_for_loss = models.FloatField(default=0)
     image = models.ImageField(upload_to=tournament_directory_path, null=True, blank=True)
+    thumbnail = ImageSpecField( [ResizeToFill(50, 50)], source='image', format='JPEG', options={'quality': 90})
     terms = models.FileField(upload_to=tournament_directory_path, blank=True, null=True)
 
     class Meta:

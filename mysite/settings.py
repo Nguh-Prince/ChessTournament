@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "modeltranslation",
     "pwa",
     "corsheaders",
+    "imagekit",
 ]
 
 CORS_ALLOWED_ORIGINS = [
