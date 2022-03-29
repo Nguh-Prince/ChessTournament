@@ -17,7 +17,7 @@
     <script src="{% static 'app/js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'app/js/functions.js' %}"></script>
     <script src="{% static 'app/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    <!-- <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script> -->
 
     <style>
         #errors {
@@ -51,9 +51,10 @@
                     </div>
                     <div class="auth-form card">
                         <div class="card-body">
-                            <form method="post" name="myform" class="signin_validate row g-3" enctype="multipart/form-data">
+                            <form method="post" name="myform" class="signin_validate row g-3"
+                                enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="row" id="personal-info">
+                                <div class="row section section-0" id="personal-info">
                                     <div class="col-12">
                                         <label class="form-label" for="name">{% trans "First and last name" %}</label>
                                         <input type="text" class="form-control required"
@@ -66,8 +67,8 @@
                                     </div>
                                     <div class="col-12">
                                         <label for="email">{% trans "Email" %}</label>
-                                        <input type="email" id="email" class="form-control" placeholder="hello@example.com"
-                                            name="email">
+                                        <input type="email" id="email" class="form-control"
+                                            placeholder="hello@example.com" name="email">
                                     </div>
                                     <div class="col-12 ">
                                         <label class="form-label" for="classroom">{% trans "Class" %}</label>
@@ -89,22 +90,23 @@
                                     </div>
 
                                     <div class="col-12>
-                                        <label for="telegram-username" class="form-label">{% trans "Telegram username" %}</label>
+                                        <label for=" telegram-username" class="form-label">{% trans "Telegram username" %}</label>
                                         <input type="text" class="form-control" id="telegram-username"
                                             name="telegram_username" placeholder="{% trans 'Telegram username' %}">
                                     </div>
                                 </div>
 
-                                <div class="row gy-3 hide" id="user-image">
+                                <div class="row gy-3 hide section section-1" id="user-image">
                                     <div class="col-12 text-center">
-                                        <img src="{% static 'app/assets/images/no-image.png' %}" class="card-img-top" alt="" id="profile-image-preview">
-                                        <input type="file" name="image" id="profile-image" class="hide">
+                                        <img src="{% static 'app/assets/images/no-image.png' %}" class="card-img-top"
+                                            alt="" id="profile-image-preview">
+                                        <input type="file" name="image" id="profile-image" accept="image/*" class="hide">
                                         <label for="profile-image" class="btn btn-primary my-3">{% trans "Upload image" %}</label>
                                     </div>
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <button id="submit" type="submit" class="btn btn-primary disabled hide">{% trans 'Create account' %}</button>
+                                    <button id="submit" type="submit" class="btn btn-primary submit disabled hide">{% trans 'Create account' %}</button>
                                     <button type="button" class="btn btn-primary disabled" id="next">{% trans "Next" %}</button>
                                     <button type="button" id="previous" class="btn btn-primary disabled hide">
                                         <i class="fas fa-chevron-circle-left"></i>
@@ -118,5 +120,10 @@
         </div>
     </div>
 </body>
+<script>
+    function gettext(text) {
+        return text
+    }
+</script>
 <script type="text/javascript" src="{% static 'app/js/signup.js' %}"></script>
 </html>

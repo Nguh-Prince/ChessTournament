@@ -1,4 +1,5 @@
 import math
+from types import NoneType
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -77,7 +78,7 @@ class TournamentCategory(models.Model):
     number_of_points_for_win = models.FloatField()
     number_of_points_for_loss = models.FloatField()
     name = models.CharField(null=False, blank=False, unique=True, max_length=50)
-    image = models.ImageField()
+    image = models.ImageField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -105,7 +106,7 @@ class Tournament(models.Model):
     number_of_points_for_draw = models.FloatField(default=0.5)
     number_of_points_for_win = models.FloatField(default=1)
     number_of_points_for_loss = models.FloatField(default=0)
-    image = models.ImageField(upload_to=tournament_directory_path)
+    image = models.ImageField(upload_to=tournament_directory_path, null=True, blank=True)
     terms = models.FileField(upload_to=tournament_directory_path, blank=True, null=True)
 
     class Meta:
@@ -227,8 +228,11 @@ class Tournament(models.Model):
         return self.enrolled_participants.count() if self.enrolled_participants else 0
 
     def __str__(self) -> str:
-        return f"{self.name} : {self.category.name}"
-
+        try:
+            return f"{self.name} : {self.category.name}"
+        except AttributeError as e:
+            print(f"Exception occured: {e.__str__()}")
+            return self.name
 
 def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     # create fixtures for a tournament once the tournament has been added or edited

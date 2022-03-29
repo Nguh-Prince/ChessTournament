@@ -141,7 +141,7 @@ def logout_view(request):
     logout(request)
     return redirect("app:login")
 
-# @login_required
+@login_required
 def create_person(request):
     context = {"errors": [], 'classrooms': CLASSROOMS}
 
@@ -162,6 +162,7 @@ def create_person(request):
             player.first_name = names[0]
             player.last_name = names[-1]
             player.email = player.email if player.email is not None else ""
+            player.user = request.user
             player.save()
 
             return redirect("app:login")
@@ -224,8 +225,14 @@ def check_uniqueness(request):
         queryset = User.objects.filter(Q(username=data.data["value"]) & ~Q(username=request.user.username) )
         model_name = _("user")
         field_name = _("username")
+    elif data.data["field"].lower() == "telegram_username":
+        queryset = models.Player.objects.filter( telegram_username=data.data['value'] )
+        model_name = _("person")
+        field_name = _("telegram username")
+        if person:
+            queryset.filter( ~Q(id=person.id) )
 
-    if queryset.count() > 0:
+    if queryset and queryset.count() > 0:
         message = _( "A %(model_name)s already exists with this %(field)s" % {'model_name': model_name, 'field': field_name} )
         return Response(
             data={

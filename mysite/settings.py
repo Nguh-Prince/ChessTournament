@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "172.20.10.5",
     "chess-tournament.herokuapp.com",
+    "192.168.8.105"
 ]
 
 

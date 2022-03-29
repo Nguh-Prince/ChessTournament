@@ -1,8 +1,8 @@
 var SECTION = 0
+var NUMBER_OF_SECTIONS = $(".section").length
 
 $(document).ready(function () {
     console.log("Doc is ready...")
-    getUniqueValues()
 })
 
 var state = {}
@@ -20,22 +20,10 @@ $(".fa-eye").click(function () {
     }
 })
 
-function getUniqueValues() {
-    $.ajax({
-        type: "GET",
-        url: `http://${getServerHostAndPort()}/get-unique-values`,
-        success: function (data) {
-            state = data
-        },
-        error: function () {
-            displayMessage(gettext("Error connecting to the server"))
-        }
-    })
-}
-
 THE_PASSWORDS_DO_NOT_MATCH = gettext("The two passwords do not match")
 
 $("#personal-info input, #personal-info select").on("input", function () {
+    console.log("Inputting personal info")
     let flag = true
     // removing previous errors if any
     $(this).removeClass('is-invalid').addClass('is-valid')
@@ -114,19 +102,16 @@ $("#next").click(function () {
     console.log("Clicked next button")
     $("#personal-info").addClass('hide')
     $("#previous").removeClass("hide").removeClass("disabled")
-    SECTION = ++SECTION % 3
+    SECTION = ++SECTION % NUMBER_OF_SECTIONS
+   
+    $(".section").addClass('hide')
+    $(`.section-${SECTION}`).removeClass('hide')
 
-    if (SECTION == 1) {
-        $("#user-info").removeClass("hide")
-        $("#user-image").addClass("hide")
-    } else if (SECTION == 2) {
-        $("#user-info").addClass("hide")
-        $("#user-image").removeClass('hide')
+    if (SECTION == NUMBER_OF_SECTIONS - 1) {
         $(this).addClass('hide')
-        $("#submit").removeClass("hide")
-    } else {
-        console.log(SECTION)
+        $(".submit").removeClass("hide").removeClass("disabled")
     }
+
     $("#card-title").text(CARD_TITLES[SECTION])
 })
 
@@ -134,16 +119,11 @@ $("#previous").click(function () {
     SECTION -= 1
     $("#submit").addClass("hide")
     $("#next").removeClass('hide')
+    $(".section").addClass("hide")
+    $(`.section-${SECTION}`).removeClass('hide')
 
     if (SECTION == 0) {
-        $("#personal-info").removeClass('hide')
-        $("#previous").addClass("hide").addClass("disabled")
-        $("#user-info").addClass('hide')
-        $("#user-image").addClass('hide')
-    } else if (SECTION == 1) {
-        $("#personal-info").addClass('hide')
-        $("#previous").removeClass("hide").removeClass("disabled")
-        $("#user-info").removeClass('hide')
+        $(this).addClass("hide")
     } else {
         console.log(SECTION)
     }
@@ -154,38 +134,60 @@ $("#previous").click(function () {
 function validateUnique(jquerySelector) {
     let flag = true
     if (jquerySelector.val()) {
+        jquerySelector.removeClass("is-invalid")
+        jquerySelector.parent().children(".invalid-feedback").remove()
+
         console.log("Input has a value")
         console.log(jquerySelector.attr("name"))
-        if (["phone", 'telegram-username', 'username'].includes(jquerySelector.attr("name"))) {
+        if (["phone", 'telegram_username', 'username'].includes(jquerySelector.attr("name"))) {
             console.log("It is a unique attribute")
-            let stateKey, attributeName
+            let queryField
             switch (jquerySelector.attr('name')) {
                 case "phone":
-                    stateKey = "phone_numbers"
-                    attributeName = gettext("phone number")
+                    queryField = "phone"
                     break;
                 case "username":
-                    stateKey = "usernames"
-                    attributeName = gettext("username")
+                    queryField = "username"
                     break;
                 case 'telegram-username':
-                    stateKey = "telegram_usernames"
-                    attributeName = gettext("telegram username")
+                    queryField = "telegram_username"
+                    break;
+                case 'email':
+                    queryField = "email"
                     break;
             }
-            console.log(stateKey)
+            console.log(queryField)
             console.log(jquerySelector.val())
-            if (state[stateKey].includes(jquerySelector.val())) {
-                let format = gettext("A person already exists with this %(attribute)s")
-                let text = interpolate(format, { 'attribute': attributeName }, true)
-                flag = false
 
-                jquerySelector.addClass('is-invalid')
+            $.ajax({
+                type: "POST",
+                url: `http://${getServerHostAndPort()}/signup/check/`,
+                data: {
+                    field: queryField,
+                    value: jquerySelector.val()
+                },
+                headers: {
+                    "X-CSRFTOKEN": getCookie("csrftoken")
+                },
+                success: function(data) {
+                    console.log("Field is unique")
+                },
+                error: function(data) {
+                    if (data.status == 400) {
+                        console.log(data.responseText)
+                        text = JSON.parse(data.responseText)["error"]
+                        
+                        let feedback = createElement('div', ['invalid-feedback'])
 
-                let feedback = createElement('div', ['invalid-feedback'])
-                feedback.textContent = text
-                jquerySelector.parent().append(feedback)
-            }
+                        feedback.textContent = text
+                        console.log(text)
+
+                        jquerySelector.parent().append(feedback)
+                        jquerySelector.addClass('is-invalid')
+                    }
+                    flag = false
+                }
+            })
         }
     }
 

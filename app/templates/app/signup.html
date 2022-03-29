@@ -62,7 +62,7 @@
                         <div class="card-body">
                             <form method="post" name="myform" class="signin_validate row g-3" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="row" id="personal-info">
+                                <div class="row section section-0" id="personal-info">
                                     <div class="col-12">
                                         <label class="form-label">{% trans "First and last name" %}</label>
                                         <input type="text" class="form-control required"
@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row hide" id="user-info">
+                                <div class="row hide section section-1" id="user-info">
                                     <div class="col-12 input-group mb-3">
                                         <span class="input-group-text">
                                             <i class="fas fa-user"></i>
@@ -138,7 +138,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row gy-3 hide" id="user-image">
+                                <div class="row gy-3 hide section section-2" id="user-image">
                                     <div class="col-12 text-center">
                                         <img src="{% static 'app/assets/images/no-image.png' %}" class="card-img-top" alt="" id="profile-image-preview">
                                         <input type="file" name="image" id="profile-image" class="hide">
