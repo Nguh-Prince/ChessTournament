@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include("app.urls")),
     path("", include("pwa.urls")),
     path("logout", LogoutView.as_view()),
+    path('i18n/', include('django.conf.urls.i18n')),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

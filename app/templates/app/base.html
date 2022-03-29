@@ -1,7 +1,7 @@
 {% load i18n static %}
 <!DOCTYPE html>
-<html lang="en">
-
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,8 +16,6 @@
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static 'app/js/luxon.min.js' %}"></script>
     <script src="{% static 'app/js/functions.js' %}"></script>
-
-    {% get_current_language as LANGUAGE_CODE %}
 
     <style>
         #messages {
@@ -81,6 +79,27 @@
                     </li>
                 </ul>
                 <div class="d-flex">
+                    <form action="{% url 'set_language' %}" method="post" class="mx-3">
+                        {% csrf_token %}
+                        <select name="language" id="language-picker" class="form-control select">
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            {% for language in languages %}
+                            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}
+                                selected{% endif %}>
+                                {{ language.name_local }} ({{ language.code }})
+                            </option>
+                            {% endfor %}
+                        </select>
+    
+                        <script>
+                            languagePicker = document.getElementById('language-picker')
+    
+                            languagePicker.onchange = function () {
+                                this.parentNode.submit()
+                            }
+                        </script>
+                    </form>
                     <a href="" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false"
                         class="d-block link-dark text-decoration-none dropdown-toggle">
                         <img src="{% if request.session.player and request.session.player.image %} {{ request.session.player.image }} {% else %} {% static 'app/assets/images/no-image.png' %} {% endif %}" alt="" width="32" height="32"
