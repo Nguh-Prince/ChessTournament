@@ -18,6 +18,7 @@ $(document).ready(function () {
             type: "GET",
             url: `/${API_URL}/tournaments/${getCookie("tournament_id")}/`,
             success: function (data) {
+                console.log(data)
                 pickLayout(TABLE_LAYOUT_OPTION)
                 generateRoundsForDisplay(data['fixtures'])
             },
@@ -55,6 +56,8 @@ function pickLayout(value) {
 }
 
 async function generateRoundsForDisplay(fixtures) {
+    console.log("Generating rounds for display with fixtures: ")
+    console.log(fixtures)
     // contains the different rounds found in the tournament along with the fixtures 
     // for each of those rounds
     let tournamentFixturesObject = {}

@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from icecream import ic
 
@@ -21,6 +22,11 @@ class TournamentViewSet(viewsets.ModelViewSet):
         permissions.IsCreatorOr403,
     ]
     queryset = models.Tournament.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = serializers.TournamentDetailSerializer(instance=instance)
+        return Response(serializer.data)
 
 class TournamentsList(generics.ListCreateAPIView):
     # get a list of tournaments or add a tournament

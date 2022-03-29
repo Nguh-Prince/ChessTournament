@@ -5,7 +5,6 @@ from django.db.models import Q, Sum
 from django.db.models.signals import post_save
 from django.utils.text import slugify
 
-# from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from icecream import ic
 from rest_framework.serializers import ValidationError
