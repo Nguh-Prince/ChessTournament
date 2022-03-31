@@ -1,3 +1,0 @@
-
-# Termes & Conditions
-1. 

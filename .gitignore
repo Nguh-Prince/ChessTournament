@@ -6,3 +6,6 @@ __pycache__
 
 # Ignore database
 db.sqlite3
+
+# Ignore all files andsubfolders in media
+media/*
