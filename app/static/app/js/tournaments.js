@@ -73,11 +73,44 @@ function displayAllTournaments(tournamentsList) {
             $(cardBody).append(button)
 
             $(button).click(function () {
+                console.log("Clicked enroll button")
                 if (!playerId) {
                     // show sign in prompt
                     $("#show-sign-in-prompt").click()
                 } else {
                     console.log("You're logged in")
+                    // get the terms and conditions, parse it and put it in the appropriate container
+                    if (tournament['terms']) {
+                        $("#terms-and-conditions-parent").removeClass('hide')
+                        $.ajax({
+                            type: "GET",
+                            url: tournament["terms"],
+                            success: function(data) {
+                                console.log(data)
+                                console.log(parseMd(data))
+                                $("#terms-and-conditions-container").html(parseMd(data))
+                            },
+                            error: function(data) {
+                                console.log(data.responseText)
+                                switch(data.status) {
+                                    case 400:
+                                        displayMessage( data.responseText )
+                                        break;
+                                    case 403:
+                                        displayMessage( ERROR_MESSAGES["403"] )
+                                        break;
+                                    case 500:
+                                        displayMessage( ERROR_MESSAGES["500"] )
+                                        break;
+                                    default:
+                                        displayMessage( `Error occured, code: ${data.status}` )
+                                        break;
+                                }
+                            }
+                        })
+                    } else {
+                        $("#terms-and-conditions-parent").addClass('hide')
+                    }
                 }
             })
 
@@ -110,32 +143,8 @@ $("#tournament-search").on('input', function() {
     } ) : state.allTournaments )
 })
 
-// $("#delete-item-confirmed").click(function() {
-//     console.log("Clicked delete item")
-//     let url = this.getAttribute("data-delete-url")
-//     console.log(url)
-//     if (url) {
-//         $.ajax({
-//             url: url,
-//             type: "DELETE",
-//             headers: {
-//                 "X-CSRFTOKEN": getCookie("csrftoken")
-//             },
-//             success: function(data) {
-//                 displayMessage(gettext("Tournament deleted successfully"), ['alert-success', 'alert-dismissible'])
-//                 loadTournaments()
-//                 loadAllTournaments()
-//             },
-//             error: function(data) {
-//                 if (data.status == 500) {
-//                     displayMessage( ERROR_MESSAGES["500"] )
-//                 } else if (data.status == 403) {
-//                     displayMessage( ERROR_MESSAGES["403"] )
-//                 } else {
-//                     displayMessage( data.responseText )
-//                 }
-//                 console.log(data.responseText)
-//             }
-//         })
-//     }
-// })
+$("#accept-notifications-checkbox").change(function() {
+    if ($(this).prop('checked')) {
+        
+    }
+})

@@ -120,12 +120,25 @@ Mate | Tournaments
                 <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="row py-3 px-3">
+                <div class="row py-3 hide" id="terms-and-conditions-parent">
                     {% trans "Enrolling in this tournament implies that you have read and accepted the organizer's Rules and Regulations" %}
+
+                    <div class="accordion" id="terms-and-conditions-accordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="terms-and-conditions">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#terms-and-conditions-container" aria-expanded="false" aria-controls="terms-and-conditions-container">
+                                    {% trans "Terms & Conditions" %}
+                                </button>
+                            </h2>
+                            <div class="accordion-collapse collapse" id="terms-and-conditions-container" aria-labelledby="terms-and-conditions" data-bs-parent="#terms-and-conditions-accordion">
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-check md-3">
                     <input type="checkbox" class="form-check-input" id="accept-notifications-checkbox">
-                    <label for="accept-notifications-checkbox" class="form-check-label">{% trans "Would you like to receive notifications from us with information concerning this tournament ?" %}</label>
+                    <label for="accept-notifications-checkbox" class="form-check-label">{% trans "I would like to receive notifications concerning this tournament" %}</label>
                 </div>
             </div>
             <div class="modal-footer">

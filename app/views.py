@@ -173,24 +173,6 @@ def create_person(request):
 
     return render(request, "app/create-person.html", context=context)
 
-@api_view(("GET",))
-@renderer_classes([JSONRenderer])
-def get_usernames_phones_telegram(request):
-    usernames_list = [f.username for f in User.objects.all() if f.username]
-    people_phones = [f.phone for f in models.Player.objects.all() if f.phone]
-    people_telegram_usernames = [
-        f.telegram_username for f in models.Player.objects.all() if f.telegram_username
-    ]
-
-    return Response(
-        data={
-            "usernames": usernames_list,
-            "phone_numbers": people_phones,
-            "telegram_usernames": people_telegram_usernames,
-        },
-        status=status.HTTP_200_OK,
-    )
-
 @csrf_exempt
 @api_view(["POST", ])
 def check_uniqueness(request):

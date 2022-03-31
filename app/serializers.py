@@ -439,6 +439,7 @@ class TournamentDetailSerializer(TournamentSerializer):
             "total_number_of_participants",
             "participants_enrolled",
             "image",
+            "terms",
             "creator",
             "creator_details",
             "time_created",
