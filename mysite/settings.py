@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "pwa",
     "corsheaders",
     "imagekit",
+    "webpush",
 ]
 
 CORS_ALLOWED_ORIGINS = [

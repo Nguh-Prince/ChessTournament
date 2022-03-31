@@ -145,6 +145,14 @@ $("#tournament-search").on('input', function() {
 
 $("#accept-notifications-checkbox").change(function() {
     if ($(this).prop('checked')) {
-        
+        if (!("Notification" in window) ) {
+            alert( gettext("Your browser does not support notifications") )
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(function (permission) {
+                if (permission == "granted") {
+                    console.log("Permission granted");
+                }
+            })
+        }
     }
 })
