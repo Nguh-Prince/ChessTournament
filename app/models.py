@@ -253,7 +253,7 @@ post_save.connect(create_tournament_fixtures, Tournament)
 
 class TournamentPlayer(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True)
     kicked_out = models.BooleanField(default=False)
     rating = models.FloatField(default=800)
     participating = models.BooleanField(
