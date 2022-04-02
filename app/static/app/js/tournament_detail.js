@@ -342,6 +342,7 @@ function addGameToFixture(fixtureId, tournamentId) {
                     setTimeout(reloadPage, 15000)
                 },
                 error: function (data) {
+                    console.log(JSON.stringify(formData))
                     if (data.status == 500) {
                         displayMessage(ERROR_MESSAGES["500"])
                     }
