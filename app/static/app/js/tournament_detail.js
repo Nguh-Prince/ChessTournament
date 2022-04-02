@@ -81,10 +81,17 @@ async function generateRoundsForDisplay(fixtures) {
             if (i in fixture['participants']) {
                 // get player details
                 player = fixture['participants'][i]
-
-                object.name = `${player['player']['first_name']} ${player['player']['last_name']} - ${player['player']['classroom']}`
-                object.winner = player['is_winner']
-                object.ID = player['player']['id']
+                
+                if (player['player'] !== null) {
+                    object.name = `${player['player']['first_name']} ${player['player']['last_name']}`
+                    object.name += player['player']['classroom'] ? ` - ${player['player']['classroom']}` : ''
+                    object.winner = player['is_winner']
+                    object.ID = player['player']['id']
+                } else {
+                    object.name = gettext("Unassigned")
+                    object.winner = false
+                    object.ID = Math.ceil(Math.random()*500)
+                }
             }
 
             // add player object to the fixture object

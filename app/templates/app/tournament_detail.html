@@ -27,14 +27,16 @@ Mate | Tournaments | {{id}}
         height: 100vh;
         position: relative;
     }
-    #layout-container>div {
+    .layout {
         width: 100%;
-        height: 100%;
+        height: 95%;
+        max-height: 95%;
         position: absolute;
         top: 0;
         left: 0;
     }
-    #layout-container>div.hide {
+
+    .layout.hide {
         display: none;
     }
 </style>
@@ -69,10 +71,28 @@ Mate | Tournaments | {{id}}
     </div>
     <div class="col-md-8 text-end p-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#participants_list">{% trans "View list of enrolled participants" %}</button>
-        <!-- <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fixture_detail">{% trans "View fixture detail" %}</button> -->
     </div>
 </div>
-<div class="row p-3">
+
+<div class="row p-3 text-end">
+    <div class="col-md-3 p-3">
+        <div class="row p-3" id="start">
+            {% if not tournament.started %}
+            {% if request.session.player.id and tournament.creator.id == request.session.player.id %}
+            <button class="btn btn-primary {% if tournament.clean %}disabled{% endif %}">
+                {% trans "Start" %}
+            </button>
+            {% else %}
+            <div class="mb-3 btn-outline-danger">
+                {% trans "This tournament has not yet started" %}
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row p-3" style="position: relative;">
     <div class="mb-3 col-md-3">
         <label for="layout-select">{% trans "Tournament layout" %}</label>
 
@@ -83,7 +103,7 @@ Mate | Tournaments | {{id}}
     </div>
 
     <div id="layout-container">
-        <div class="row" id="table-layout">
+        <div class="row layout" id="table-layout">
             <div class="col-md-12">
                 <table class="table table-striped" id="fixtures-table">
                     <thead>
@@ -110,11 +130,11 @@ Mate | Tournaments | {{id}}
                                     {% empty %}
                                     <li>{% trans "This fixture has no players" %}</li>
                                     {% endfor %}
-    
-                                    {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} 
-                                    <button class="btn btn-primary">
+
+                                    {% if fixture.playerfixture_set.count < 2 and request.session.player and tournament.creator.id == request.session.player.id %} <button
+                                        class="btn btn-primary">
                                         {% trans "Add a player" %}</button>
-                                    {% endif %}
+                                        {% endif %}
                                 </ul>
                             </td>
                             <td>
@@ -122,7 +142,7 @@ Mate | Tournaments | {{id}}
                                 <input type="hidden" class="player" id="{{ fixture_player.id }}"
                                     value="{{ fixture_player.player.player }}">
                                 {% endfor %}
-    
+
                                 {% for game in fixture.game_set.all %}
                                 <button class="btn btn-secondary display-game" onclick="showGameDetail( {{ game.id }} )"
                                     data-bs-target="#game_detail" data-bs-toggle="modal" data-game-id="{{ game.id }}"
@@ -137,8 +157,8 @@ Mate | Tournaments | {{id}}
                                 </ul>
                                 {% endfor %}
                                 {% if request.session.player and tournament.creator.id == request.session.player.id %}
-                                <button class="btn btn-primary add-game" data-bs-toggle="modal" data-bs-target="#new_game"
-                                    data-fixture-id="{{ fixture.id }}">
+                                <button class="btn btn-primary add-game" data-bs-toggle="modal"
+                                    data-bs-target="#new_game" data-fixture-id="{{ fixture.id }}">
                                     {% trans "Add a game" %}
                                 </button>
                                 {% endif %}
@@ -151,17 +171,17 @@ Mate | Tournaments | {{id}}
                                     class="form-control">
                                 {% else %}
                                 {% trans "This fixture has no winner" %}
-                                    {% if fixture.tournament.creator.id == request.user.player.id %}
-                                    <div class="mb-3">
-                                        <label for="fixture_{{ fixture.id }}_winner">{% trans "Pick a winner" %}</label>
-                                        <select id="fixture_{{ fixture.id }}_winner" class="form-control">
-                                            <option value="">---</option>
-                                            {% for player in fixture.playerfixture_set.all %}
-                                            <option value="{{ player.id }}">{{ player.player.player.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    {% endif %}
+                                {% if fixture.tournament.creator.id == request.user.player.id %}
+                                <div class="mb-3">
+                                    <label for="fixture_{{ fixture.id }}_winner">{% trans "Pick a winner" %}</label>
+                                    <select id="fixture_{{ fixture.id }}_winner" class="form-control">
+                                        <option value="">---</option>
+                                        {% for player in fixture.playerfixture_set.all %}
+                                        <option value="{{ player.id }}">{{ player.player.player.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endif %}
                                 {% endif %}
                             </td>
                             <td>
@@ -182,24 +202,9 @@ Mate | Tournaments | {{id}}
             </div>
         </div>
 
-        <div class="bracket-container brackets" id="brackets-layout">
+        <div class="bracket-container brackets layout" id="brackets-layout">
         </div>
     </div>
-</div>
-
-<div class="row p-3">
-    {% if not tournament.started %}
-    {% if request.session.player.id and tournament.creator.id == request.session.player.id %}
-    <button class="btn btn-primary {% if tournament.clean %}disabled{% endif %}">
-        {% trans "Start" %}
-    </button>
-    {% else %}
-    <div class="mb-3 btn-outline-danger">
-        {% trans "This tournament has not yet started" %}
-    </div>
-    {% endif %}
-    {% endif %}
-
 </div>
 {% endblock %}
 
@@ -234,9 +239,11 @@ Mate | Tournaments | {{id}}
                             </td>
                             <td>
                                 {% if tournament_player.participating and not tournament_player.kicked_out %}
-                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans "Kick out" %}</button>
+                                <button class="btn btn-danger" onclick="kickOut({{ tournament_player.id }})">{% trans
+                                    "Kick out" %}</button>
                                 {% elif not tournament_player.participating %}
-                                <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans "Enroll" %}</button>
+                                <button class="btn btn-primary" onclick="enroll( {{ tournament_player.id }} )">{% trans
+                                    "Enroll" %}</button>
                                 {% elif tournament_player.kicked_out %}
                                 <button class="btn btn-outline-danger disabled">{% trans "Kicked out" %}</button>
                                 {% endif %}
@@ -318,7 +325,7 @@ Mate | Tournaments | {{id}}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="add-game">{% trans "Submit" %}</button>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal" aria-label="Close">
                     {% trans "Close" %}
                 </button>
             </div>

@@ -38,7 +38,7 @@ class Player(models.Model):
     telegram_username = models.CharField(max_length=256, unique=True, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name} ({self.classroom})"
+        return f"{self.first_name} {self.last_name}{ ' ' + self.classroom if self.classroom else ''}"
 
     @property
     def name(self) -> str:
@@ -204,24 +204,53 @@ class Tournament(models.Model):
             number *= 2
 
     def assign_players_to_initial_fixtures(self):
+        import random
         # this method randomly places enrolled players in the outermost fixtures, i.e. those that do not have any children
         outermost_fixtures = self.fixture_set.filter(children__isnull=True)
-        enrolled_participants = self.enrolled_participants
+        null_enrolled_participants = self.enrolled_participants.filter(player__isnull=True)
+        non_null_enrolled_participants = self.enrolled_participants.filter(player__isnull=False)
+        assigned_participants = []
 
+        total_number_of_participants = non_null_enrolled_participants.count() + null_enrolled_participants.count()
         if (
-            enrolled_participants.count() == outermost_fixtures.count() * 2
-            and enrolled_participants.count() == self.total_number_of_participants
+            total_number_of_participants == outermost_fixtures.count() * 2
+            and total_number_of_participants == self.total_number_of_participants and null_enrolled_participants.count() <= non_null_enrolled_participants.count()
         ):
-            j = 0
             for fixture in outermost_fixtures:
-                for i in range(2):
+                player1, player2 = None, None
+
+                # if all the placeholders have not been selected
+                ic(Fixture.objects.filter(tournament=self, playerfixture__player__isnull=True).count(), null_enrolled_participants.count())
+                if Fixture.objects.filter(tournament=self, playerfixture__player__isnull=True, level_number=total_number_of_participants//2).count() <= null_enrolled_participants.count():
+                    print("Selecting a random placeholder")
+                    while True:
+                        # select a random null player
+                        player1 = random.choice(null_enrolled_participants)
+                        if Fixture.objects.filter(tournament=self, playerfixture__player=player1).count() == 0:
+                            break
+                else:
+                    print("No placeholders, Selecting a random player")
+                    while True:
+                        player1 = random.choice(non_null_enrolled_participants)
+                        if Fixture.objects.filter(tournament=self, playerfixture__player=player1).count() == 0:
+                            break
+                
+                while True:
+                    print("Selecting a random player")
+                    player2 = random.choice(non_null_enrolled_participants)
+                    if Fixture.objects.filter(tournament=self, playerfixture__player=player2).count() == 0 and player2 != player1:
+                        break
+
+                for i in [player1, player2]:
+                    ic(i)
                     playerfixture = PlayerFixture(
-                        fixture=fixture, player=enrolled_participants[j + i]
+                        fixture=fixture, player=i   
                     )
                     playerfixture.clean()
                     playerfixture.save()
-
-                j += 2
+                
+                assigned_participants.append(player1.id)
+                assigned_participants.append(player2.id)
 
     @property
     def enrolled_participants(self):
@@ -301,7 +330,7 @@ class Fixture(models.Model):
         if query.count() >= 1:
             string = f"{ query.first().player.player.__str__() } vs. { query.last().player.player.__str__() if query.count() > 1 else '---' }"
 
-        return string
+        return f"{self.tournament.name} {string}"
 
     def clean(self) -> None:
         if self.children.count() > 2:
@@ -427,7 +456,6 @@ class PlayerFixture(models.Model):
     is_winner = models.BooleanField(default=False)
 
     def clean(self) -> None:
-        ic(self)
         # a fixture cannot have more than 2 player fixture entries
         if self.fixture.playerfixture_set.all().count() > 2:
             raise ValidationError(_("Fixture already has two players"))
