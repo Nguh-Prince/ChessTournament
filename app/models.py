@@ -281,7 +281,7 @@ post_save.connect(create_tournament_fixtures, Tournament)
 
 
 class TournamentPlayer(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament: Tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True)
     kicked_out = models.BooleanField(default=False)
     rating = models.FloatField(default=800)
@@ -297,8 +297,10 @@ class TournamentPlayer(models.Model):
         ):
             raise ValidationError(_("The tournament is already full."))
 
+        if self.tournament.tournamentplayer_set.filter( Q(participating=True) & Q(kicked_out=False) & ~Q(id=self.id) ).count() > 0:
+            raise ValidationError( _(f"Player {self.player} is already enrolled in the tournament and has not yet been kicked out!") )
+
     class Meta:
-        unique_together = [["tournament", "player"]]
         verbose_name = _("Tournament participant")
         verbose_name_plural = _("Tournament participants")
 
