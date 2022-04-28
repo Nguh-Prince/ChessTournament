@@ -276,6 +276,12 @@ def create_tournament_fixtures(sender, instance: Tournament, **kwargs):
     ):
         instance.create_fixtures()
 
+def create_placeholder_players(sender, instance: Tournament, **kwargs):
+    if instance.tournamentplayer_set.filter(player__isnull=True).count() == 0:
+        # create placeholder players
+        for i in range(instance.total_number_of_participants):
+            TournamentPlayer.objects.create(player=None, tournament=instance, participating=True)
+
 
 post_save.connect(create_tournament_fixtures, Tournament)
 
@@ -311,7 +317,7 @@ class Fixture(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     root = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, related_name="children", blank=True
-    )
+    ) 
     finished = models.BooleanField(default=False)
     # a fixture can have no more than one root, the root is the fixture that is dependent on the results of this one and another fixture
     # a fixture can be the root of no more than 2 other fixtures
@@ -540,9 +546,13 @@ class PlayerFixtureGame(models.Model):
     #  in fixtures preceding this game's fixture
     @property
     def get_sum_of_scores_before_game(self):
-        total_score = self.game.fixture.children.aggregate(
-            score=models.Sum(models.F("game__playerfixturegame__score"))
-        )["score"]
+        # total_score = self.game.fixture.children.aggregate(
+        #     score=models.Sum(models.F("game__playerfixturegame__score"))
+        # )["score"]
+        total_score = self.__class__.models.objects.filter(Q(playerfixture__fixture__in=self.game.fixture.children) & Q(playerfixture__player=self.playerfixture.player) ).aggregate(
+            score=models.Sum(models.F("score"))
+        )
+        print(total_score)
 
         return total_score if total_score else 0
 

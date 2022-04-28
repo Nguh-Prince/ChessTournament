@@ -129,10 +129,11 @@ class PlayerFixtureGameSerializer(serializers.ModelSerializer):
     scores = serializers.FloatField(
         source="get_sum_of_scores_before_game", read_only=True
     )
+    player = TournamentPlayerSerializer(source='playerfixture.player', read_only=True)
 
     class Meta:
         model = models.PlayerFixtureGame
-        fields = ("id", "playerfixture", "score", "is_home", "scores")
+        fields = ("id", "playerfixture", "score", "is_home", "scores", "player")
 
     def validate(self, attrs):
         ic(attrs)

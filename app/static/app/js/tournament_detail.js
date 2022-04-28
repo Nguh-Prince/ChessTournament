@@ -387,6 +387,8 @@ function showGameDetail(gameId) {
 }
 
 function populateGameModal(gameObject) {
+    console.log(`Displaying gameObject in populateGameModal`)
+    console.log(gameObject)
     $("#game_detail .modal-header").text(gameObject["__str__"])
 
     $("#game_classroom").val(gameObject["classroom"])
@@ -399,6 +401,7 @@ function populateGameModal(gameObject) {
 
     for (let player of gameObject["players"]) {
         player["is_home"] ? $("#game_white").val(player["playerfixture"]) : $("#game_black").val(player["playerfixture"])
+        player["is_home"] ? $("#game_white_score").val(player["score"]) : $("#game_black_score").val(player["score"]);
     }
 }
 

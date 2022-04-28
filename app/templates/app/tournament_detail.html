@@ -393,7 +393,7 @@ Mate | Tournaments | {{id}}
                 {% if tournament.creator.id == request.session.player.id %}
                 <button class="btn btn-primary" id="edit-game">{% trans "Submit" %}</button>
                 {% endif %}
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal" aria-label="Close">
                     {% trans "Close" %}
                 </button>
             </div>
